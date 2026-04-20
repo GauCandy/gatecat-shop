@@ -583,7 +583,6 @@ function ProductForm({
   const editingId = editing?.id ?? null;
 
   const [name, setName] = useState(editing?.name ?? "");
-  const [slug, setSlug] = useState(editing?.slug ?? "");
   const [categoryIds, setCategoryIds] = useState<Set<string>>(
     new Set(editing?.categories.map((c) => c.id) ?? [])
   );
@@ -600,7 +599,6 @@ function ProductForm({
 
   useEffect(() => {
     setName(editing?.name ?? "");
-    setSlug(editing?.slug ?? "");
     setCategoryIds(new Set(editing?.categories.map((c) => c.id) ?? []));
     setMainPreview(editing?.imageUrl ?? null);
     setRemoveMainImage(false);
@@ -680,7 +678,6 @@ function ProductForm({
 
     const fd = new FormData();
     fd.set("name", name.trim());
-    fd.set("slug", slug.trim());
     for (const cid of categoryIds) fd.append("categoryIds", cid);
 
     const mainFile = mainFileRef.current?.files?.[0];
@@ -732,22 +729,12 @@ function ProductForm({
         {editing ? "Sửa sản phẩm" : "Thêm sản phẩm"}
       </h2>
 
-      <Field label="Tên sản phẩm">
+      <Field label="Tên sản phẩm" hint="Slug sẽ tự sinh từ tên sản phẩm">
         <input
           type="text"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className={inputCls}
-        />
-      </Field>
-
-      <Field label="Slug" hint="Để trống sẽ tự sinh từ tên sản phẩm">
-        <input
-          type="text"
-          value={slug}
-          onChange={(e) => setSlug(e.target.value)}
-          placeholder="vd: macbook-pro-14"
           className={inputCls}
         />
       </Field>
@@ -1037,12 +1024,37 @@ function CategoryPicker({
   onToggle: (id: string) => void;
 }) {
   const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   const filtered = useMemo(() => {
     const q = query.trim();
     if (!q) return categories;
     const n = normalize(q);
     return categories.filter((c) => normalize(c.name).includes(n));
   }, [categories, query]);
+
+  const selectedList = useMemo(
+    () => categories.filter((c) => selected.has(c.id)),
+    [categories, selected]
+  );
 
   if (categories.length === 0) {
     return (
@@ -1053,40 +1065,77 @@ function CategoryPicker({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded border border-slate-300 bg-white p-2">
-      <input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Lọc danh mục..."
-        className="h-8 w-full rounded border border-slate-200 bg-white px-2 text-[12px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
-      />
-      <div className="max-h-48 overflow-y-auto">
-        {filtered.length === 0 ? (
-          <p className="px-2 py-3 text-center text-[12px] text-slate-500">
-            Không có danh mục khớp.
-          </p>
-        ) : (
-          <ul className="flex flex-col">
-            {filtered.map((c) => {
-              const checked = selected.has(c.id);
-              return (
-                <li key={c.id}>
-                  <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-[13px] text-slate-700 hover:bg-slate-50">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => onToggle(c.id)}
-                      className="h-4 w-4 accent-slate-900"
-                    />
-                    <span>{c.name}</span>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+    <div ref={wrapRef} className="relative">
+      <div
+        className="flex min-h-9 flex-wrap items-center gap-1 rounded border border-slate-300 bg-white p-1.5 focus-within:border-[var(--color-accent)] focus-within:ring-1 focus-within:ring-[var(--color-accent)]"
+        onClick={() => {
+          setOpen(true);
+          inputRef.current?.focus();
+        }}
+      >
+        {selectedList.map((c) => (
+          <span
+            key={c.id}
+            className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[12px] text-slate-700"
+          >
+            {c.name}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle(c.id);
+              }}
+              aria-label={`Bỏ ${c.name}`}
+              className="grid h-4 w-4 place-items-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-900"
+            >
+              ×
+            </button>
+          </span>
+        ))}
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          placeholder={
+            selectedList.length === 0 ? "Chọn danh mục..." : "Thêm..."
+          }
+          className="min-w-[80px] flex-1 bg-transparent px-1 py-0.5 text-[13px] text-slate-900 outline-none placeholder:text-slate-400"
+        />
       </div>
+
+      {open && (
+        <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-y-auto rounded border border-slate-300 bg-white shadow-lg">
+          {filtered.length === 0 ? (
+            <p className="px-3 py-3 text-center text-[12px] text-slate-500">
+              Không có danh mục khớp.
+            </p>
+          ) : (
+            <ul className="flex flex-col py-1">
+              {filtered.map((c) => {
+                const checked = selected.has(c.id);
+                return (
+                  <li key={c.id}>
+                    <label className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-[13px] text-slate-700 hover:bg-slate-50">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => onToggle(c.id)}
+                        className="h-4 w-4 accent-slate-900"
+                      />
+                      <span>{c.name}</span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 }

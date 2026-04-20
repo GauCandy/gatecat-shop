@@ -3,10 +3,9 @@ import { SESSION_COOKIE } from "@/lib/session";
 import { isAdminRequest } from "@/lib/admin";
 import {
   deleteProduct,
+  generateUniqueProductSlug,
   getProductById,
-  productSlugExists,
   skuExists,
-  slugify,
   updateProduct,
 } from "@/lib/products";
 import { parseProductForm } from "../form";
@@ -41,12 +40,12 @@ export async function PATCH(
     return NextResponse.json({ error: msg }, { status: 400 });
   }
 
-  const slug = slugify(parsed.slug || parsed.name);
-  if (!slug) {
-    return NextResponse.json({ error: "Slug không hợp lệ" }, { status: 400 });
-  }
-  if (await productSlugExists(slug, id)) {
-    return NextResponse.json({ error: "Slug đã tồn tại" }, { status: 409 });
+  let slug: string;
+  try {
+    slug = await generateUniqueProductSlug(parsed.name, id);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Slug không hợp lệ";
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
   for (const v of parsed.variants) {
     if (await skuExists(v.sku, v.id ?? undefined)) {

@@ -128,6 +128,21 @@ export async function productSlugExists(
   return rows.length > 0;
 }
 
+export async function generateUniqueProductSlug(
+  name: string,
+  excludeId?: string
+): Promise<string> {
+  const base = slugify(name);
+  if (!base) throw new Error("Tên sản phẩm không hợp lệ để tạo slug");
+  if (!(await productSlugExists(base, excludeId))) return base;
+  for (let i = 0; i < 5; i++) {
+    const suffix = crypto.randomBytes(3).toString("hex");
+    const candidate = `${base}-${suffix}`;
+    if (!(await productSlugExists(candidate, excludeId))) return candidate;
+  }
+  throw new Error("Không thể tạo slug duy nhất cho sản phẩm");
+}
+
 export async function skuExists(
   sku: string,
   exceptId?: string

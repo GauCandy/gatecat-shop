@@ -11,7 +11,6 @@ export type ParsedVariant = {
 
 export type ParsedProductForm = {
   name: string;
-  slug: string;
   categoryIds: string[];
   imageUrl: string | null;
   variants: ParsedVariant[];
@@ -46,7 +45,6 @@ export async function parseProductForm(
   const name = String(form.get("name") ?? "").trim();
   if (!name) throw new Error("Tên sản phẩm là bắt buộc");
 
-  const slug = String(form.get("slug") ?? "").trim();
   const rawCategories = form.getAll("categoryIds");
   const categoryIds = Array.from(
     new Set(
@@ -120,7 +118,6 @@ export async function parseProductForm(
 
   return {
     name,
-    slug,
     categoryIds,
     imageUrl,
     variants,
