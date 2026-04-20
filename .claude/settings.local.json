@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} — %{size_download} bytes\\\\n\" http://localhost:3000)",
+      "Bash(taskkill //PID 39396 //F)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:8443)",
+      "Bash(netstat -ano)",
+      "Bash(tasklist //FI \"PID eq 41032\")",
+      "Bash(taskkill //PID 41032 //F)",
+      "WebFetch(domain:pris.ly)",
+      "WebFetch(domain:www.prisma.io)",
+      "Bash(npm uninstall *)",
+      "WebSearch",
+      "Bash(Get-Item components/UserMenu.tsx)",
+      "Bash(npx dotenv *)",
+      "Bash(curl -ks -o /dev/null -w \"home:%{http_code}\\\\n\" https://localhost:8443/)",
+      "Bash(curl -ks -o /dev/null -w \"admin-cats:%{http_code}\\\\n\" https://localhost:8443/admin/categories)",
+      "Bash(curl -s -o /dev/null -w \"home:%{http_code}\\\\n\" http://localhost:8443/)",
+      "Bash(curl -s -o /dev/null -w \"admin-cats:%{http_code}\\\\n\" http://localhost:8443/admin/categories)",
+      "Bash(node -e \"require\\('dotenv'\\).config\\({path:'.env'}\\); const u=new URL\\(process.env.DATABASE_URL\\); console.log\\('host:',u.host,'db:',u.pathname\\);\")",
+      "Bash(node -e ' *)",
+      "Bash(curl -s -w \"\\\\nstatus:%{http_code}\\\\n\" http://localhost:8443/)",
+      "Bash(node -e \"import\\('./lib/db.js'\\).catch\\(\\(\\)=>import\\('pg'\\).then\\(async m=>{const {Pool}=m.default||m;const p=new Pool\\({connectionString:process.env.DATABASE_URL}\\);const r=await p.query\\('SELECT id, name, slug, parent_id FROM categories ORDER BY sort_order, name'\\);console.log\\(JSON.stringify\\(r.rows,null,2\\)\\);await p.end\\(\\);}\\)\\)\")"
+    ]
+  }
+}
