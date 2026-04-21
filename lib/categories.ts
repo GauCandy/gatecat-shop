@@ -35,6 +35,14 @@ export async function listCategories(): Promise<Category[]> {
   return rows;
 }
 
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  const { rows } = await pool.query(
+    `SELECT ${SELECT_COLS} FROM categories WHERE slug = $1 LIMIT 1`,
+    [slug]
+  );
+  return rows[0] ?? null;
+}
+
 export async function createCategory(data: {
   name: string;
   slug: string;

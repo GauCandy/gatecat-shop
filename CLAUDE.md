@@ -15,4 +15,3 @@ After any code edit:
 3. Build passes = done.
 
 - After adding a migration → `npm run db:migrate`. Never edit applied migrations.
-- Skip steps 1–2 for Markdown/comment/SQL-only edits.

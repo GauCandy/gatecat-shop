@@ -9,6 +9,7 @@ export type ProductVariant = {
   imageUrl: string | null;
   listPrice: number;
   salePrice: number;
+  stock: number;
   sortOrder: number;
 };
 
@@ -22,6 +23,7 @@ export type Product = {
   id: string;
   name: string;
   slug: string;
+  description: string;
   imageUrl: string | null;
   categories: ProductCategoryRef[];
   sortOrder: number;
@@ -38,7 +40,7 @@ async function fetchVariantsByProductIds(
   const { rows } = await pool.query<ProductVariant>(
     `SELECT id, product_id AS "productId", sku, image_url AS "imageUrl",
             list_price AS "listPrice", sale_price AS "salePrice",
-            sort_order AS "sortOrder"
+            stock, sort_order AS "sortOrder"
      FROM product_variants
      WHERE product_id = ANY($1::text[])
      ORDER BY sort_order ASC, created_at ASC`,
@@ -80,7 +82,7 @@ async function fetchCategoriesByProductIds(
 
 export async function listProducts(): Promise<Product[]> {
   const { rows } = await pool.query(
-    `SELECT id, name, slug, image_url AS "imageUrl", sort_order AS "sortOrder"
+    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder"
      FROM products
      ORDER BY sort_order ASC, name ASC`
   );
@@ -98,9 +100,28 @@ export async function listProducts(): Promise<Product[]> {
 
 export async function getProductById(id: string): Promise<Product | null> {
   const { rows } = await pool.query(
-    `SELECT id, name, slug, image_url AS "imageUrl", sort_order AS "sortOrder"
+    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder"
      FROM products WHERE id = $1 LIMIT 1`,
     [id]
+  );
+  const p = rows[0];
+  if (!p) return null;
+  const [variants, categories] = await Promise.all([
+    fetchVariantsByProductIds([p.id]),
+    fetchCategoriesByProductIds([p.id]),
+  ]);
+  return {
+    ...p,
+    variants: variants.get(p.id) ?? [],
+    categories: categories.get(p.id) ?? [],
+  };
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const { rows } = await pool.query(
+    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder"
+     FROM products WHERE slug = $1 LIMIT 1`,
+    [slug]
   );
   const p = rows[0];
   if (!p) return null;
@@ -162,11 +183,13 @@ export type VariantInput = {
   imageUrl: string | null;
   listPrice: number;
   salePrice: number;
+  stock: number;
 };
 
 export type ProductInput = {
   name: string;
   slug: string;
+  description: string;
   imageUrl: string | null;
   categoryIds: string[];
 };
@@ -199,18 +222,18 @@ export async function createProduct(
   try {
     await client.query("BEGIN");
     await client.query(
-      `INSERT INTO products (id, name, slug, image_url, sort_order)
-       VALUES ($1, $2, $3, $4,
+      `INSERT INTO products (id, name, slug, description, image_url, sort_order)
+       VALUES ($1, $2, $3, $4, $5,
                (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM products))`,
-      [id, data.name, data.slug, data.imageUrl]
+      [id, data.name, data.slug, data.description, data.imageUrl]
     );
     await syncCategories(client, id, data.categoryIds);
     for (let i = 0; i < variants.length; i++) {
       const v = variants[i];
       await client.query(
         `INSERT INTO product_variants
-           (id, product_id, sku, image_url, list_price, sale_price, sort_order)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+           (id, product_id, sku, image_url, list_price, sale_price, stock, sort_order)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [
           crypto.randomUUID(),
           id,
@@ -218,6 +241,7 @@ export async function createProduct(
           v.imageUrl,
           v.listPrice,
           v.salePrice,
+          v.stock,
           i + 1,
         ]
       );
@@ -244,9 +268,9 @@ export async function updateProduct(
     await client.query("BEGIN");
     const { rowCount } = await client.query(
       `UPDATE products
-       SET name = $2, slug = $3, image_url = $4, updated_at = NOW()
+       SET name = $2, slug = $3, description = $4, image_url = $5, updated_at = NOW()
        WHERE id = $1`,
-      [id, data.name, data.slug, data.imageUrl]
+      [id, data.name, data.slug, data.description, data.imageUrl]
     );
     if (!rowCount) {
       await client.query("ROLLBACK");
@@ -272,15 +296,15 @@ export async function updateProduct(
         await client.query(
           `UPDATE product_variants
            SET sku = $2, image_url = $3, list_price = $4, sale_price = $5,
-               sort_order = $6, updated_at = NOW()
-           WHERE id = $1 AND product_id = $7`,
-          [v.id, v.sku, v.imageUrl, v.listPrice, v.salePrice, i + 1, id]
+               stock = $6, sort_order = $7, updated_at = NOW()
+           WHERE id = $1 AND product_id = $8`,
+          [v.id, v.sku, v.imageUrl, v.listPrice, v.salePrice, v.stock, i + 1, id]
         );
       } else {
         await client.query(
           `INSERT INTO product_variants
-             (id, product_id, sku, image_url, list_price, sale_price, sort_order)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+             (id, product_id, sku, image_url, list_price, sale_price, stock, sort_order)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
           [
             crypto.randomUUID(),
             id,
@@ -288,6 +312,7 @@ export async function updateProduct(
             v.imageUrl,
             v.listPrice,
             v.salePrice,
+            v.stock,
             i + 1,
           ]
         );

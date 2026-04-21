@@ -528,6 +528,7 @@ type VariantDraft = {
   sku: string;
   listPrice: string;
   salePrice: string;
+  stock: string;
   imageOp: "keep" | "remove" | "upload";
   existingImageUrl: string | null;
   previewUrl: string | null;
@@ -541,6 +542,7 @@ function createEmptyVariant(): VariantDraft {
     sku: "",
     listPrice: "",
     salePrice: "",
+    stock: "0",
     imageOp: "keep",
     existingImageUrl: null,
     previewUrl: null,
@@ -555,6 +557,7 @@ function fromExistingVariant(v: ProductVariant): VariantDraft {
     sku: v.sku,
     listPrice: String(v.listPrice),
     salePrice: String(v.salePrice),
+    stock: String(v.stock),
     imageOp: "keep",
     existingImageUrl: v.imageUrl,
     previewUrl: v.imageUrl,
@@ -583,6 +586,7 @@ function ProductForm({
   const editingId = editing?.id ?? null;
 
   const [name, setName] = useState(editing?.name ?? "");
+  const [description, setDescription] = useState(editing?.description ?? "");
   const [categoryIds, setCategoryIds] = useState<Set<string>>(
     new Set(editing?.categories.map((c) => c.id) ?? [])
   );
@@ -599,6 +603,7 @@ function ProductForm({
 
   useEffect(() => {
     setName(editing?.name ?? "");
+    setDescription(editing?.description ?? "");
     setCategoryIds(new Set(editing?.categories.map((c) => c.id) ?? []));
     setMainPreview(editing?.imageUrl ?? null);
     setRemoveMainImage(false);
@@ -666,6 +671,7 @@ function ProductForm({
       seen.add(sku.toUpperCase());
       const lp = Number(v.listPrice);
       const sp = Number(v.salePrice);
+      const st = Number(v.stock || 0);
       if (!Number.isFinite(lp) || lp < 0) {
         setError(`Giá niêm yết của "${sku}" không hợp lệ`);
         return;
@@ -674,10 +680,15 @@ function ProductForm({
         setError(`Giá bán của "${sku}" không hợp lệ`);
         return;
       }
+      if (!Number.isFinite(st) || st < 0) {
+        setError(`Tồn kho của "${sku}" không hợp lệ`);
+        return;
+      }
     }
 
     const fd = new FormData();
     fd.set("name", name.trim());
+    fd.set("description", description);
     for (const cid of categoryIds) fd.append("categoryIds", cid);
 
     const mainFile = mainFileRef.current?.files?.[0];
@@ -695,6 +706,7 @@ function ProductForm({
         sku: v.sku.trim(),
         listPrice: Number(v.listPrice),
         salePrice: Number(v.salePrice),
+        stock: Number(v.stock || 0),
         imageOp: op,
       };
     });
@@ -736,6 +748,16 @@ function ProductForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           className={inputCls}
+        />
+      </Field>
+
+      <Field label="Mô tả sản phẩm">
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+          placeholder="Thông tin chi tiết, tính năng nổi bật, chất liệu..."
+          className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
         />
       </Field>
 
@@ -958,6 +980,19 @@ function VariantRow({
             />
           </Field>
         </div>
+
+        <Field label="Tồn kho">
+          <input
+            type="text"
+            inputMode="numeric"
+            value={variant.stock}
+            onChange={(e) =>
+              onChange({ stock: parseDigits(e.target.value) })
+            }
+            placeholder="0"
+            className={inputCls}
+          />
+        </Field>
 
         <Field label="Ảnh mã sản phẩm">
           <div className="flex items-center gap-3">

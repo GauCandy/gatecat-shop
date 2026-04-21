@@ -61,6 +61,7 @@ export async function PATCH(
     {
       name: parsed.name,
       slug,
+      description: parsed.description,
       imageUrl: parsed.imageUrl,
       categoryIds: parsed.categoryIds,
     },
@@ -70,6 +71,7 @@ export async function PATCH(
       imageUrl: v.imageUrl,
       listPrice: v.listPrice,
       salePrice: v.salePrice,
+      stock: v.stock,
     }))
   );
   if (!product) {

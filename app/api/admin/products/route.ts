@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
     {
       name: parsed.name,
       slug,
+      description: parsed.description,
       imageUrl: parsed.imageUrl,
       categoryIds: parsed.categoryIds,
     },
@@ -61,6 +62,7 @@ export async function POST(req: NextRequest) {
       imageUrl: v.imageUrl,
       listPrice: v.listPrice,
       salePrice: v.salePrice,
+      stock: v.stock,
     }))
   );
   return NextResponse.json({ product }, { status: 201 });

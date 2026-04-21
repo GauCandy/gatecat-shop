@@ -22,7 +22,8 @@
       "Bash(node -e \"require\\('dotenv'\\).config\\({path:'.env'}\\); const u=new URL\\(process.env.DATABASE_URL\\); console.log\\('host:',u.host,'db:',u.pathname\\);\")",
       "Bash(node -e ' *)",
       "Bash(curl -s -w \"\\\\nstatus:%{http_code}\\\\n\" http://localhost:8443/)",
-      "Bash(node -e \"import\\('./lib/db.js'\\).catch\\(\\(\\)=>import\\('pg'\\).then\\(async m=>{const {Pool}=m.default||m;const p=new Pool\\({connectionString:process.env.DATABASE_URL}\\);const r=await p.query\\('SELECT id, name, slug, parent_id FROM categories ORDER BY sort_order, name'\\);console.log\\(JSON.stringify\\(r.rows,null,2\\)\\);await p.end\\(\\);}\\)\\)\")"
+      "Bash(node -e \"import\\('./lib/db.js'\\).catch\\(\\(\\)=>import\\('pg'\\).then\\(async m=>{const {Pool}=m.default||m;const p=new Pool\\({connectionString:process.env.DATABASE_URL}\\);const r=await p.query\\('SELECT id, name, slug, parent_id FROM categories ORDER BY sort_order, name'\\);console.log\\(JSON.stringify\\(r.rows,null,2\\)\\);await p.end\\(\\);}\\)\\)\")",
+      "Bash(npx tsc *)"
     ]
   }
 }

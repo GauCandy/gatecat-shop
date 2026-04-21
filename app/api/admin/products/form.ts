@@ -7,10 +7,12 @@ export type ParsedVariant = {
   imageUrl: string | null;
   listPrice: number;
   salePrice: number;
+  stock: number;
 };
 
 export type ParsedProductForm = {
   name: string;
+  description: string;
   categoryIds: string[];
   imageUrl: string | null;
   variants: ParsedVariant[];
@@ -21,6 +23,7 @@ type VariantDescriptor = {
   sku?: string;
   listPrice?: number;
   salePrice?: number;
+  stock?: number;
   imageOp?: "keep" | "remove" | "upload";
   existingImageUrl?: string | null;
 };
@@ -44,6 +47,8 @@ export async function parseProductForm(
 ): Promise<ParsedProductForm> {
   const name = String(form.get("name") ?? "").trim();
   if (!name) throw new Error("Tên sản phẩm là bắt buộc");
+
+  const description = String(form.get("description") ?? "").trim();
 
   const rawCategories = form.getAll("categoryIds");
   const categoryIds = Array.from(
@@ -87,10 +92,13 @@ export async function parseProductForm(
 
     const listPrice = Number(d.listPrice);
     const salePrice = Number(d.salePrice);
+    const stock = Number(d.stock ?? 0);
     if (!Number.isFinite(listPrice) || listPrice < 0)
       throw new Error(`Giá niêm yết của "${sku}" không hợp lệ`);
     if (!Number.isFinite(salePrice) || salePrice < 0)
       throw new Error(`Giá bán của "${sku}" không hợp lệ`);
+    if (!Number.isFinite(stock) || stock < 0)
+      throw new Error(`Tồn kho của "${sku}" không hợp lệ`);
 
     const id = d.id ? String(d.id) : null;
     const existingVariant = id ? existing?.variantsById.get(id) : undefined;
@@ -113,11 +121,13 @@ export async function parseProductForm(
       imageUrl: variantImageUrl,
       listPrice: Math.round(listPrice),
       salePrice: Math.round(salePrice),
+      stock: Math.round(stock),
     });
   }
 
   return {
     name,
+    description,
     categoryIds,
     imageUrl,
     variants,
