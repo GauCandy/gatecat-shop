@@ -2,16 +2,23 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { Product, ProductVariant } from "@/lib/products";
 
 const formatVnd = (n: number) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
 
+type Feedback = { kind: "ok" | "err"; msg: string } | null;
+
 export function ProductDetailClient({ product }: { product: Product }) {
+  const router = useRouter();
   const hasVariants = product.variants.length > 0;
   const [selectedId, setSelectedId] = useState<string | null>(
     hasVariants ? product.variants[0].id : null
   );
+  const [busy, setBusy] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback>(null);
+
   const selected = useMemo<ProductVariant | null>(
     () => product.variants.find((v) => v.id === selectedId) ?? null,
     [product.variants, selectedId]
@@ -19,15 +26,47 @@ export function ProductDetailClient({ product }: { product: Product }) {
   const mainImage = selected?.imageUrl ?? product.imageUrl ?? null;
   const outOfStock = !!selected && selected.stock <= 0;
 
-  const onBuy = () => {
-    if (!selected) return;
-    alert(
-      `Chức năng mua hàng đang hoàn thiện.\nBạn vừa chọn: ${selected.sku}`
-    );
+  const showFeedback = (f: Feedback) => {
+    setFeedback(f);
+    if (f) window.setTimeout(() => setFeedback(null), 3000);
   };
-  const onAddToCart = () => {
-    if (!selected) return;
-    alert(`Đã ghi nhận: thêm ${selected.sku} vào giỏ hàng (demo).`);
+
+  const addToCart = async (): Promise<boolean> => {
+    if (!selected || outOfStock || busy) return false;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ variantId: selected.id, quantity: 1 }),
+      });
+      if (res.status === 401) {
+        router.push("/login");
+        return false;
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showFeedback({ kind: "err", msg: data?.error ?? "Không thêm được" });
+        return false;
+      }
+      router.refresh();
+      return true;
+    } catch {
+      showFeedback({ kind: "err", msg: "Lỗi kết nối" });
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onAddToCart = async () => {
+    const ok = await addToCart();
+    if (ok) showFeedback({ kind: "ok", msg: "Đã thêm vào giỏ" });
+  };
+
+  const onBuy = async () => {
+    const ok = await addToCart();
+    if (ok) router.push("/cart");
   };
 
   return (
@@ -183,7 +222,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
           <button
             type="button"
             onClick={onBuy}
-            disabled={!selected || outOfStock}
+            disabled={!selected || outOfStock || busy}
             className="inline-flex flex-1 items-center justify-center rounded-full bg-[var(--color-accent)] px-6 py-3 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Mua ngay
@@ -191,7 +230,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
           <button
             type="button"
             onClick={onAddToCart}
-            disabled={!selected || outOfStock}
+            disabled={!selected || outOfStock || busy}
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-[var(--color-text)] bg-white px-6 py-3 text-[14px] font-semibold text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg
@@ -211,6 +250,19 @@ export function ProductDetailClient({ product }: { product: Product }) {
             Thêm vào giỏ
           </button>
         </div>
+
+        {feedback && (
+          <div
+            role="status"
+            className={`rounded-lg px-3 py-2 text-[12px] ${
+              feedback.kind === "ok"
+                ? "bg-green-500/10 text-green-700"
+                : "bg-red-500/10 text-red-700"
+            }`}
+          >
+            {feedback.msg}
+          </div>
+        )}
 
         {product.description && (
           <div className="mt-2 rounded-2xl border border-[var(--color-border)] bg-white p-5">

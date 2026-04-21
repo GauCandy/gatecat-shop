@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { getSessionUser, SESSION_COOKIE } from "@/lib/session";
 import { listCategories } from "@/lib/categories";
+import { getCartCount } from "@/lib/cart";
 import { HeaderClient } from "./HeaderClient";
 
 export async function Header() {
@@ -9,5 +11,10 @@ export async function Header() {
     getSessionUser(token),
     listCategories(),
   ]);
-  return <HeaderClient user={user} categories={categories} />;
+  const cartCount = user ? await getCartCount(user.id) : 0;
+  return (
+    <Suspense fallback={null}>
+      <HeaderClient user={user} categories={categories} cartCount={cartCount} />
+    </Suspense>
+  );
 }

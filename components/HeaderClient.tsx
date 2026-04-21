@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { SessionUser } from "@/lib/session";
 import type { Category, CategoryNode } from "@/lib/categories-types";
 import { buildTree } from "@/lib/category-tree";
@@ -11,12 +12,34 @@ import { UserMenu } from "./UserMenu";
 export function HeaderClient({
   user,
   categories,
+  cartCount,
 }: {
   user: SessionUser | null;
   categories: Category[];
+  cartCount: number;
 }) {
   const [hideSubNav, setHideSubNav] = useState(false);
   const roots = useMemo(() => buildTree(categories), [categories]);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const sp = useSearchParams();
+  const initialQ = pathname === "/products" ? sp.get("q") ?? "" : "";
+  const [query, setQuery] = useState(initialQ);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  useEffect(() => {
+    if (pathname === "/products") setQuery(sp.get("q") ?? "");
+    else setQuery("");
+  }, [pathname, sp]);
+
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    const href = q ? `/products?q=${encodeURIComponent(q)}` : "/products";
+    setMobileSearchOpen(false);
+    router.push(href);
+  };
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -52,23 +75,32 @@ export function HeaderClient({
           <form
             role="search"
             className="relative hidden min-w-0 flex-1 md:block"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={submitSearch}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-dim)]"
+            <button
+              type="submit"
+              aria-label="Tìm"
+              className="absolute left-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-dim)] transition hover:text-[var(--color-text)]"
             >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
             <input
               type="search"
+              name="q"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Tìm sản phẩm, danh mục..."
               className="h-9 w-full rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] pl-9 pr-4 text-[13px] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:border-[var(--color-accent)] focus:bg-white focus:outline-none"
             />
@@ -78,6 +110,8 @@ export function HeaderClient({
             <button
               type="button"
               aria-label="Tìm kiếm"
+              aria-expanded={mobileSearchOpen}
+              onClick={() => setMobileSearchOpen((v) => !v)}
               className="grid h-9 w-9 place-items-center rounded-full text-[var(--color-text-dim)] transition hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] md:hidden"
             >
               <svg
@@ -95,26 +129,33 @@ export function HeaderClient({
               </svg>
             </button>
 
-            <button
-              type="button"
-              aria-label="Giỏ hàng"
-              className="relative grid h-9 w-9 place-items-center rounded-full text-[var(--color-text-dim)] transition hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4"
+            {user && (
+              <Link
+                href="/cart"
+                aria-label="Giỏ hàng"
+                className="relative grid h-9 w-9 place-items-center rounded-full text-[var(--color-text-dim)] transition hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
               >
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                <path d="M3 6h18" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4"
+                >
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                  <path d="M3 6h18" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--color-accent)] px-1 text-[10px] font-semibold leading-none text-white">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {user ? (
               <UserMenu user={user} />
@@ -150,6 +191,41 @@ export function HeaderClient({
             )}
           </div>
         </div>
+
+        {mobileSearchOpen && (
+          <div className="border-t border-[var(--color-border)] bg-white px-4 py-2 sm:px-6 md:hidden">
+            <form role="search" onSubmit={submitSearch} className="relative">
+              <button
+                type="submit"
+                aria-label="Tìm"
+                className="absolute left-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-dim)] transition hover:text-[var(--color-text)]"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+              </button>
+              <input
+                type="search"
+                name="q"
+                autoFocus
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Tìm sản phẩm, danh mục..."
+                className="h-9 w-full rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] pl-9 pr-4 text-[13px] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:border-[var(--color-accent)] focus:bg-white focus:outline-none"
+              />
+            </form>
+          </div>
+        )}
       </header>
 
       <nav

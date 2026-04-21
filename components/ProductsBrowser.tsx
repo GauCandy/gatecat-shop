@@ -63,7 +63,11 @@ export function ProductsBrowser({
     return ids;
   }, [categories, lockedCategory]);
 
-  const [q, setQ] = useState(sp.get("q") ?? "");
+  const urlQ = sp.get("q") ?? "";
+  const [q, setQ] = useState(urlQ);
+  useEffect(() => {
+    setQ((prev) => (prev === urlQ ? prev : urlQ));
+  }, [urlQ]);
   const [minPrice, setMinPrice] = useState(sp.get("min") ?? "");
   const [maxPrice, setMaxPrice] = useState(sp.get("max") ?? "");
   const [sort, setSort] = useState<SortKey>((sp.get("sort") as SortKey) ?? "default");
@@ -71,6 +75,8 @@ export function ProductsBrowser({
     const raw = sp.get("cat");
     return new Set(raw ? raw.split(",").filter(Boolean) : []);
   });
+  const [onlyInStock, setOnlyInStock] = useState(sp.get("instock") === "1");
+  const [onlySale, setOnlySale] = useState(sp.get("sale") === "1");
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -80,9 +86,11 @@ export function ProductsBrowser({
     if (maxPrice) params.set("max", maxPrice);
     if (sort !== "default") params.set("sort", sort);
     if (selectedCats.size > 0) params.set("cat", Array.from(selectedCats).join(","));
+    if (onlyInStock) params.set("instock", "1");
+    if (onlySale) params.set("sale", "1");
     const qs = params.toString();
     router.replace(qs ? `?${qs}` : "?", { scroll: false });
-  }, [q, minPrice, maxPrice, sort, selectedCats, router]);
+  }, [q, minPrice, maxPrice, sort, selectedCats, onlyInStock, onlySale, router]);
 
   const catRows = useMemo(() => {
     const rows = sortByTree(categories);
@@ -128,9 +136,11 @@ export function ProductsBrowser({
         if (minN !== null && range.max < minN) return false;
         if (maxN !== null && range.min > maxN) return false;
       }
+      if (onlyInStock && !p.variants.some((v) => v.stock > 0)) return false;
+      if (onlySale && !p.variants.some((v) => v.listPrice > v.salePrice)) return false;
       return true;
     });
-  }, [products, q, minPrice, maxPrice, lockedSubtree, selectedCatsExpanded]);
+  }, [products, q, minPrice, maxPrice, lockedSubtree, selectedCatsExpanded, onlyInStock, onlySale]);
 
   const sorted = useMemo(() => {
     const arr = filtered.slice();
@@ -167,11 +177,15 @@ export function ProductsBrowser({
     setMaxPrice("");
     setSort("default");
     setSelectedCats(new Set());
+    setOnlyInStock(false);
+    setOnlySale(false);
   };
 
   const activeCount =
     (q.trim() ? 1 : 0) +
     (minPrice ? 1 : 0) +
+    (onlyInStock ? 1 : 0) +
+    (onlySale ? 1 : 0) +
     (maxPrice ? 1 : 0) +
     (selectedCats.size > 0 ? 1 : 0);
 
@@ -243,14 +257,27 @@ export function ProductsBrowser({
               )}
             </div>
 
-            <FilterBlock label="Tìm kiếm">
-              <input
-                type="search"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Tên, mã SKU..."
-                className="h-9 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
-              />
+            <FilterBlock label="Khuyến mãi & tồn kho">
+              <div className="flex flex-col gap-2">
+                <label className="flex cursor-pointer items-center gap-2 text-[13px] text-[var(--color-text)]">
+                  <input
+                    type="checkbox"
+                    checked={onlyInStock}
+                    onChange={(e) => setOnlyInStock(e.target.checked)}
+                    className="h-4 w-4 accent-[var(--color-accent)]"
+                  />
+                  Chỉ hiện còn hàng
+                </label>
+                <label className="flex cursor-pointer items-center gap-2 text-[13px] text-[var(--color-text)]">
+                  <input
+                    type="checkbox"
+                    checked={onlySale}
+                    onChange={(e) => setOnlySale(e.target.checked)}
+                    className="h-4 w-4 accent-[var(--color-accent)]"
+                  />
+                  Đang giảm giá
+                </label>
+              </div>
             </FilterBlock>
 
             <FilterBlock label="Giá (₫)">
