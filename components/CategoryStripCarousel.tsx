@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Category } from "@/lib/categories-types";
+import type { CategoryNode } from "@/lib/categories-types";
 import { CategoryStripItem } from "./CategoryStripItem";
 
-export function CategoryStripCarousel({ items }: { items: Category[] }) {
+export function CategoryStripCarousel({ items }: { items: CategoryNode[] }) {
   const scrollRef = useRef<HTMLUListElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
@@ -62,7 +62,7 @@ export function CategoryStripCarousel({ items }: { items: Category[] }) {
         {items.map((c) => (
           <CategoryStripItem
             key={c.id}
-            node={{ ...c, children: [] }}
+            node={c}
             className="snap-start"
           />
         ))}

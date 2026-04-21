@@ -3,9 +3,16 @@ import { pool } from "./db";
 import type { Category } from "./categories-types";
 
 export type { Category, CategoryNode } from "./categories-types";
-export { buildTree, sortByTree, collectDescendantIds } from "./category-tree";
+export {
+  buildTree,
+  sortByTree,
+  collectDescendantIds,
+  depthOf,
+  subtreeHeight,
+  MAX_DEPTH,
+} from "./category-tree";
 
-const SELECT_COLS = `id, name, slug, image_url AS "imageUrl", sort_order AS "sortOrder", parent_id AS "parentId"`;
+const SELECT_COLS = `id, name, slug, image_url AS "imageUrl", sort_order AS "sortOrder", parent_id AS "parentId", is_featured AS "isFeatured"`;
 
 export function slugify(input: string): string {
   return input
@@ -33,13 +40,14 @@ export async function createCategory(data: {
   slug: string;
   imageUrl: string | null;
   parentId: string | null;
+  isFeatured: boolean;
 }): Promise<Category> {
   const id = crypto.randomUUID();
   const { rows } = await pool.query(
-    `INSERT INTO categories (id, name, slug, image_url, parent_id, sort_order)
-     VALUES ($1, $2, $3, $4, $5, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM categories))
+    `INSERT INTO categories (id, name, slug, image_url, parent_id, is_featured, sort_order)
+     VALUES ($1, $2, $3, $4, $5, $6, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM categories))
      RETURNING ${SELECT_COLS}`,
-    [id, data.name, data.slug, data.imageUrl, data.parentId]
+    [id, data.name, data.slug, data.imageUrl, data.parentId, data.isFeatured]
   );
   return rows[0];
 }
@@ -51,14 +59,15 @@ export async function updateCategory(
     slug: string;
     imageUrl: string | null;
     parentId: string | null;
+    isFeatured: boolean;
   }
 ): Promise<Category | null> {
   const { rows } = await pool.query(
     `UPDATE categories
-     SET name = $2, slug = $3, image_url = $4, parent_id = $5, updated_at = NOW()
+     SET name = $2, slug = $3, image_url = $4, parent_id = $5, is_featured = $6, updated_at = NOW()
      WHERE id = $1
      RETURNING ${SELECT_COLS}`,
-    [id, data.name, data.slug, data.imageUrl, data.parentId]
+    [id, data.name, data.slug, data.imageUrl, data.parentId, data.isFeatured]
   );
   return rows[0] ?? null;
 }

@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/lib/session";
 import { isAdminRequest } from "@/lib/admin";
-import { pool } from "@/lib/db";
 import {
   createCategory,
+  depthOf,
   listCategories,
+  MAX_DEPTH,
   slugExists,
   slugify,
 } from "@/lib/categories";
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
   const name = String(form.get("name") ?? "").trim();
   const rawSlug = String(form.get("slug") ?? "").trim();
   const rawParentId = String(form.get("parentId") ?? "").trim();
+  const isFeatured = form.get("isFeatured") === "1";
   const image = form.get("image");
 
   if (!name) {
@@ -46,12 +48,16 @@ export async function POST(req: NextRequest) {
 
   let parentId: string | null = null;
   if (rawParentId) {
-    const { rows } = await pool.query(
-      "SELECT 1 FROM categories WHERE id = $1 LIMIT 1",
-      [rawParentId]
-    );
-    if (rows.length === 0) {
+    const all = await listCategories();
+    const exists = all.some((c) => c.id === rawParentId);
+    if (!exists) {
       return NextResponse.json({ error: "Danh mục cha không tồn tại" }, { status: 400 });
+    }
+    if (depthOf(all, rawParentId) >= MAX_DEPTH) {
+      return NextResponse.json(
+        { error: `Chỉ hỗ trợ tối đa ${MAX_DEPTH + 1} cấp danh mục` },
+        { status: 400 }
+      );
     }
     parentId = rawParentId;
   }
@@ -69,6 +75,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const category = await createCategory({ name, slug, imageUrl, parentId });
+  const category = await createCategory({ name, slug, imageUrl, parentId, isFeatured });
   return NextResponse.json({ category }, { status: 201 });
 }

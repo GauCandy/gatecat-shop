@@ -5,9 +5,12 @@ import { isAdminRequest } from "@/lib/admin";
 import {
   collectDescendantIds,
   deleteCategory,
+  depthOf,
   listCategories,
+  MAX_DEPTH,
   slugExists,
   slugify,
+  subtreeHeight,
   updateCategory,
   type Category,
 } from "@/lib/categories";
@@ -15,7 +18,8 @@ import { saveImageUpload, UploadError } from "@/lib/upload";
 
 async function getById(id: string): Promise<Category | null> {
   const { rows } = await pool.query(
-    `SELECT id, name, slug, image_url AS "imageUrl", sort_order AS "sortOrder", parent_id AS "parentId"
+    `SELECT id, name, slug, image_url AS "imageUrl", sort_order AS "sortOrder",
+            parent_id AS "parentId", is_featured AS "isFeatured"
      FROM categories WHERE id = $1 LIMIT 1`,
     [id]
   );
@@ -41,6 +45,7 @@ export async function PATCH(
   const name = String(form.get("name") ?? "").trim();
   const rawSlug = String(form.get("slug") ?? "").trim();
   const rawParentId = String(form.get("parentId") ?? "").trim();
+  const isFeatured = form.get("isFeatured") === "1";
   const image = form.get("image");
   const removeImage = form.get("removeImage") === "1";
 
@@ -69,6 +74,12 @@ export async function PATCH(
     if (collectDescendantIds(all, id).has(rawParentId)) {
       return NextResponse.json({ error: "Không thể chọn danh mục con làm cha" }, { status: 400 });
     }
+    if (depthOf(all, rawParentId) + 1 + subtreeHeight(all, id) > MAX_DEPTH) {
+      return NextResponse.json(
+        { error: `Chỉ hỗ trợ tối đa ${MAX_DEPTH + 1} cấp danh mục` },
+        { status: 400 }
+      );
+    }
     parentId = rawParentId;
   }
 
@@ -87,7 +98,7 @@ export async function PATCH(
     imageUrl = null;
   }
 
-  const category = await updateCategory(id, { name, slug, imageUrl, parentId });
+  const category = await updateCategory(id, { name, slug, imageUrl, parentId, isFeatured });
   if (!category) {
     return NextResponse.json({ error: "Không tìm thấy danh mục" }, { status: 404 });
   }

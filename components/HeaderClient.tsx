@@ -279,18 +279,99 @@ function SubNavItem({ node }: { node: CategoryNode }) {
             </Link>
             <div className="my-1 h-px bg-[var(--color-border)]" />
             {node.children.map((child) => (
-              <Link
-                key={child.id}
-                href={`/category/${child.slug}`}
-                role="menuitem"
-                className="block rounded-md px-3 py-2 text-[13px] text-[var(--color-text-dim)] transition hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
-              >
-                {child.name}
-              </Link>
+              <SubNavChildRow key={child.id} child={child} />
             ))}
           </div>,
           document.body
         )}
     </li>
+  );
+}
+
+function SubNavChildRow({ child }: { child: CategoryNode }) {
+  const hasGrandchildren = child.children.length > 0;
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef<number | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimer.current != null) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = window.setTimeout(() => setOpen(false), 120);
+  };
+
+  useEffect(() => () => cancelClose(), []);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => {
+        if (!hasGrandchildren) return;
+        cancelClose();
+        setOpen(true);
+      }}
+      onMouseLeave={() => hasGrandchildren && scheduleClose()}
+    >
+      <Link
+        href={`/category/${child.slug}`}
+        role="menuitem"
+        aria-haspopup={hasGrandchildren ? "menu" : undefined}
+        aria-expanded={hasGrandchildren ? open : undefined}
+        onClick={(e) => {
+          if (!hasGrandchildren) return;
+          if (window.matchMedia("(hover: none)").matches && !open) {
+            e.preventDefault();
+            setOpen(true);
+          }
+        }}
+        className="flex items-center justify-between gap-2 rounded-md px-3 py-2 text-[13px] text-[var(--color-text-dim)] transition hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
+      >
+        <span className="truncate">{child.name}</span>
+        {hasGrandchildren && (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+            className="h-3 w-3 shrink-0"
+          >
+            <polyline points="9 6 15 12 9 18" />
+          </svg>
+        )}
+      </Link>
+
+      {hasGrandchildren && open && (
+        <div
+          role="menu"
+          className="absolute left-full top-0 z-[61] ml-1 w-52 rounded-lg border border-[var(--color-border)] bg-white p-1 shadow-lg"
+        >
+          <Link
+            href={`/category/${child.slug}`}
+            role="menuitem"
+            className="block rounded-md px-3 py-2 text-[13px] font-medium text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+          >
+            Tất cả {child.name}
+          </Link>
+          <div className="my-1 h-px bg-[var(--color-border)]" />
+          {child.children.map((g) => (
+            <Link
+              key={g.id}
+              href={`/category/${g.slug}`}
+              role="menuitem"
+              className="block rounded-md px-3 py-2 text-[13px] text-[var(--color-text-dim)] transition hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
+            >
+              {g.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

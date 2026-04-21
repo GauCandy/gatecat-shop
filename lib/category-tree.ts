@@ -1,5 +1,39 @@
 import type { Category, CategoryNode } from "./categories-types";
 
+// Max category levels (cha → con → con của con). 0-indexed max depth.
+export const MAX_DEPTH = 2;
+
+export function depthOf(flat: Category[], id: string): number {
+  const byId = new Map(flat.map((c) => [c.id, c]));
+  let d = 0;
+  let cur = byId.get(id);
+  while (cur?.parentId && byId.has(cur.parentId)) {
+    cur = byId.get(cur.parentId);
+    d++;
+    if (d > 100) break;
+  }
+  return d;
+}
+
+export function subtreeHeight(flat: Category[], rootId: string): number {
+  const byParent = new Map<string, Category[]>();
+  for (const c of flat) {
+    if (c.parentId) {
+      const arr = byParent.get(c.parentId);
+      if (arr) arr.push(c);
+      else byParent.set(c.parentId, [c]);
+    }
+  }
+  const dfs = (id: string): number => {
+    const ch = byParent.get(id);
+    if (!ch || ch.length === 0) return 0;
+    let h = 0;
+    for (const c of ch) h = Math.max(h, dfs(c.id) + 1);
+    return h;
+  };
+  return dfs(rootId);
+}
+
 export function sortByTree(flat: Category[]): { category: Category; depth: number }[] {
   const byParent = new Map<string | null, Category[]>();
   for (const c of flat) {

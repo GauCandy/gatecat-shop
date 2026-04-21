@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Category } from "@/lib/categories";
+import { MAX_DEPTH } from "@/lib/category-tree";
 
 type Mode =
   | { kind: "create" }
@@ -35,6 +36,25 @@ function sortByTree(flat: Category[]): Row[] {
   };
   walk(null, 0);
   return out;
+}
+
+function subtreeHeight(flat: Category[], rootId: string): number {
+  const byParent = new Map<string, Category[]>();
+  for (const c of flat) {
+    if (c.parentId) {
+      const arr = byParent.get(c.parentId);
+      if (arr) arr.push(c);
+      else byParent.set(c.parentId, [c]);
+    }
+  }
+  const dfs = (id: string): number => {
+    const ch = byParent.get(id);
+    if (!ch || ch.length === 0) return 0;
+    let h = 0;
+    for (const c of ch) h = Math.max(h, dfs(c.id) + 1);
+    return h;
+  };
+  return dfs(rootId);
 }
 
 function collectDescendantIds(flat: Category[], rootId: string): Set<string> {
@@ -193,6 +213,29 @@ export function CategoryManager({ initial }: { initial: Category[] }) {
         onExpandAll={expandAll}
         onCollapseAll={collapseAll}
         onEdit={(c) => setMode({ kind: "edit", category: c })}
+        onToggleFeatured={async (c) => {
+          const next = !c.isFeatured;
+          setCategories((list) =>
+            list.map((x) => (x.id === c.id ? { ...x, isFeatured: next } : x))
+          );
+          const res = await fetch(`/api/admin/categories/${c.id}/featured`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ isFeatured: next }),
+          });
+          if (!res.ok) {
+            setCategories((list) =>
+              list.map((x) => (x.id === c.id ? { ...x, isFeatured: c.isFeatured } : x))
+            );
+            const { error } = await res.json().catch(() => ({ error: "Lỗi" }));
+            alert(error ?? "Không thể cập nhật");
+            return;
+          }
+          if (mode.kind === "edit" && mode.category.id === c.id) {
+            setMode({ kind: "edit", category: { ...mode.category, isFeatured: next } });
+          }
+          router.refresh();
+        }}
         onDelete={async (c) => {
           if (!confirm(`Xoá danh mục "${c.name}"? Các danh mục con cũng sẽ bị xoá.`)) return;
           const res = await fetch(`/api/admin/categories/${c.id}`, {
@@ -394,6 +437,7 @@ function CategoryList({
   onExpandAll,
   onCollapseAll,
   onEdit,
+  onToggleFeatured,
   onDelete,
   onReorder,
 }: {
@@ -415,6 +459,7 @@ function CategoryList({
   onExpandAll: () => void;
   onCollapseAll: () => void;
   onEdit: (c: Category) => void;
+  onToggleFeatured: (c: Category) => void;
   onDelete: (c: Category) => void;
   onReorder: (from: number, to: number) => void;
 }) {
@@ -527,7 +572,7 @@ function CategoryList({
             <th className="w-16 px-3 py-2 font-medium">Ảnh</th>
             <th className="px-3 py-2 font-medium">Tên</th>
             <th className="px-3 py-2 font-medium">Slug</th>
-            <th className="w-40 px-3 py-2 text-right font-medium">Thao tác</th>
+            <th className="w-48 px-3 py-2 text-right font-medium">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -543,7 +588,10 @@ function CategoryList({
               </td>
             </tr>
           ) : (
-            rows.map(({ category: c, depth }, idx) => (
+            rows.map(({ category: c, depth }, idx) => {
+              const kids = childCount.get(c.id) ?? 0;
+              const canExpand = kids > 0;
+              return (
               <tr
                 key={c.id}
                 draggable={canDrag}
@@ -551,7 +599,10 @@ function CategoryList({
                 onDragOver={(e) => handleDragOver(e, idx)}
                 onDrop={(e) => handleDrop(e, idx)}
                 onDragEnd={handleDragEnd}
+                onClick={canExpand ? () => onToggleExpand(c.id) : undefined}
                 className={`border-b border-slate-200 last:border-0 ${
+                  canExpand ? "cursor-pointer" : ""
+                } ${
                   dragIndex === idx ? "opacity-40" : ""
                 } ${
                   hoverIndex === idx && dragIndex !== idx
@@ -601,7 +652,10 @@ function CategoryList({
                         return (
                           <button
                             type="button"
-                            onClick={() => onToggleExpand(c.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onToggleExpand(c.id);
+                            }}
                             aria-label={isOpen ? "Thu gọn" : "Mở rộng"}
                             aria-expanded={isOpen}
                             className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
@@ -631,6 +685,15 @@ function CategoryList({
                       return <span className="inline-block w-5" aria-hidden />;
                     })()}
                     <span>{c.name}</span>
+                    {c.isFeatured && (
+                      <span
+                        title="Danh mục nổi bật"
+                        aria-label="Danh mục nổi bật"
+                        className="text-[13px] leading-none text-amber-500"
+                      >
+                        ★
+                      </span>
+                    )}
                     {(childCount.get(c.id) ?? 0) > 0 && (
                       <span className="text-[11px] font-normal text-slate-400">
                         ({childCount.get(c.id)})
@@ -643,14 +706,36 @@ function CategoryList({
                   <div className="flex justify-end gap-2">
                     <button
                       type="button"
-                      onClick={() => onEdit(c)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleFeatured(c);
+                      }}
+                      aria-pressed={c.isFeatured}
+                      title={c.isFeatured ? "Bỏ đánh dấu nổi bật" : "Đánh dấu nổi bật"}
+                      className={`grid h-[30px] w-[30px] place-items-center rounded border text-[16px] leading-none transition ${
+                        c.isFeatured
+                          ? "border-amber-400 bg-amber-50 text-amber-500 hover:bg-amber-100"
+                          : "border-slate-300 bg-white text-slate-400 hover:border-amber-300 hover:text-amber-400"
+                      }`}
+                    >
+                      {c.isFeatured ? "★" : "☆"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(c);
+                      }}
                       className="rounded border border-slate-300 bg-white px-4 py-1.5 text-[13px] font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
                     >
                       Sửa
                     </button>
                     <button
                       type="button"
-                      onClick={() => onDelete(c)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(c);
+                      }}
                       className="rounded border border-red-300 bg-white px-4 py-1.5 text-[13px] font-medium text-red-600 transition hover:border-red-400 hover:bg-red-50"
                     >
                       Xoá
@@ -658,7 +743,8 @@ function CategoryList({
                   </div>
                 </td>
               </tr>
-            ))
+              );
+            })
           )}
         </tbody>
       </table>
@@ -693,6 +779,7 @@ function CategoryForm({
   const [name, setName] = useState(editing?.name ?? "");
   const [slug, setSlug] = useState(editing?.slug ?? "");
   const [parentId, setParentId] = useState<string>(editing?.parentId ?? "");
+  const [isFeatured, setIsFeatured] = useState<boolean>(editing?.isFeatured ?? false);
   const [preview, setPreview] = useState<string | null>(editing?.imageUrl ?? null);
   const [removeImage, setRemoveImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -705,13 +792,18 @@ function CategoryForm({
       excluded.add(editingId);
       for (const id of collectDescendantIds(categories, editingId)) excluded.add(id);
     }
-    return sortByTree(categories).filter((r) => !excluded.has(r.category.id));
+    const selfHeight = editingId ? subtreeHeight(categories, editingId) : 0;
+    return sortByTree(categories).filter((r) => {
+      if (excluded.has(r.category.id)) return false;
+      return r.depth + 1 + selfHeight <= MAX_DEPTH;
+    });
   }, [categories, editingId]);
 
   useEffect(() => {
     setName(editing?.name ?? "");
     setSlug(editing?.slug ?? "");
     setParentId(editing?.parentId ?? "");
+    setIsFeatured(editing?.isFeatured ?? false);
     setPreview(editing?.imageUrl ?? null);
     setRemoveImage(false);
     setError(null);
@@ -728,6 +820,7 @@ function CategoryForm({
     fd.set("name", name);
     fd.set("slug", slug);
     fd.set("parentId", parentId);
+    fd.set("isFeatured", isFeatured ? "1" : "0");
     const file = fileRef.current?.files?.[0];
     if (file) fd.set("image", file);
     if (editing && removeImage && !file) fd.set("removeImage", "1");
@@ -797,6 +890,16 @@ function CategoryForm({
           ))}
         </select>
       </Field>
+
+      <label className="flex items-center gap-2 text-[13px] text-slate-800">
+        <input
+          type="checkbox"
+          checked={isFeatured}
+          onChange={(e) => setIsFeatured(e.target.checked)}
+          className="h-4 w-4 rounded border-slate-300 text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+        />
+        <span>Danh mục nổi bật (hiển thị ở trang chủ, sắp xếp A–Z)</span>
+      </label>
 
       <Field label="Hình ảnh">
         <div className="flex items-center gap-3">
