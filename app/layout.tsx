@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Toaster } from "@/components/Toaster";
 
 export const metadata: Metadata = {
   title: "Gatecat Shop — Mua sắm online",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body className="min-h-screen flex flex-col">{children}</body>
+      <body className="min-h-screen flex flex-col">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

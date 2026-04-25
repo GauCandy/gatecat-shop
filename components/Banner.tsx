@@ -12,11 +12,13 @@ export function Banner() {
   return (
     <section className="mx-auto w-full px-4 pt-4 sm:px-6 lg:w-2/3 lg:px-0">
       <a href={b.href} className="block overflow-hidden bg-[var(--color-surface-2)]">
-        <div
-          className="h-[220px] w-full bg-cover bg-center sm:h-[280px] lg:h-[320px]"
-          style={{ backgroundImage: `url(${b.image})` }}
-          role="img"
-          aria-label={b.alt}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={b.image}
+          alt={b.alt}
+          decoding="async"
+          fetchPriority="high"
+          className="h-[220px] w-full object-cover sm:h-[280px] lg:h-[320px]"
         />
       </a>
     </section>

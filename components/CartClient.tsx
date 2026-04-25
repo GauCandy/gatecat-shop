@@ -11,23 +11,48 @@ const formatVnd = (n: number) =>
 export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
   const router = useRouter();
   const [items, setItems] = useState<CartItem[]>(initialItems);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    new Set(initialItems.map((i) => i.id))
+  );
   const [busyId, setBusyId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  const selectedItems = items.filter((i) => selectedIds.has(i.id));
   const subtotal = useMemo(
-    () => items.reduce((sum, it) => sum + it.salePrice * it.quantity, 0),
-    [items]
+    () => selectedItems.reduce((sum, it) => sum + it.salePrice * it.quantity, 0),
+    [selectedItems]
   );
   const listTotal = useMemo(
-    () => items.reduce((sum, it) => sum + it.listPrice * it.quantity, 0),
-    [items]
+    () => selectedItems.reduce((sum, it) => sum + it.listPrice * it.quantity, 0),
+    [selectedItems]
   );
   const saved = listTotal - subtotal;
   const totalQty = useMemo(
-    () => items.reduce((sum, it) => sum + it.quantity, 0),
-    [items]
+    () => selectedItems.reduce((sum, it) => sum + it.quantity, 0),
+    [selectedItems]
   );
+
+  const allSelected = selectedIds.size === items.length && items.length > 0;
+  const partialSelected = selectedIds.size > 0 && selectedIds.size < items.length;
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(items.map((i) => i.id)));
+    }
+  };
+
+  const toggleSelectItem = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    setSelectedIds(next);
+  };
 
   const showError = (msg: string) => {
     setError(msg);
@@ -74,6 +99,8 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
     if (busyId) return;
     const prev = items;
     setItems(items.filter((i) => i.id !== id));
+    selectedIds.delete(id);
+    setSelectedIds(new Set(selectedIds));
     setBusyId(id);
     try {
       const res = await fetch(`/api/cart/items/${id}`, { method: "DELETE" });
@@ -89,6 +116,15 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
     } finally {
       setBusyId(null);
     }
+  };
+
+  const goToCheckout = () => {
+    if (selectedIds.size === 0) {
+      showError("Vui lòng chọn ít nhất một sản phẩm");
+      return;
+    }
+    const ids = Array.from(selectedIds).join(",");
+    router.push(`/checkout?items=${ids}`);
   };
 
   if (items.length === 0) {
@@ -129,26 +165,58 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
+          <input
+            type="checkbox"
+            checked={allSelected}
+            ref={(el) => {
+              if (el) el.indeterminate = partialSelected;
+            }}
+            onChange={toggleSelectAll}
+            className="h-4 w-4 accent-[var(--color-accent)]"
+            aria-label="Chọn tất cả"
+          />
+          <span className="text-[13px] font-medium text-[var(--color-text)]">
+            {selectedIds.size > 0
+              ? `Đã chọn ${selectedIds.size} sản phẩm`
+              : "Chọn tất cả"}
+          </span>
+        </div>
+
         {items.map((it) => {
           const img = it.variantImageUrl ?? it.productImageUrl;
           const lineTotal = it.salePrice * it.quantity;
           const maxed = it.quantity >= it.stock;
           const isBusy = busyId === it.id;
+          const isSelected = selectedIds.has(it.id);
           return (
             <div
               key={it.id}
-              className="flex gap-3 rounded-2xl border border-[var(--color-border)] bg-white p-3 sm:gap-4 sm:p-4"
+              className={`flex gap-3 rounded-lg border p-3 sm:gap-4 sm:p-4 transition ${
+                isSelected
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5"
+                  : "border-[var(--color-border)] bg-white"
+              }`}
             >
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={() => toggleSelectItem(it.id)}
+                className="mt-1 h-4 w-4 accent-[var(--color-accent)]"
+                aria-label={`Chọn ${it.productName}`}
+              />
               <Link
                 href={`/products/${it.productSlug}`}
                 className="block h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] sm:h-24 sm:w-24"
               >
                 {img ? (
-                  <div
-                    className="h-full w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${img})` }}
-                    role="img"
-                    aria-label={it.productName}
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={img}
+                    alt={it.productName}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
                   <div className="grid h-full w-full place-items-center text-[10px] text-[var(--color-text-dim)]">
@@ -242,7 +310,7 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
         )}
       </div>
 
-      <aside className="h-fit rounded-2xl border border-[var(--color-border-strong)] bg-white p-5 lg:sticky lg:top-28">
+      <aside className="h-fit rounded-lg border border-[var(--color-border-strong)] bg-white p-5 lg:sticky lg:top-28">
         <h2 className="text-[14px] font-semibold text-[var(--color-text)]">
           Tóm tắt đơn
         </h2>
@@ -267,14 +335,15 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
         </dl>
         <button
           type="button"
-          onClick={() => alert("Chức năng thanh toán đang hoàn thiện.")}
-          className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[var(--color-accent)] px-6 py-3 text-[14px] font-semibold text-white transition hover:brightness-110"
+          disabled={selectedIds.size === 0}
+          onClick={goToCheckout}
+          className="mt-5 w-full rounded-lg bg-[var(--color-accent)] px-6 py-3 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Thanh toán
         </button>
         <Link
           href="/products"
-          className="mt-2 inline-flex w-full items-center justify-center rounded-full border border-[var(--color-border)] bg-white px-6 py-3 text-[13px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
+          className="mt-2 inline-flex w-full items-center justify-center rounded-lg border border-[var(--color-border)] bg-white px-6 py-3 text-[13px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
         >
           Tiếp tục mua sắm
         </Link>

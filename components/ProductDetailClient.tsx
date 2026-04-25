@@ -16,6 +16,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
   const [selectedId, setSelectedId] = useState<string | null>(
     hasVariants ? product.variants[0].id : null
   );
+  const [quantity, setQuantity] = useState(1);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
 
@@ -38,7 +39,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ variantId: selected.id, quantity: 1 }),
+        body: JSON.stringify({ variantId: selected.id, quantity }),
       });
       if (res.status === 401) {
         router.push("/login");
@@ -74,11 +75,13 @@ export function ProductDetailClient({ product }: { product: Product }) {
       <div className="flex flex-col gap-3">
         <div className="aspect-square w-full overflow-hidden rounded-2xl border border-[var(--color-border-strong)] bg-[var(--color-surface-2)]">
           {mainImage ? (
-            <div
-              className="h-full w-full bg-cover bg-center"
-              style={{ backgroundImage: `url(${mainImage})` }}
-              role="img"
-              aria-label={product.name}
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={mainImage}
+              alt={product.name}
+              decoding="async"
+              fetchPriority="high"
+              className="h-full w-full object-cover"
             />
           ) : (
             <div className="grid h-full w-full place-items-center text-[13px] text-[var(--color-text-dim)]">
@@ -105,11 +108,13 @@ export function ProductDetailClient({ product }: { product: Product }) {
                   }`}
                 >
                   {img ? (
-                    <div
-                      className="h-full w-full bg-cover bg-center"
-                      style={{ backgroundImage: `url(${img})` }}
-                      role="img"
-                      aria-label={v.sku}
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={img}
+                      alt={v.sku}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
                     <div className="grid h-full w-full place-items-center bg-[var(--color-surface-2)] text-[10px] text-[var(--color-text-dim)]">
@@ -214,6 +219,35 @@ export function ProductDetailClient({ product }: { product: Product }) {
                   </button>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {selected && (
+          <div>
+            <p className="mb-2 text-[12px] font-medium text-[var(--color-text)]">
+              Số lượng
+            </p>
+            <div className="inline-flex items-center rounded-lg border border-[var(--color-border)] bg-white">
+              <button
+                type="button"
+                disabled={quantity <= 1 || outOfStock || busy}
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="grid h-10 w-10 place-items-center text-[var(--color-text-dim)] transition hover:text-[var(--color-text)] disabled:opacity-40"
+              >
+                −
+              </button>
+              <span className="min-w-10 text-center text-[14px] font-semibold">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                disabled={quantity >= selected.stock || outOfStock || busy}
+                onClick={() => setQuantity(Math.min(selected.stock, quantity + 1))}
+                className="grid h-10 w-10 place-items-center text-[var(--color-text-dim)] transition hover:text-[var(--color-text)] disabled:opacity-40"
+              >
+                +
+              </button>
             </div>
           </div>
         )}

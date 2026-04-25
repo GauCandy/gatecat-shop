@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 type Props = {
   searchParams: Promise<{ error?: string }>;
@@ -14,8 +16,10 @@ export default async function LoginPage({ searchParams }: Props) {
   const message = error ? ERROR_MESSAGES[error] : null;
 
   return (
-    <main className="flex flex-1 items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md rounded-2xl border border-[var(--color-border)] bg-white p-8 shadow-sm">
+    <>
+      <Header />
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md rounded-2xl border border-[var(--color-border)] bg-white p-8 shadow-sm">
         <Link href="/" className="flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-full bg-[var(--color-text)] text-[12px] font-semibold text-white">
             G
@@ -57,8 +61,10 @@ export default async function LoginPage({ searchParams }: Props) {
           </Link>
           .
         </p>
-      </div>
-    </main>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 }
 

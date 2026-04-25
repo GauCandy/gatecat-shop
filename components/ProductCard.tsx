@@ -34,11 +34,13 @@ export function ProductCard({ product }: { product: Product }) {
     >
       <div className="relative aspect-square overflow-hidden border-b border-[var(--color-border)] bg-[var(--color-surface-2)]">
         {image ? (
-          <div
-            className="h-full w-full bg-cover bg-center transition duration-500 group-hover:scale-[1.03]"
-            style={{ backgroundImage: `url(${image})` }}
-            role="img"
-            aria-label={product.name}
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={image}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="grid h-full w-full place-items-center text-[11px] text-[var(--color-text-dim)]">

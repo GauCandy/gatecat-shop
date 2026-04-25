@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
+import { ProductReviewList } from "@/components/ProductReviewList";
 import { getProductBySlug } from "@/lib/products";
+import { listReviewsForProduct, getProductRatingStats } from "@/lib/reviews";
 
 export default async function ProductPage({
   params,
@@ -13,6 +15,11 @@ export default async function ProductPage({
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
+
+  const [reviews, stats] = await Promise.all([
+    listReviewsForProduct(product.id),
+    getProductRatingStats(product.id),
+  ]);
 
   return (
     <>
@@ -43,6 +50,12 @@ export default async function ProductPage({
           </nav>
 
           <ProductDetailClient product={product} />
+
+          <ProductReviewList
+            reviews={reviews}
+            average={stats.average}
+            count={stats.count}
+          />
         </div>
       </main>
       <Footer />

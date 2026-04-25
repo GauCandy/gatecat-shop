@@ -33,11 +33,24 @@ const SELECT_ITEMS = `
   JOIN product_variants v ON v.id = ci.variant_id
   JOIN products p ON p.id = v.product_id
   WHERE ci.user_id = $1
-  ORDER BY ci.updated_at DESC
 `;
 
 export async function listCartItems(userId: string): Promise<CartItem[]> {
-  const { rows } = await pool.query<CartItem>(SELECT_ITEMS, [userId]);
+  const { rows } = await pool.query<CartItem>(
+    `${SELECT_ITEMS} ORDER BY ci.updated_at DESC`,
+    [userId]
+  );
+  return rows;
+}
+
+export async function listCartItemsById(
+  userId: string,
+  itemIds: string[]
+): Promise<CartItem[]> {
+  const { rows } = await pool.query<CartItem>(
+    `${SELECT_ITEMS} AND ci.id = ANY($2) ORDER BY ci.updated_at DESC`,
+    [userId, itemIds]
+  );
   return rows;
 }
 
@@ -83,7 +96,7 @@ export async function addCartItem(
 
   const itemId = rows[0].id;
   const { rows: itemRows } = await pool.query<CartItem>(
-    `${SELECT_ITEMS.replace("WHERE ci.user_id = $1", "WHERE ci.user_id = $1 AND ci.id = $2")}`,
+    `${SELECT_ITEMS} AND ci.id = $2`,
     [userId, itemId]
   );
   if (!itemRows[0]) throw new Error("Không lấy được giỏ hàng");
@@ -133,7 +146,7 @@ export async function updateCartItemQuantity(
   );
 
   const { rows } = await pool.query<CartItem>(
-    `${SELECT_ITEMS.replace("WHERE ci.user_id = $1", "WHERE ci.user_id = $1 AND ci.id = $2")}`,
+    `${SELECT_ITEMS} AND ci.id = $2`,
     [userId, itemId]
   );
   return rows[0] ?? null;

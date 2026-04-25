@@ -3,8 +3,12 @@ import { requireAdmin } from "@/lib/admin";
 import { AdminNavLink } from "./AdminNavLink";
 
 const navItems = [
+  { href: "/admin/dashboard", label: "Tổng quan" },
   { href: "/admin/categories", label: "Quản lí danh mục" },
   { href: "/admin/products", label: "Quản lí sản phẩm" },
+  { href: "/admin/vouchers", label: "Quản lí voucher" },
+  { href: "/admin/users", label: "Quản lí người dùng" },
+  { href: "/admin/reviews", label: "Kiểm duyệt đánh giá" },
 ];
 
 export default async function AdminLayout({

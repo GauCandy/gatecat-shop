@@ -23,7 +23,19 @@
       "Bash(node -e ' *)",
       "Bash(curl -s -w \"\\\\nstatus:%{http_code}\\\\n\" http://localhost:8443/)",
       "Bash(node -e \"import\\('./lib/db.js'\\).catch\\(\\(\\)=>import\\('pg'\\).then\\(async m=>{const {Pool}=m.default||m;const p=new Pool\\({connectionString:process.env.DATABASE_URL}\\);const r=await p.query\\('SELECT id, name, slug, parent_id FROM categories ORDER BY sort_order, name'\\);console.log\\(JSON.stringify\\(r.rows,null,2\\)\\);await p.end\\(\\);}\\)\\)\")",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(pkill -f \"npm run dev\")",
+      "PowerShell(Stop-Process -Force)",
+      "Read(//tmp/**)",
+      "PowerShell(\"Done\")",
+      "Bash(awk '{print $2}')",
+      "Bash(xargs kill *)",
+      "PowerShell(\\(Get-NetTCPConnection -LocalPort 8443 -ErrorAction SilentlyContinue\\).OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; \"Done\")",
+      "PowerShell(if \\($?\\) { \"Node processes found\" } else { \"� All stopped\" })",
+      "PowerShell(\\(Get-NetTCPConnection -LocalPort 8443 -ErrorAction SilentlyContinue\\).OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 2; \"Ready\")",
+      "PowerShell(\"� Done\")",
+      "Bash(curl -k -s -o /dev/null -w \"%{http_code}\" https://localhost:8443/admin/dashboard)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8443/admin/dashboard)"
     ]
   }
 }

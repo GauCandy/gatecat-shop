@@ -18,9 +18,12 @@ function Avatar({ user }: { user: SessionUser }) {
     <span className="relative grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-full bg-[var(--color-text)] text-[11px] font-semibold text-white">
       <span aria-hidden>{initials(user.name)}</span>
       {user.avatarUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={user.avatarUrl}
           alt=""
+          loading="lazy"
+          decoding="async"
           referrerPolicy="no-referrer"
           onError={(e) => {
             e.currentTarget.style.display = "none";

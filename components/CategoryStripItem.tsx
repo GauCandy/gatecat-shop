@@ -23,6 +23,8 @@ export function CategoryStripItem({
             <img
               src={node.imageUrl}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="h-6 w-6 object-contain"
             />
           ) : (
