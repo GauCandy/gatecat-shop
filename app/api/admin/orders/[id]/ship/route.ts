@@ -41,16 +41,33 @@ export async function PATCH(
       `
       UPDATE orders
       SET status = 'shipping', tracking_code = $2, updated_at = NOW()
-      WHERE id = $1 AND status = 'confirmed'
+      WHERE id = $1 AND status = 'confirmed' AND delivery_method = 'delivery'
       RETURNING id, status, tracking_code
       `,
       [id, trackingCode]
     );
 
     if (!result.rows.length) {
+      const existing = await pool.query<{ status: string; delivery_method: string }>(
+        `SELECT status::text AS status, delivery_method::text AS delivery_method
+         FROM orders WHERE id = $1`,
+        [id]
+      );
+      if (!existing.rows.length) {
+        return NextResponse.json(
+          { error: "Đơn hàng không tồn tại" },
+          { status: 404 }
+        );
+      }
+      if (existing.rows[0].delivery_method === "pickup") {
+        return NextResponse.json(
+          { error: "Đơn lấy tại shop không có trạng thái đang giao" },
+          { status: 400 }
+        );
+      }
       return NextResponse.json(
-        { error: "Đơn hàng không tồn tại hoặc không ở trạng thái đang chuẩn bị hàng" },
-        { status: 404 }
+        { error: "Đơn hàng không ở trạng thái đang chuẩn bị hàng" },
+        { status: 409 }
       );
     }
 

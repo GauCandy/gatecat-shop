@@ -89,9 +89,16 @@ export async function createOrder(
   try {
     await client.query("BEGIN");
 
+    const variantIds = cartItems.map((i) => i.variantId);
+    const stockRes = await client.query<{ id: string; stock: number }>(
+      `SELECT id, stock FROM product_variants WHERE id = ANY($1) FOR UPDATE`,
+      [variantIds]
+    );
+    const stockMap = new Map(stockRes.rows.map((r) => [r.id, Number(r.stock)]));
     for (const item of cartItems) {
-      if (item.stock < item.quantity) {
-        throw new Error(`Not enough stock for ${item.productName}`);
+      const live = stockMap.get(item.variantId) ?? 0;
+      if (live < item.quantity) {
+        throw new Error(`Sản phẩm "${item.productName}" không đủ hàng`);
       }
     }
 
@@ -228,10 +235,22 @@ export async function changeOrderStatus(
       [orderId]
     );
   } else if (leavingRefund && stockRestored) {
-    const items = await client.query(
+    const items = await client.query<{ variant_id: string; quantity: number }>(
       `SELECT variant_id, quantity FROM order_items WHERE order_id = $1`,
       [orderId]
     );
+    const variantIds = items.rows.map((i) => i.variant_id);
+    const stockRes = await client.query<{ id: string; stock: number }>(
+      `SELECT id, stock FROM product_variants WHERE id = ANY($1) FOR UPDATE`,
+      [variantIds]
+    );
+    const stockMap = new Map(stockRes.rows.map((r) => [r.id, Number(r.stock)]));
+    for (const item of items.rows) {
+      const live = stockMap.get(item.variant_id) ?? 0;
+      if (live < item.quantity) {
+        throw new Error("Không đủ tồn kho để khôi phục đơn về trạng thái này");
+      }
+    }
     for (const item of items.rows) {
       await client.query(
         `UPDATE product_variants SET stock = stock - $1 WHERE id = $2`,
