@@ -12,12 +12,12 @@ const formatDay = (d: Date) =>
   new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-digit" }).format(d);
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending: { label: "Chờ xác nhận", color: "text-yellow-700" },
-  confirmed: { label: "Đang chuẩn bị", color: "text-blue-700" },
-  shipping: { label: "Đang giao", color: "text-purple-700" },
-  delivered: { label: "Đã giao", color: "text-green-700" },
-  returned: { label: "Hoàn hàng", color: "text-orange-700" },
-  cancelled: { label: "Đã huỷ", color: "text-gray-700" },
+  pending: { label: "PENDING", color: "text-yellow-300" },
+  confirmed: { label: "PREPARING", color: "text-cyan-300" },
+  shipping: { label: "TRANSIT", color: "text-purple-300" },
+  delivered: { label: "DELIVERED", color: "text-green-300" },
+  returned: { label: "RETURNED", color: "text-orange-300" },
+  cancelled: { label: "CANCELLED", color: "text-zinc-400" },
 };
 
 type DayRow = { day: string; revenue: string; orders: string };
@@ -125,7 +125,6 @@ export default async function AdminDashboardPage() {
     createdAt: r.created_at,
   }));
 
-  // Build last-30-days series filling missing days with 0
   const dayMap = new Map<string, { revenue: number; orders: number }>();
   for (const row of dailyRes.rows) {
     dayMap.set(row.day, { revenue: Number(row.revenue), orders: Number(row.orders) });
@@ -144,47 +143,37 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-[22px] font-semibold tracking-tight">Tổng quan</h1>
-        <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
-          Doanh thu, số đơn và sản phẩm bán chạy. Doanh thu chỉ tính từ đơn đã giao thành công.
+      <div className="border-b-2 border-zinc-800 pb-4">
+        <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ DASHBOARD · MISSION CONTROL
+        </p>
+        <h1 className="mt-2 text-[24px] font-black uppercase tracking-tight sm:text-[30px]">
+          Tổng quan<span className="text-orange-500">.</span>
+        </h1>
+        <p className="mc-mono mt-1.5 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+          ▸ Doanh thu chỉ tính từ đơn đã giao thành công.
         </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Doanh thu (tất cả)"
-          value={formatVnd(totalRevenue)}
-          sub={`${formatNum(totalOrders)} đơn đã giao`}
-          accent="text-green-700"
-        />
-        <StatCard
-          label="Doanh thu hôm nay"
-          value={formatVnd(todayRevenue)}
-          sub={`${formatNum(todayOrders)} đơn`}
-          accent="text-blue-700"
-        />
-        <StatCard
-          label="Doanh thu 7 ngày"
-          value={formatVnd(weekRevenue)}
-          sub={`${formatNum(weekOrders)} đơn`}
-          accent="text-purple-700"
-        />
-        <StatCard
-          label="Khách hàng"
-          value={formatNum(totalUsers)}
-          sub={`${activeVouchers} voucher đang hoạt động`}
-          accent="text-orange-700"
-        />
+        <StatCard label="REVENUE · TOTAL" value={formatVnd(totalRevenue)} sub={`${formatNum(totalOrders)} đơn`} />
+        <StatCard label="REVENUE · TODAY" value={formatVnd(todayRevenue)} sub={`${formatNum(todayOrders)} đơn`} />
+        <StatCard label="REVENUE · 7D" value={formatVnd(weekRevenue)} sub={`${formatNum(weekOrders)} đơn`} />
+        <StatCard label="OPERATORS" value={formatNum(totalUsers)} sub={`${activeVouchers} voucher active`} />
       </div>
 
-      <section className="rounded-xl border border-[var(--color-border-strong)] bg-white p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-            Doanh thu 30 ngày gần nhất
-          </h2>
-          <span className="text-[12px] text-[var(--color-text-dim)]">
-            Cao nhất: {formatVnd(maxRevenue)}
+      <section className="relative border-2 border-zinc-700 bg-zinc-900 p-5">
+        <span className="mc-rivet mc-rivet-tl" />
+        <span className="mc-rivet mc-rivet-tr" />
+        <span className="mc-rivet mc-rivet-bl" />
+        <span className="mc-rivet mc-rivet-br" />
+
+        <div className="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+          <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ REVENUE · LAST 30D
+          </p>
+          <span className="mc-mono text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
+            ▸ MAX: <span className="text-orange-400">{formatVnd(maxRevenue)}</span>
           </span>
         </div>
         <div className="mt-4 flex h-44 items-stretch gap-1">
@@ -195,7 +184,7 @@ export default async function AdminDashboardPage() {
               title={`${formatDay(s.date)}: ${formatVnd(s.revenue)} (${s.orders} đơn)`}
             >
               <div
-                className="w-full rounded-t bg-gradient-to-t from-[var(--color-accent)] to-[var(--color-accent)]/70 transition group-hover:brightness-110"
+                className="w-full bg-gradient-to-t from-orange-500 to-orange-400 transition group-hover:brightness-110"
                 style={{
                   height: `${Math.max(2, (s.revenue / maxRevenue) * 100)}%`,
                 }}
@@ -203,7 +192,7 @@ export default async function AdminDashboardPage() {
             </div>
           ))}
         </div>
-        <div className="mt-2 flex justify-between text-[10px] text-[var(--color-text-dim)]">
+        <div className="mc-mono mt-2 flex justify-between text-[10px] uppercase tracking-[0.18em] text-zinc-600">
           <span>{formatDay(series[0].date)}</span>
           <span>{formatDay(series[Math.floor(series.length / 2)].date)}</span>
           <span>{formatDay(series[series.length - 1].date)}</span>
@@ -211,10 +200,15 @@ export default async function AdminDashboardPage() {
       </section>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-        <section className="rounded-xl border border-[var(--color-border-strong)] bg-white p-5">
-          <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-            Trạng thái đơn hàng
-          </h2>
+        <section className="relative border-2 border-zinc-700 bg-zinc-900 p-5">
+          <span className="mc-rivet mc-rivet-tl" />
+          <span className="mc-rivet mc-rivet-tr" />
+          <span className="mc-rivet mc-rivet-bl" />
+          <span className="mc-rivet mc-rivet-br" />
+
+          <p className="mc-mono border-b-2 border-zinc-800 pb-3 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ ORDER STATUS BREAKDOWN
+          </p>
           <div className="mt-3 space-y-2">
             {Object.entries(STATUS_LABELS).map(([key, info]) => {
               const count = statusCounts[key] ?? 0;
@@ -224,13 +218,13 @@ export default async function AdminDashboardPage() {
               );
               return (
                 <div key={key}>
-                  <div className="flex items-center justify-between text-[13px]">
-                    <span className={`font-medium ${info.color}`}>{info.label}</span>
-                    <span className="text-[var(--color-text)]">{formatNum(count)}</span>
+                  <div className="mc-mono flex items-center justify-between text-[11px] uppercase tracking-[0.18em]">
+                    <span className={`font-black ${info.color}`}>⬢ {info.label}</span>
+                    <span className="text-zinc-100">{formatNum(count)}</span>
                   </div>
-                  <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-surface-2)]">
+                  <div className="mt-1 h-1.5 w-full overflow-hidden bg-zinc-950">
                     <div
-                      className="h-full bg-current opacity-60"
+                      className={`h-full ${info.color.replace("text-", "bg-").replace("-300", "-500")}`}
                       style={{
                         width: `${(count / totalForBar) * 100}%`,
                       }}
@@ -241,43 +235,46 @@ export default async function AdminDashboardPage() {
             })}
           </div>
 
-          <div className="mt-4 border-t border-[var(--color-border)] pt-3 text-[12px] text-[var(--color-text-dim)]">
-            Đã giảm giá qua voucher:{" "}
-            <span className="font-semibold text-[var(--color-text)]">
-              {formatVnd(totalDiscount)}
-            </span>
+          <div className="mc-mono mt-4 border-t-2 border-zinc-800 pt-3 text-[11px] uppercase tracking-[0.15em] text-zinc-500">
+            ▸ Đã giảm voucher:{" "}
+            <span className="font-black text-orange-400">{formatVnd(totalDiscount)}</span>
           </div>
         </section>
 
-        <section className="rounded-xl border border-[var(--color-border-strong)] bg-white p-5">
-          <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-            Sản phẩm bán chạy
-          </h2>
+        <section className="relative border-2 border-zinc-700 bg-zinc-900 p-5">
+          <span className="mc-rivet mc-rivet-tl" />
+          <span className="mc-rivet mc-rivet-tr" />
+          <span className="mc-rivet mc-rivet-bl" />
+          <span className="mc-rivet mc-rivet-br" />
+
+          <p className="mc-mono border-b-2 border-zinc-800 pb-3 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ TOP UNITS · BEST SELLERS
+          </p>
           {topProducts.length === 0 ? (
-            <p className="mt-3 text-[13px] text-[var(--color-text-dim)]">
-              Chưa có dữ liệu — chưa có đơn nào hoàn tất.
+            <p className="mc-mono mt-3 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+              ▸ Chưa có dữ liệu.
             </p>
           ) : (
             <div className="mt-3 space-y-2">
               {topProducts.map((p, i) => (
                 <div
                   key={p.name}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] p-2"
+                  className="flex items-center justify-between gap-3 border-2 border-zinc-800 bg-zinc-950 p-2"
                 >
                   <div className="flex min-w-0 items-center gap-2">
-                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--color-surface-2)] text-[11px] font-bold text-[var(--color-text)]">
+                    <span className="mc-mono grid h-7 w-7 shrink-0 place-items-center border-2 border-orange-500/60 bg-orange-500/10 text-[11px] font-black text-orange-400">
                       {i + 1}
                     </span>
-                    <p className="line-clamp-1 text-[13px] text-[var(--color-text)]">
+                    <p className="line-clamp-1 text-[12px] font-black uppercase tracking-tight text-zinc-100">
                       {p.name}
                     </p>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className="text-[13px] font-semibold text-[var(--color-text)]">
+                    <p className="mc-mono text-[12px] font-black text-orange-400">
                       {formatVnd(p.revenue)}
                     </p>
-                    <p className="text-[11px] text-[var(--color-text-dim)]">
-                      Đã bán {formatNum(p.quantity)}
+                    <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                      ▸ {formatNum(p.quantity)} unit
                     </p>
                   </div>
                 </div>
@@ -287,22 +284,29 @@ export default async function AdminDashboardPage() {
         </section>
       </div>
 
-      <section className="rounded-xl border border-[var(--color-border-strong)] bg-white p-5">
-        <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-          Đơn hàng mới nhất
-        </h2>
+      <section className="relative border-2 border-zinc-700 bg-zinc-900 p-5">
+        <span className="mc-rivet mc-rivet-tl" />
+        <span className="mc-rivet mc-rivet-tr" />
+        <span className="mc-rivet mc-rivet-bl" />
+        <span className="mc-rivet mc-rivet-br" />
+
+        <p className="mc-mono border-b-2 border-zinc-800 pb-3 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ RECENT ORDERS · 8 LATEST
+        </p>
         {recentOrders.length === 0 ? (
-          <p className="mt-3 text-[13px] text-[var(--color-text-dim)]">Chưa có đơn nào.</p>
+          <p className="mc-mono mt-3 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+            ▸ Chưa có đơn nào.
+          </p>
         ) : (
           <div className="mt-3 overflow-x-auto">
-            <table className="min-w-full text-[13px]">
-              <thead className="border-b border-[var(--color-border)] text-[11px] uppercase tracking-wider text-[var(--color-text-dim)]">
+            <table className="min-w-full">
+              <thead className="mc-mono border-b-2 border-zinc-800 text-[10px] font-black uppercase tracking-[0.22em] text-orange-500">
                 <tr>
-                  <th className="px-2 py-2 text-left">Mã đơn</th>
-                  <th className="px-2 py-2 text-left">Khách</th>
-                  <th className="px-2 py-2 text-left">Trạng thái</th>
-                  <th className="px-2 py-2 text-right">Tổng</th>
-                  <th className="px-2 py-2 text-right">Thời gian</th>
+                  <th className="px-2 py-2 text-left">⬢ ORD#</th>
+                  <th className="px-2 py-2 text-left">KHÁCH</th>
+                  <th className="px-2 py-2 text-left">STATUS</th>
+                  <th className="px-2 py-2 text-right">TỔNG</th>
+                  <th className="px-2 py-2 text-right">TIME</th>
                 </tr>
               </thead>
               <tbody>
@@ -311,32 +315,30 @@ export default async function AdminDashboardPage() {
                   return (
                     <tr
                       key={o.id}
-                      className="border-b border-[var(--color-border)] last:border-b-0"
+                      className="border-b-2 border-zinc-800 last:border-b-0"
                     >
-                      <td className="px-2 py-2 font-mono text-[12px] text-[var(--color-text)]">
+                      <td className="mc-mono px-2 py-2 text-[11px] font-black uppercase tracking-[0.15em] text-orange-400">
                         <Link
                           href={`/shipping/orders/${o.id}`}
-                          className="hover:text-[var(--color-accent)] hover:underline"
+                          className="hover:text-orange-300 hover:underline"
                         >
-                          #{o.id.slice(0, 8).toUpperCase()}
+                          ▸ {o.id.slice(0, 8).toUpperCase()}
                         </Link>
                       </td>
-                      <td className="px-2 py-2 text-[var(--color-text)]">
+                      <td className="mc-mono px-2 py-2 text-[11px] uppercase tracking-[0.08em] text-zinc-100">
                         {o.recipientName}
                       </td>
-                      <td className="px-2 py-2">
+                      <td className="mc-mono px-2 py-2 text-[10px] font-black uppercase tracking-[0.22em]">
                         {status ? (
-                          <span className={`text-[12px] font-medium ${status.color}`}>
-                            {status.label}
-                          </span>
+                          <span className={status.color}>⬢ {status.label}</span>
                         ) : (
                           o.status
                         )}
                       </td>
-                      <td className="px-2 py-2 text-right font-semibold text-[var(--color-text)]">
+                      <td className="mc-mono px-2 py-2 text-right text-[12px] font-black text-orange-400">
                         {formatVnd(o.totalAmount)}
                       </td>
-                      <td className="px-2 py-2 text-right text-[12px] text-[var(--color-text-dim)]">
+                      <td className="mc-mono px-2 py-2 text-right text-[10px] uppercase tracking-[0.15em] text-zinc-500">
                         {new Intl.DateTimeFormat("vi-VN", {
                           dateStyle: "short",
                           timeStyle: "short",
@@ -358,20 +360,22 @@ function StatCard({
   label,
   value,
   sub,
-  accent,
 }: {
   label: string;
   value: string;
   sub: string;
-  accent: string;
 }) {
   return (
-    <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-4">
-      <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-dim)]">
-        {label}
+    <div className="relative border-2 border-zinc-800 bg-zinc-900 p-4">
+      <span className="mc-rivet mc-rivet-tl" />
+      <span className="mc-rivet mc-rivet-tr" />
+      <p className="mc-mono text-[9px] font-black uppercase tracking-[0.32em] text-orange-500">
+        ⬢ {label}
       </p>
-      <p className={`mt-1 text-[22px] font-bold ${accent}`}>{value}</p>
-      <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">{sub}</p>
+      <p className="mc-mono mt-2 text-[20px] font-black text-orange-400">{value}</p>
+      <p className="mc-mono mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        ▸ {sub}
+      </p>
     </div>
   );
 }

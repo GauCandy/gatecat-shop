@@ -42,11 +42,16 @@ export default async function ShippingAllPage() {
   const deliveredToday = Number(todayResult.rows[0]?.count ?? 0);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-[22px] font-semibold tracking-tight">Tất cả đơn hàng</h1>
-        <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
-          Tìm kiếm, xem chi tiết và chỉnh sửa trạng thái mọi đơn hàng.
+    <div className="flex flex-col gap-6 text-zinc-100">
+      <div className="border-b-2 border-zinc-800 pb-4">
+        <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ QUEUE · 01 · ALL ORDERS
+        </p>
+        <h1 className="mt-2 text-[22px] font-black uppercase tracking-tight sm:text-[28px]">
+          Tất cả đơn hàng<span className="text-orange-500">.</span>
+        </h1>
+        <p className="mc-mono mt-1.5 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+          ▸ Tìm kiếm, xem chi tiết và chỉnh sửa trạng thái mọi đơn.
         </p>
       </div>
 
@@ -65,11 +70,11 @@ function StatsRow({
   deliveredToday: number;
 }) {
   const cards = [
-    { label: "Chờ xác nhận", value: counts.pending ?? 0, color: "text-yellow-700" },
-    { label: "Đang chuẩn bị", value: counts.confirmed ?? 0, color: "text-blue-700" },
-    { label: "Đang giao", value: counts.shipping ?? 0, color: "text-purple-700" },
-    { label: "Đã giao hôm nay", value: deliveredToday, color: "text-green-700" },
-    { label: "Hoàn hàng", value: counts.returned ?? 0, color: "text-orange-700" },
+    { label: "PENDING", desc: "Chờ xác nhận", value: counts.pending ?? 0, color: "text-yellow-300" },
+    { label: "PREPARING", desc: "Chuẩn bị", value: counts.confirmed ?? 0, color: "text-cyan-300" },
+    { label: "TRANSIT", desc: "Đang giao", value: counts.shipping ?? 0, color: "text-purple-300" },
+    { label: "DELIVERED", desc: "Hôm nay", value: deliveredToday, color: "text-green-300" },
+    { label: "RETURNED", desc: "Hoàn", value: counts.returned ?? 0, color: "text-orange-300" },
   ];
 
   return (
@@ -77,12 +82,15 @@ function StatsRow({
       {cards.map((c) => (
         <div
           key={c.label}
-          className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3"
+          className="relative border-2 border-zinc-800 bg-zinc-900 px-4 py-3"
         >
-          <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-dim)]">
-            {c.label}
+          <span className="mc-rivet mc-rivet-tl" />
+          <span className="mc-rivet mc-rivet-tr" />
+          <p className="mc-mono text-[9px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ {c.label}
           </p>
-          <p className={`mt-1 text-[22px] font-bold ${c.color}`}>{c.value}</p>
+          <p className={`mc-mono mt-1.5 text-[24px] font-black ${c.color}`}>{c.value}</p>
+          <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">{c.desc}</p>
         </div>
       ))}
     </div>

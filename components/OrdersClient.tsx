@@ -14,22 +14,22 @@ const formatDate = (d: Date) =>
   }).format(new Date(d));
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending: { label: "Chờ xác nhận", color: "bg-yellow-100 text-yellow-700" },
-  confirmed: { label: "Đang chuẩn bị hàng", color: "bg-blue-100 text-blue-700" },
-  shipping: { label: "Đang giao", color: "bg-purple-100 text-purple-700" },
-  delivered: { label: "Đã giao", color: "bg-green-100 text-green-700" },
-  returned: { label: "Hoàn hàng", color: "bg-orange-100 text-orange-700" },
-  cancelled: { label: "Đã huỷ", color: "bg-gray-200 text-gray-700" },
+  pending: { label: "PENDING", color: "border-yellow-500/60 bg-yellow-500/10 text-yellow-300" },
+  confirmed: { label: "PREPARING", color: "border-cyan-500/60 bg-cyan-500/10 text-cyan-300" },
+  shipping: { label: "IN TRANSIT", color: "border-purple-500/60 bg-purple-500/10 text-purple-300" },
+  delivered: { label: "DELIVERED", color: "border-green-500/60 bg-green-500/10 text-green-300" },
+  returned: { label: "RETURNED", color: "border-orange-500/60 bg-orange-500/10 text-orange-300" },
+  cancelled: { label: "CANCELLED", color: "border-zinc-700 bg-zinc-800 text-zinc-400" },
 };
 
 const TABS = [
-  { id: "all", label: "Tất cả", status: null },
-  { id: "pending", label: "Chờ xác nhận", status: "pending" },
-  { id: "confirmed", label: "Đang chuẩn bị", status: "confirmed" },
-  { id: "shipping", label: "Đang giao", status: "shipping" },
-  { id: "delivered", label: "Đã giao", status: "delivered" },
-  { id: "returned", label: "Hoàn hàng", status: "returned" },
-  { id: "cancelled", label: "Đã huỷ", status: "cancelled" },
+  { id: "all", label: "ALL", status: null },
+  { id: "pending", label: "PENDING", status: "pending" },
+  { id: "confirmed", label: "PREP", status: "confirmed" },
+  { id: "shipping", label: "TRANSIT", status: "shipping" },
+  { id: "delivered", label: "DONE", status: "delivered" },
+  { id: "returned", label: "RETURN", status: "returned" },
+  { id: "cancelled", label: "CANCEL", status: "cancelled" },
 ];
 
 export function OrdersClient({ orders }: { orders: Order[] }) {
@@ -42,8 +42,13 @@ export function OrdersClient({ orders }: { orders: Order[] }) {
   }, [orders, activeTab]);
 
   return (
-    <div className="rounded-xl border border-[var(--color-border-strong)] bg-white overflow-hidden">
-      <div className="border-b border-[var(--color-border)]">
+    <div className="relative overflow-hidden border-2 border-zinc-700 bg-zinc-900">
+      <span className="mc-rivet mc-rivet-tl" />
+      <span className="mc-rivet mc-rivet-tr" />
+      <span className="mc-rivet mc-rivet-bl" />
+      <span className="mc-rivet mc-rivet-br" />
+
+      <div className="border-b-2 border-zinc-800 bg-zinc-950">
         <div className="flex overflow-x-auto">
           {TABS.map((tab) => {
             const count =
@@ -55,20 +60,22 @@ export function OrdersClient({ orders }: { orders: Order[] }) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative whitespace-nowrap px-5 py-4 text-[14px] font-medium transition ${
+                className={`mc-mono relative whitespace-nowrap border-r-2 border-zinc-800 px-4 py-3.5 text-[10px] font-black uppercase tracking-[0.22em] transition ${
                   active
-                    ? "text-[var(--color-accent)]"
-                    : "text-[var(--color-text-dim)] hover:text-[var(--color-text)]"
+                    ? "bg-orange-500/8 text-orange-400"
+                    : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
                 }`}
               >
-                {tab.label}
+                ⬢ {tab.label}
                 {count > 0 && (
-                  <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-surface-2)] text-[11px] font-semibold text-[var(--color-text)]">
+                  <span className={`ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center px-1 text-[10px] font-black ${
+                    active ? "bg-orange-500 text-zinc-950" : "bg-zinc-800 text-zinc-300"
+                  }`}>
                     {count}
                   </span>
                 )}
                 {active && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--color-accent)]" />
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-orange-500" />
                 )}
               </button>
             );
@@ -78,22 +85,22 @@ export function OrdersClient({ orders }: { orders: Order[] }) {
 
       <div className="p-6">
         {filteredOrders.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] p-10 text-center">
-            <p className="text-[14px] font-medium text-[var(--color-text)]">
-              {activeTab === "all"
-                ? "Bạn chưa có đơn hàng nào"
-                : `Không có đơn hàng ${TABS.find((t) => t.id === activeTab)?.label?.toLowerCase()}`}
+          <div className="border-2 border-dashed border-zinc-700 bg-zinc-950 p-10 text-center">
+            <p className="text-[15px] font-black uppercase tracking-tight text-zinc-100">
+              ⬢ {activeTab === "all"
+                ? "CHƯA CÓ ĐƠN NÀO"
+                : `KHÔNG CÓ ĐƠN ${TABS.find((t) => t.id === activeTab)?.label}`}
             </p>
             {activeTab === "all" && (
               <>
-                <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
-                  Hãy khám phá sản phẩm và đặt hàng ngay.
+                <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                  ▸ Hãy khám phá sản phẩm và đặt hàng ngay.
                 </p>
                 <Link
                   href="/products"
-                  className="mt-4 inline-flex rounded-lg bg-[var(--color-accent)] px-5 py-2 text-[13px] font-semibold text-white transition hover:brightness-110"
+                  className="mc-btn-primary mc-btn-primary-lg mt-5"
                 >
-                  Xem sản phẩm
+                  ⬢ XEM SẢN PHẨM
                 </Link>
               </>
             )}
@@ -106,27 +113,34 @@ export function OrdersClient({ orders }: { orders: Order[] }) {
                 <Link
                   key={order.id}
                   href={`/orders/${order.id}`}
-                  className="flex items-center justify-between gap-4 rounded-lg border border-[var(--color-border)] p-4 transition hover:shadow-sm hover:border-[var(--color-accent)]/50"
+                  className="relative flex items-center justify-between gap-4 border-2 border-zinc-800 bg-zinc-950 p-4 transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-[4px_4px_0_#09090b]"
                 >
+                  <span className="mc-rivet mc-rivet-tl" />
+                  <span className="mc-rivet mc-rivet-tr" />
+                  <span className="mc-rivet mc-rivet-bl" />
+                  <span className="mc-rivet mc-rivet-br" />
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[13px] font-semibold text-[var(--color-text)]">
-                        Đơn #{order.id.slice(0, 8).toUpperCase()}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="mc-mono text-[12px] font-black uppercase tracking-[0.22em] text-orange-400">
+                        ⬢ ORD#{order.id.slice(0, 8).toUpperCase()}
                       </span>
                       {status && (
                         <span
-                          className={`rounded-full px-2 py-1 text-[10px] font-semibold ${status.color}`}
+                          className={`mc-mono border-2 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] ${status.color}`}
                         >
                           {status.label}
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
-                      {formatDate(order.createdAt)}
+                    <p className="mc-mono mt-1.5 text-[10px] uppercase tracking-[0.22em] text-zinc-500">
+                      ▸ {formatDate(order.createdAt)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[14px] font-bold text-[var(--color-text)]">
+                    <p className="mc-mono text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500">
+                      AMOUNT
+                    </p>
+                    <p className="mc-mono mt-0.5 text-[16px] font-black text-orange-400">
                       {formatVnd(order.totalAmount)}
                     </p>
                   </div>

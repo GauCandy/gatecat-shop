@@ -35,7 +35,9 @@
       "PowerShell(\\(Get-NetTCPConnection -LocalPort 8443 -ErrorAction SilentlyContinue\\).OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 2; \"Ready\")",
       "PowerShell(\"� Done\")",
       "Bash(curl -k -s -o /dev/null -w \"%{http_code}\" https://localhost:8443/admin/dashboard)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8443/admin/dashboard)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8443/admin/dashboard)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:8443/)",
+      "Bash(curl -sS -o /tmp/page.html -w \"HTTP %{http_code}\\\\n\" --max-time 60 http://127.0.0.1:8443/)"
     ]
   }
 }

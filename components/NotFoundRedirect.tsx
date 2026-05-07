@@ -17,9 +17,9 @@ export function NotFoundRedirect({ seconds = 10 }: { seconds?: number }) {
   }, [remaining, router]);
 
   return (
-    <p className="mt-4 text-[12px] text-[var(--color-text-dim)]">
-      Tự động chuyển về trang chủ sau{" "}
-      <span className="font-semibold text-[var(--color-text)]">{remaining}s</span>
+    <p className="mc-mono mt-4 text-[10px] uppercase tracking-[0.22em] text-zinc-500">
+      ▸ AUTO-REDIRECT IN{" "}
+      <span className="font-black text-orange-400">{remaining}s</span>
     </p>
   );
 }

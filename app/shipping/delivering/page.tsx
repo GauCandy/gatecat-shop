@@ -30,11 +30,16 @@ export default async function ShippingDeliveringPage() {
   const orders = result.rows;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-[22px] font-semibold tracking-tight">Đang giao</h1>
-        <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
-          Chọn chế độ rồi quét mã vận chuyển để cập nhật trạng thái giao thành công hoặc hoàn hàng.
+    <div className="flex flex-col gap-6 text-zinc-100">
+      <div className="border-b-2 border-zinc-800 pb-4">
+        <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ QUEUE · 04 · IN TRANSIT
+        </p>
+        <h1 className="mt-2 text-[22px] font-black uppercase tracking-tight sm:text-[28px]">
+          Đang giao<span className="text-orange-500">.</span>
+        </h1>
+        <p className="mc-mono mt-1.5 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+          ▸ Chọn chế độ rồi quét mã để cập nhật giao thành công / hoàn hàng.
         </p>
       </div>
       <DeliveringOrdersClient orders={orders} />

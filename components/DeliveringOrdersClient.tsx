@@ -63,38 +63,43 @@ export function DeliveringOrdersClient({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-4">
-        <p className="mb-3 text-[13px] font-semibold text-[var(--color-text)]">
-          Chế độ quét
+      <div className="relative border-2 border-orange-500/60 bg-zinc-900 p-5 shadow-[6px_6px_0_#09090b]">
+        <span className="mc-rivet mc-rivet-tl mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-tr mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-bl mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-br mc-rivet-lg" />
+
+        <p className="mc-mono mb-3 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ SCAN MODE
         </p>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={() => setMode("delivered")}
-            className={`flex-1 rounded-lg px-4 py-2.5 text-[13px] font-semibold transition ${
+            className={`mc-mono flex-1 border-2 px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] transition ${
               mode === "delivered"
-                ? "bg-green-600 text-white"
-                : "border border-[var(--color-border)] bg-white text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                ? "border-green-500 bg-green-500 text-zinc-950 shadow-[3px_3px_0_#09090b]"
+                : "border-zinc-700 bg-zinc-950 text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
             }`}
           >
-            ✓ Giao thành công
+            ✓ GIAO THÀNH CÔNG
           </button>
           <button
             type="button"
             onClick={() => setMode("returned")}
-            className={`flex-1 rounded-lg px-4 py-2.5 text-[13px] font-semibold transition ${
+            className={`mc-mono flex-1 border-2 px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] transition ${
               mode === "returned"
-                ? "bg-orange-600 text-white"
-                : "border border-[var(--color-border)] bg-white text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                ? "border-orange-500 bg-orange-500 text-zinc-950 shadow-[3px_3px_0_#09090b]"
+                : "border-zinc-700 bg-zinc-950 text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
             }`}
           >
-            ↩ Hoàn hàng
+            ↩ HOÀN HÀNG
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-4">
-          <label className="mb-2 block text-[13px] font-medium text-[var(--color-text)]">
-            Quét / nhập mã vận chuyển
+        <form onSubmit={handleSubmit} className="mt-4 border-t-2 border-zinc-800 pt-4">
+          <label className="mc-mono mb-2 block text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ QUÉT / NHẬP TRACKING CODE
           </label>
           <div className="flex gap-2">
             <input
@@ -104,40 +109,46 @@ export function DeliveringOrdersClient({
               value={code}
               onChange={(e) => setCode(e.target.value)}
               disabled={busy}
-              className="h-11 flex-1 rounded-lg border border-[var(--color-border)] bg-white px-3 text-[14px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+              className="mc-mono h-11 flex-1 border-2 border-zinc-700 bg-zinc-950 px-3 text-[14px] font-bold uppercase tracking-[0.08em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
             />
             <button
               type="submit"
               disabled={busy || !code.trim()}
-              className={`rounded-lg px-5 py-2 text-[13px] font-semibold text-white transition disabled:opacity-50 ${
+              className={`mc-mono inline-flex items-center justify-center gap-1 border-2 px-5 py-2 text-[11px] font-black uppercase tracking-[0.22em] shadow-[3px_3px_0_#09090b] transition disabled:opacity-50 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#09090b] ${
                 mode === "delivered"
-                  ? "bg-green-600 hover:brightness-110"
-                  : "bg-orange-600 hover:brightness-110"
+                  ? "border-green-500 bg-green-500 text-zinc-950"
+                  : "border-orange-500 bg-orange-500 text-zinc-950"
               }`}
             >
-              {busy ? "..." : mode === "delivered" ? "Giao" : "Hoàn"}
+              {busy ? "..." : mode === "delivered" ? "✓ GIAO" : "↩ HOÀN"}
             </button>
           </div>
           {message && (
             <p
-              className={`mt-2 text-[12px] ${
-                message.type === "ok" ? "text-green-700" : "text-red-600"
+              className={`mc-mono mt-2 border-2 px-3 py-2 text-[11px] font-black uppercase tracking-[0.2em] ${
+                message.type === "ok"
+                  ? "border-green-500/60 bg-green-500/10 text-green-300"
+                  : "border-red-500/60 bg-red-500/10 text-red-300"
               }`}
             >
-              {message.text}
+              ⬢ {message.text}
             </p>
           )}
         </form>
       </div>
 
       <div>
-        <p className="mb-3 text-[13px] font-semibold text-[var(--color-text)]">
-          Đơn hàng đang giao ({orders.length})
+        <p className="mc-mono mb-3 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ ĐANG GIAO ({orders.length})
         </p>
         {orders.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] p-10 text-center">
-            <p className="text-[14px] font-medium text-[var(--color-text)]">
-              Không có đơn đang giao
+          <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 p-10 text-center">
+            <span className="mc-rivet mc-rivet-tl" />
+            <span className="mc-rivet mc-rivet-tr" />
+            <span className="mc-rivet mc-rivet-bl" />
+            <span className="mc-rivet mc-rivet-br" />
+            <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
+              ⬢ KHÔNG CÓ ĐƠN ĐANG GIAO
             </p>
           </div>
         ) : (
@@ -145,47 +156,52 @@ export function DeliveringOrdersClient({
             {orders.map((order) => (
               <div
                 key={order.id}
-                className="rounded-lg border border-[var(--color-border)] bg-white p-3"
+                className="relative border-2 border-zinc-800 bg-zinc-900 p-3"
               >
+                <span className="mc-rivet mc-rivet-tl" />
+                <span className="mc-rivet mc-rivet-tr" />
+                <span className="mc-rivet mc-rivet-bl" />
+                <span className="mc-rivet mc-rivet-br" />
+
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-semibold text-[var(--color-text)]">
-                        Đơn #{order.id.slice(0, 8).toUpperCase()}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="mc-mono text-[12px] font-black uppercase tracking-[0.22em] text-orange-400">
+                        ⬢ ORD#{order.id.slice(0, 8).toUpperCase()}
                       </span>
                       {order.trackingCode && (
-                        <span className="rounded bg-[var(--color-surface-2)] px-2 py-0.5 font-mono text-[11px] text-[var(--color-text)]">
+                        <span className="mc-mono border-2 border-zinc-700 bg-zinc-950 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-300">
                           {order.trackingCode}
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
-                      {order.recipientName ?? "—"}
+                    <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.15em] text-zinc-300">
+                      ▸ {order.recipientName ?? "—"}
                       {order.phone && (
                         <>
                           {" · "}
                           <a
                             href={`tel:${order.phone}`}
-                            className="text-[var(--color-accent)] underline-offset-2 hover:underline"
+                            className="text-orange-400 underline-offset-2 hover:underline"
                           >
                             {order.phone}
                           </a>
                         </>
                       )}
                     </p>
-                    <p className="text-[12px] text-[var(--color-text-dim)]">
+                    <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                       {[order.addressLine, order.ward, order.district, order.province]
                         .filter(Boolean)
                         .join(", ")}
                     </p>
                     <Link
                       href={`/shipping/orders/${order.id}`}
-                      className="mt-1 inline-block text-[12px] font-medium text-[var(--color-accent)] hover:underline"
+                      className="mc-mono mt-1 inline-block text-[10px] font-black uppercase tracking-[0.22em] text-orange-400 hover:text-orange-300"
                     >
-                      Xem chi tiết →
+                      ▸ XEM CHI TIẾT →
                     </Link>
                   </div>
-                  <p className="whitespace-nowrap text-[13px] font-bold text-[var(--color-text)]">
+                  <p className="mc-mono whitespace-nowrap text-[14px] font-black text-orange-400">
                     {formatVnd(order.totalAmount)}
                   </p>
                 </div>

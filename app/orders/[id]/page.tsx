@@ -23,12 +23,12 @@ const formatDate = (d: Date) =>
   }).format(new Date(d));
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending: { label: "Chờ xác nhận", color: "bg-yellow-100 text-yellow-700" },
-  confirmed: { label: "Đang chuẩn bị hàng", color: "bg-blue-100 text-blue-700" },
-  shipping: { label: "Đang giao", color: "bg-purple-100 text-purple-700" },
-  delivered: { label: "Đã giao", color: "bg-green-100 text-green-700" },
-  returned: { label: "Hoàn hàng", color: "bg-orange-100 text-orange-700" },
-  cancelled: { label: "Đã huỷ", color: "bg-gray-200 text-gray-700" },
+  pending: { label: "PENDING", color: "border-yellow-500/60 bg-yellow-500/10 text-yellow-300" },
+  confirmed: { label: "PREPARING", color: "border-cyan-500/60 bg-cyan-500/10 text-cyan-300" },
+  shipping: { label: "IN TRANSIT", color: "border-purple-500/60 bg-purple-500/10 text-purple-300" },
+  delivered: { label: "DELIVERED", color: "border-green-500/60 bg-green-500/10 text-green-300" },
+  returned: { label: "RETURNED", color: "border-orange-500/60 bg-orange-500/10 text-orange-300" },
+  cancelled: { label: "CANCELLED", color: "border-zinc-700 bg-zinc-800 text-zinc-400" },
 };
 
 export default async function OrderDetailPage({
@@ -65,63 +65,74 @@ export default async function OrderDetailPage({
               { href: "/orders", label: "Đơn hàng" },
               { label: `#${order.id.slice(0, 8).toUpperCase()}` },
             ]}
-            title={`Đơn hàng #${order.id.slice(0, 8).toUpperCase()}`}
+            title={`Đơn ORD#${order.id.slice(0, 8).toUpperCase()}`}
+            description={`Chi tiết dispatch — ${formatDate(order.createdAt)}`}
           />
 
-          <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-6">
-            <div className="mb-6 flex items-start justify-between gap-4">
-              <p className="text-[13px] text-[var(--color-text-dim)]">
-                {formatDate(order.createdAt)}
-              </p>
+          <div className="relative border-2 border-zinc-700 bg-zinc-900 p-6">
+            <span className="mc-rivet mc-rivet-tl mc-rivet-lg" />
+            <span className="mc-rivet mc-rivet-tr mc-rivet-lg" />
+            <span className="mc-rivet mc-rivet-bl mc-rivet-lg" />
+            <span className="mc-rivet mc-rivet-br mc-rivet-lg" />
+
+            <div className="mb-6 flex items-start justify-between gap-4 border-b-2 border-zinc-800 pb-5">
+              <div>
+                <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                  ⬢ DISPATCH STATUS
+                </p>
+                <p className="mc-mono mt-1.5 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                  ▸ {formatDate(order.createdAt)}
+                </p>
+              </div>
               {status && (
                 <span
-                  className={`whitespace-nowrap rounded-full px-3 py-1 text-[12px] font-semibold ${status.color}`}
+                  className={`mc-mono whitespace-nowrap border-2 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] ${status.color}`}
                 >
-                  {status.label}
+                  ⬢ {status.label}
                 </span>
               )}
             </div>
 
-            <div className="mt-6 grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[var(--color-text-dim)]">
-                  {order.deliveryMethod === "pickup"
-                    ? "Địa điểm lấy hàng"
-                    : "Địa chỉ giao hàng"}
+                <h2 className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                  ⬢ {order.deliveryMethod === "pickup"
+                    ? "PICKUP DEPOT"
+                    : "DEPLOY POINT"}
                 </h2>
-                <div className="mt-2 rounded-lg bg-[var(--color-surface-2)] p-3">
+                <div className="mt-2 border-2 border-zinc-800 bg-zinc-950 p-3">
                   {order.deliveryMethod === "pickup" ? (
                     <>
-                      <p className="font-semibold text-[var(--color-text)]">
+                      <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
                         {SHOP_INFO.name}
                       </p>
-                      <p className="text-[12px] text-[var(--color-text-dim)]">
-                        {SHOP_INFO.phone}
+                      <p className="mc-mono mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                        ▸ {SHOP_INFO.phone}
                       </p>
-                      <p className="mt-1 text-[13px] text-[var(--color-text)]">
+                      <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
                         {shopFullAddress()}
                       </p>
-                      <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
-                        Giờ mở cửa: {SHOP_INFO.hours}
+                      <p className="mc-mono mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                        OPEN: <span className="text-orange-400">{SHOP_INFO.hours}</span>
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="font-semibold text-[var(--color-text)]">
+                      <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
                         {order.recipientName}
                       </p>
-                      <p className="text-[12px] text-[var(--color-text-dim)]">
-                        {order.phone}
+                      <p className="mc-mono mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                        ▸ {order.phone}
                       </p>
-                      <p className="mt-1 text-[13px] text-[var(--color-text)]">
+                      <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
                         {order.addressLine}
                       </p>
-                      <p className="text-[12px] text-[var(--color-text-dim)]">
+                      <p className="mc-mono mt-0.5 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                         {order.ward}, {order.district}, {order.province}
                       </p>
                       {order.note && (
-                        <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
-                          <span className="font-medium">Ghi chú:</span> {order.note}
+                        <p className="mc-mono mt-2 text-[10px] uppercase tracking-[0.12em] text-zinc-400">
+                          <span className="font-black text-orange-400">NOTE ▸</span> {order.note}
                         </p>
                       )}
                     </>
@@ -130,50 +141,50 @@ export default async function OrderDetailPage({
               </div>
 
               <div>
-                <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[var(--color-text-dim)]">
-                  Phương thức nhận hàng & thanh toán
+                <h2 className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                  ⬢ DELIVERY · PAYMENT
                 </h2>
-                <div className="mt-2 rounded-lg bg-[var(--color-surface-2)] p-3">
-                  <p className="font-semibold text-[var(--color-text)]">
-                    {order.deliveryMethod === "pickup"
-                      ? "Lấy tại shop"
-                      : "Giao hàng tận nơi"}
+                <div className="mt-2 border-2 border-zinc-800 bg-zinc-950 p-3">
+                  <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
+                    ⬢ {order.deliveryMethod === "pickup"
+                      ? "LẤY TẠI SHOP"
+                      : "GIAO TẬN NƠI"}
                   </p>
-                  <p className="mt-1 text-[13px] text-[var(--color-text)]">
-                    COD - Thanh toán khi nhận hàng
+                  <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.15em] text-zinc-300">
+                    ▸ COD · Thanh toán khi nhận
                   </p>
-                  <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
+                  <p className="mc-mono mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                     {order.deliveryMethod === "pickup"
-                      ? "Thanh toán tại quầy khi đến lấy hàng."
-                      : "Chuẩn bị tiền mặt khi nhân viên giao hàng đến."}
+                      ? "Thanh toán tại quầy khi đến lấy."
+                      : "Chuẩn bị tiền mặt cho shipper."}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 border-t border-[var(--color-border)] pt-6">
-              <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-                Chi tiết sản phẩm
+            <div className="mt-6 border-t-2 border-zinc-800 pt-6">
+              <h2 className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                ⬢ CARGO · CHI TIẾT SẢN PHẨM
               </h2>
               <div className="mt-4 space-y-3">
                 {order.items?.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-start justify-between rounded-lg border border-[var(--color-border)] p-3"
+                    className="flex items-start justify-between border-2 border-zinc-800 bg-zinc-950 p-3"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-[var(--color-text)]">
+                      <p className="text-[13px] font-black uppercase tracking-tight text-zinc-100">
                         {item.productName}
                       </p>
-                      <p className="text-[12px] text-[var(--color-text-dim)]">
-                        Mã: {item.variantSku}
+                      <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                        ▸ SN: {item.variantSku}
                       </p>
-                      <p className="mt-1 text-[12px] text-[var(--color-text)]">
+                      <p className="mc-mono mt-1 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
                         {formatVnd(item.unitPrice)} × {item.quantity}
                       </p>
                     </div>
                     <div className="whitespace-nowrap text-right">
-                      <p className="font-semibold text-[var(--color-text)]">
+                      <p className="mc-mono text-[14px] font-black text-orange-400">
                         {formatVnd(item.subtotal)}
                       </p>
                     </div>
@@ -182,32 +193,32 @@ export default async function OrderDetailPage({
               </div>
             </div>
 
-            <div className="mt-6 border-t border-[var(--color-border)] pt-6">
-              <dl className="space-y-2 text-[13px]">
-                <div className="flex justify-between text-[var(--color-text-dim)]">
-                  <dt>Tạm tính</dt>
-                  <dd className="text-[var(--color-text)]">
+            <div className="mt-6 border-t-2 border-zinc-800 pt-6">
+              <dl className="mc-mono space-y-2 text-[11px] uppercase tracking-[0.15em]">
+                <div className="flex justify-between">
+                  <dt className="text-zinc-500">▸ Tạm tính</dt>
+                  <dd className="font-bold text-zinc-100">
                     {formatVnd(order.totalAmount + order.discountAmount)}
                   </dd>
                 </div>
                 {order.discountAmount > 0 && (
-                  <div className="flex justify-between text-green-700">
-                    <dt>
-                      Voucher
+                  <div className="flex justify-between">
+                    <dt className="text-zinc-500">
+                      ▸ Voucher
                       {order.voucherCode && (
-                        <span className="ml-1 font-mono">{order.voucherCode}</span>
+                        <span className="ml-1 text-orange-400">{order.voucherCode}</span>
                       )}
                     </dt>
-                    <dd>-{formatVnd(order.discountAmount)}</dd>
+                    <dd className="font-bold text-green-400">−{formatVnd(order.discountAmount)}</dd>
                   </div>
                 )}
-                <div className="flex justify-between text-[var(--color-text-dim)]">
-                  <dt>Phí ship</dt>
-                  <dd className="text-green-600 font-medium">Miễn phí</dd>
+                <div className="flex justify-between">
+                  <dt className="text-zinc-500">▸ Phí ship</dt>
+                  <dd className="font-bold text-green-400">Miễn phí</dd>
                 </div>
-                <div className="flex justify-between border-t border-[var(--color-border)] pt-2">
-                  <dt className="font-bold text-[var(--color-text)]">Tổng cộng</dt>
-                  <dd className="text-[16px] font-bold text-[var(--color-text)]">
+                <div className="flex items-baseline justify-between border-t-2 border-zinc-800 pt-3">
+                  <dt className="text-[12px] font-black tracking-[0.22em] text-orange-500">⬢ TỔNG</dt>
+                  <dd className="text-[20px] font-black text-orange-400">
                     {formatVnd(order.totalAmount)}
                   </dd>
                 </div>
@@ -218,18 +229,18 @@ export default async function OrderDetailPage({
               <OrderReviewSection orderId={order.id} products={reviewableProducts} />
             )}
 
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3 border-t-2 border-zinc-800 pt-5">
               <Link
                 href="/orders"
-                className="inline-flex flex-1 items-center justify-center rounded-lg border border-[var(--color-border)] bg-white px-5 py-3 text-[13px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
+                className="mc-btn-outline mc-btn-outline-lg flex-1 justify-center"
               >
-                Quay lại đơn hàng
+                ◀ ĐƠN HÀNG
               </Link>
               <Link
                 href="/products"
-                className="inline-flex flex-1 items-center justify-center rounded-lg bg-[var(--color-accent)] px-5 py-3 text-[13px] font-semibold text-white transition hover:brightness-110"
+                className="mc-btn-primary mc-btn-primary-lg flex-1 justify-center"
               >
-                Tiếp tục mua sắm
+                ⬢ TIẾP TỤC MUA
               </Link>
               {order.status === "pending" && (
                 <CancelOrderButton orderId={order.id} />

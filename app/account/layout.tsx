@@ -22,12 +22,12 @@ export default async function AccountLayout({
       <Header />
       <main className="flex-1">
         <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <nav className="mb-5 flex items-center gap-1.5 text-[13px] text-[var(--color-text-dim)]">
-            <Link href="/" className="transition hover:text-[var(--color-text)]">
-              Trang chủ
+          <nav className="mc-mono mb-5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-500">
+            <Link href="/" className="transition hover:text-orange-400">
+              ▸ Trang chủ
             </Link>
-            <span className="text-[var(--color-border)]">/</span>
-            <span className="font-medium text-[var(--color-text)]">Tài khoản</span>
+            <span className="text-zinc-700">/</span>
+            <span className="font-black text-orange-400">⬢ Tài khoản</span>
           </nav>
 
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">

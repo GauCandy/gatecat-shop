@@ -75,9 +75,13 @@ export function PreparingOrdersClient({ orders: initial }: { orders: ShipperOrde
 
   if (orders.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] p-10 text-center">
-        <p className="text-[14px] font-medium text-[var(--color-text)]">
-          Không có đơn đang chuẩn bị hàng
+      <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 p-10 text-center">
+        <span className="mc-rivet mc-rivet-tl" />
+        <span className="mc-rivet mc-rivet-tr" />
+        <span className="mc-rivet mc-rivet-bl" />
+        <span className="mc-rivet mc-rivet-br" />
+        <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
+          ⬢ KHÔNG CÓ ĐƠN ĐANG CHUẨN BỊ
         </p>
       </div>
     );
@@ -90,37 +94,42 @@ export function PreparingOrdersClient({ orders: initial }: { orders: ShipperOrde
         return (
           <div
             key={order.id}
-            className="rounded-lg border border-[var(--color-border)] bg-white p-4"
+            className="relative border-2 border-zinc-800 bg-zinc-900 p-4"
           >
+            <span className="mc-rivet mc-rivet-tl" />
+            <span className="mc-rivet mc-rivet-tr" />
+            <span className="mc-rivet mc-rivet-bl" />
+            <span className="mc-rivet mc-rivet-br" />
+
             <div className="flex flex-col gap-4">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[13px] font-semibold text-[var(--color-text)]">
-                    Đơn #{order.id.slice(0, 8).toUpperCase()}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="mc-mono text-[12px] font-black uppercase tracking-[0.22em] text-orange-400">
+                    ⬢ ORD#{order.id.slice(0, 8).toUpperCase()}
                   </span>
-                  <span className="text-[11px] text-[var(--color-text-dim)]">
-                    {formatDate(order.createdAt)}
+                  <span className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                    ▸ {formatDate(order.createdAt)}
                   </span>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                    className={`mc-mono border-2 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] ${
                       isPickup
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-blue-100 text-blue-700"
+                        ? "border-amber-500/60 bg-amber-500/10 text-amber-300"
+                        : "border-cyan-500/60 bg-cyan-500/10 text-cyan-300"
                     }`}
                   >
-                    {isPickup ? "Lấy tại shop" : "Giao hàng"}
+                    {isPickup ? "PICKUP" : "DELIVERY"}
                   </span>
                 </div>
                 {order.recipientName && (
-                  <p className="mt-2 text-[13px] font-medium text-[var(--color-text)]">
+                  <p className="mt-3 text-[14px] font-black uppercase tracking-tight text-zinc-100">
                     {order.recipientName}
                   </p>
                 )}
                 {order.phone && (
-                  <p className="text-[12px]">
-                    <a
+                  <p className="mc-mono text-[11px] uppercase tracking-[0.15em]">
+                    ▸ <a
                       href={`tel:${order.phone}`}
-                      className="text-[var(--color-accent)] underline-offset-2 hover:underline"
+                      className="text-orange-400 underline-offset-2 hover:underline"
                     >
                       {order.phone}
                     </a>
@@ -128,28 +137,28 @@ export function PreparingOrdersClient({ orders: initial }: { orders: ShipperOrde
                 )}
                 {!isPickup && order.addressLine && (
                   <>
-                    <p className="mt-1 text-[13px] text-[var(--color-text)]">
-                      {order.addressLine}
+                    <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
+                      ▸ {order.addressLine}
                     </p>
-                    <p className="text-[12px] text-[var(--color-text-dim)]">
+                    <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                       {order.ward}, {order.district}, {order.province}
                     </p>
                   </>
                 )}
                 {isPickup && (
-                  <p className="mt-1 text-[12px] italic text-[var(--color-text-dim)]">
-                    Khách sẽ đến shop lấy trực tiếp.
+                  <p className="mc-mono mt-1 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                    ▸ Khách sẽ đến shop lấy trực tiếp.
                   </p>
                 )}
-                <div className="mt-2 flex items-center gap-3">
-                  <p className="text-[14px] font-bold text-[var(--color-text)]">
+                <div className="mt-3 flex flex-wrap items-center gap-3 border-t-2 border-zinc-800 pt-3">
+                  <p className="mc-mono text-[16px] font-black text-orange-400">
                     {formatVnd(order.totalAmount)}
                   </p>
                   <Link
                     href={`/shipping/orders/${order.id}`}
-                    className="text-[12px] font-medium text-[var(--color-accent)] hover:underline"
+                    className="mc-mono text-[10px] font-black uppercase tracking-[0.22em] text-orange-400 hover:text-orange-300"
                   >
-                    Xem chi tiết →
+                    ▸ XEM CHI TIẾT →
                   </Link>
                 </div>
               </div>
@@ -159,31 +168,31 @@ export function PreparingOrdersClient({ orders: initial }: { orders: ShipperOrde
                   type="button"
                   disabled={busy}
                   onClick={() => handleMarkPickedUp(order.id)}
-                  className="w-full rounded-lg bg-green-600 px-4 py-2.5 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                  className="mc-mono inline-flex w-full items-center justify-center gap-1 border-2 border-green-500 bg-green-500 px-4 py-3 text-[12px] font-black uppercase tracking-[0.22em] text-zinc-950 shadow-[4px_4px_0_#09090b] transition hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#09090b] disabled:opacity-50"
                 >
-                  ✓ Khách đã đến lấy hàng
+                  ✓ KHÁCH ĐÃ ĐẾN LẤY
                 </button>
               ) : activeId === order.id ? (
-                <div className="rounded-lg border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 p-4">
-                  <p className="mb-3 text-[13px] font-medium text-[var(--color-text)]">
-                    Nhập mã vận chuyển
+                <div className="border-2 border-orange-500 bg-orange-500/8 p-4">
+                  <p className="mc-mono mb-3 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                    ⬢ NHẬP TRACKING CODE
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <input
                       type="text"
-                      placeholder="VTP1234567890, GHN123456, ..."
+                      placeholder="VTP1234567890, GHN123456..."
                       value={trackingCode}
                       onChange={(e) => setTrackingCode(e.target.value)}
                       autoFocus
-                      className="h-10 flex-1 rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+                      className="mc-mono h-10 flex-1 min-w-[200px] border-2 border-zinc-700 bg-zinc-950 px-3 text-[12px] font-bold uppercase tracking-[0.1em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
                     />
                     <button
                       type="button"
                       disabled={busy || !trackingCode.trim()}
                       onClick={() => handleShip(order.id)}
-                      className="rounded-lg bg-[var(--color-accent)] px-5 py-2 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                      className="mc-btn-primary disabled:opacity-50"
                     >
-                      {busy ? "..." : "Chuyển sang đang giao"}
+                      ⬢ {busy ? "..." : "SHIP"}
                     </button>
                     <button
                       type="button"
@@ -193,12 +202,16 @@ export function PreparingOrdersClient({ orders: initial }: { orders: ShipperOrde
                         setTrackingCode("");
                         setError(null);
                       }}
-                      className="rounded-lg border border-[var(--color-border)] bg-white px-5 py-2 text-[13px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:opacity-50"
+                      className="mc-btn-outline disabled:opacity-50"
                     >
-                      Huỷ
+                      ✕ HUỶ
                     </button>
                   </div>
-                  {error && <p className="mt-2 text-[12px] text-red-600">{error}</p>}
+                  {error && (
+                    <p className="mc-mono mt-2 text-[11px] font-black uppercase tracking-[0.2em] text-red-400">
+                      ⬢ ERR · {error}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <button
@@ -208,9 +221,9 @@ export function PreparingOrdersClient({ orders: initial }: { orders: ShipperOrde
                     setTrackingCode("");
                     setError(null);
                   }}
-                  className="w-full rounded-lg bg-[var(--color-accent)] px-4 py-2.5 text-[13px] font-semibold text-white transition hover:brightness-110"
+                  className="mc-btn-primary mc-btn-primary-lg w-full justify-center"
                 >
-                  Đang chuẩn bị hàng → Nhập mã vận chuyển
+                  ⬢ NHẬP TRACKING → SHIP
                 </button>
               )}
             </div>

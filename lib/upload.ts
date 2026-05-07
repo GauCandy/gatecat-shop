@@ -3,7 +3,7 @@ import path from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
-const MAX_SIZE = 5 * 1024 * 1024;
+const DEFAULT_MAX_SIZE = 5 * 1024 * 1024;
 
 const EXT_BY_MIME: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -14,12 +14,20 @@ const EXT_BY_MIME: Record<string, string> = {
 };
 
 export type UploadResult = { url: string };
+export type UploadOptions = { maxSize?: number };
 
-export async function saveImageUpload(file: File): Promise<UploadResult> {
+export async function saveImageUpload(
+  file: File,
+  options: UploadOptions = {}
+): Promise<UploadResult> {
+  const maxSize = options.maxSize ?? DEFAULT_MAX_SIZE;
   const ext = EXT_BY_MIME[file.type];
   if (!ext) throw new UploadError("Định dạng ảnh không được hỗ trợ");
   if (file.size === 0) throw new UploadError("File rỗng");
-  if (file.size > MAX_SIZE) throw new UploadError("Ảnh vượt quá 5MB");
+  if (file.size > maxSize) {
+    const mb = Math.round(maxSize / (1024 * 1024));
+    throw new UploadError(`Ảnh vượt quá ${mb}MB`);
+  }
 
   await mkdir(UPLOAD_DIR, { recursive: true });
   const name = `${crypto.randomBytes(16).toString("hex")}.${ext}`;

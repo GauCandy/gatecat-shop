@@ -23,17 +23,17 @@ const STATUS_OPTIONS = [
 ] as const;
 
 const STATUS_BADGE: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-700",
-  confirmed: "bg-blue-100 text-blue-700",
-  shipping: "bg-purple-100 text-purple-700",
-  delivered: "bg-green-100 text-green-700",
-  returned: "bg-orange-100 text-orange-700",
-  cancelled: "bg-gray-200 text-gray-700",
+  pending: "border-yellow-500/60 bg-yellow-500/10 text-yellow-300",
+  confirmed: "border-cyan-500/60 bg-cyan-500/10 text-cyan-300",
+  shipping: "border-purple-500/60 bg-purple-500/10 text-purple-300",
+  delivered: "border-green-500/60 bg-green-500/10 text-green-300",
+  returned: "border-orange-500/60 bg-orange-500/10 text-orange-300",
+  cancelled: "border-zinc-700 bg-zinc-800 text-zinc-400",
 };
 
 const FILTERS = [
-  { id: "all", label: "Tất cả", value: null },
-  ...STATUS_OPTIONS.map((s) => ({ id: s.value, label: s.label, value: s.value })),
+  { id: "all", label: "ALL", value: null },
+  ...STATUS_OPTIONS.map((s) => ({ id: s.value, label: s.value.toUpperCase(), value: s.value })),
 ];
 
 type RowState = {
@@ -120,27 +120,27 @@ export function AllOrdersClient({ orders: initial }: { orders: ShipperOrderRow[]
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="relative flex-1 md:max-w-sm">
+        <div className="relative flex-1 md:max-w-md">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Tìm theo mã đơn, SĐT, tên, mã vận chuyển..."
-            className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 pr-9 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            placeholder="QUERY · MÃ ĐƠN, SĐT, TÊN, TRACKING..."
+            className="mc-mono h-10 w-full border-2 border-zinc-700 bg-zinc-900 px-3 pr-9 text-[12px] font-bold uppercase tracking-[0.1em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
               aria-label="Xoá tìm kiếm"
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-dim)] hover:text-[var(--color-text)]"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-orange-400"
             >
               ✕
             </button>
           )}
         </div>
-        <span className="text-[12px] text-[var(--color-text-dim)]">
-          {filtered.length} / {orders.length} đơn
+        <span className="mc-mono text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500">
+          ▸ {filtered.length} / {orders.length} ORDER
         </span>
       </div>
 
@@ -154,16 +154,16 @@ export function AllOrdersClient({ orders: initial }: { orders: ShipperOrderRow[]
               key={f.id}
               type="button"
               onClick={() => setFilter(f.value)}
-              className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition ${
+              className={`mc-mono inline-flex items-center gap-2 border-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] transition ${
                 active
-                  ? "bg-[var(--color-text)] text-white"
-                  : "border border-[var(--color-border)] bg-white text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                  ? "border-orange-500 bg-orange-500 text-zinc-950 shadow-[2px_2px_0_#09090b]"
+                  : "border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
               }`}
             >
-              {f.label}
+              ⬢ {f.label}
               <span
-                className={`ml-2 rounded-full px-1.5 py-0.5 text-[10px] ${
-                  active ? "bg-white/20" : "bg-[var(--color-surface-2)]"
+                className={`px-1.5 py-0.5 text-[9px] ${
+                  active ? "bg-zinc-950 text-orange-400" : "bg-zinc-800 text-zinc-300"
                 }`}
               >
                 {count}
@@ -174,8 +174,14 @@ export function AllOrdersClient({ orders: initial }: { orders: ShipperOrderRow[]
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] p-10 text-center">
-          <p className="text-[14px] font-medium text-[var(--color-text)]">Không có đơn nào</p>
+        <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 p-10 text-center">
+          <span className="mc-rivet mc-rivet-tl" />
+          <span className="mc-rivet mc-rivet-tr" />
+          <span className="mc-rivet mc-rivet-bl" />
+          <span className="mc-rivet mc-rivet-br" />
+          <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
+            ⬢ KHÔNG CÓ ĐƠN NÀO
+          </p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -185,56 +191,61 @@ export function AllOrdersClient({ orders: initial }: { orders: ShipperOrderRow[]
             return (
               <div
                 key={order.id}
-                className="rounded-lg border border-[var(--color-border)] bg-white p-3"
+                className="relative border-2 border-zinc-800 bg-zinc-900 p-3"
               >
+                <span className="mc-rivet mc-rivet-tl" />
+                <span className="mc-rivet mc-rivet-tr" />
+                <span className="mc-rivet mc-rivet-bl" />
+                <span className="mc-rivet mc-rivet-br" />
+
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[13px] font-semibold text-[var(--color-text)]">
-                        Đơn #{order.id.slice(0, 8).toUpperCase()}
+                      <span className="mc-mono text-[12px] font-black uppercase tracking-[0.22em] text-orange-400">
+                        ⬢ ORD#{order.id.slice(0, 8).toUpperCase()}
                       </span>
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                          STATUS_BADGE[order.status] ?? "bg-gray-100 text-gray-700"
+                        className={`mc-mono border-2 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] ${
+                          STATUS_BADGE[order.status] ?? "border-zinc-700 bg-zinc-800 text-zinc-400"
                         }`}
                       >
                         {STATUS_OPTIONS.find((s) => s.value === order.status)?.label ??
                           order.status}
                       </span>
-                      <span className="text-[11px] text-[var(--color-text-dim)]">
-                        {formatDate(order.createdAt)}
+                      <span className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                        ▸ {formatDate(order.createdAt)}
                       </span>
                     </div>
-                    <p className="mt-1 text-[12px] text-[var(--color-text)]">
-                      {order.recipientName ?? "—"}
+                    <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.15em] text-zinc-300">
+                      ▸ {order.recipientName ?? "—"}
                       {order.phone && (
                         <>
                           {" · "}
                           <a
                             href={`tel:${order.phone}`}
-                            className="text-[var(--color-accent)] underline-offset-2 hover:underline"
+                            className="text-orange-400 underline-offset-2 hover:underline"
                           >
                             {order.phone}
                           </a>
                         </>
                       )}
                     </p>
-                    <p className="text-[12px] text-[var(--color-text-dim)]">
+                    <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                       {order.deliveryMethod === "pickup"
-                        ? "🏪 Lấy tại shop"
+                        ? "🏪 LẤY TẠI SHOP"
                         : [order.addressLine, order.ward, order.district, order.province]
                             .filter(Boolean)
                             .join(", ")}
                     </p>
-                    <div className="mt-1 flex items-center gap-3">
-                      <p className="text-[13px] font-bold text-[var(--color-text)]">
+                    <div className="mt-2 flex items-center gap-3">
+                      <p className="mc-mono text-[14px] font-black text-orange-400">
                         {formatVnd(order.totalAmount)}
                       </p>
                       <Link
                         href={`/shipping/orders/${order.id}`}
-                        className="text-[12px] font-medium text-[var(--color-accent)] hover:underline"
+                        className="mc-mono text-[10px] font-black uppercase tracking-[0.22em] text-orange-400 hover:text-orange-300"
                       >
-                        Xem chi tiết →
+                        ▸ XEM CHI TIẾT →
                       </Link>
                     </div>
                   </div>
@@ -245,7 +256,7 @@ export function AllOrdersClient({ orders: initial }: { orders: ShipperOrderRow[]
                         value={r.status}
                         onChange={(e) => setRow(order.id, { status: e.target.value, error: null })}
                         disabled={r.saving}
-                        className="h-9 flex-1 rounded-lg border border-[var(--color-border)] bg-white px-2 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+                        className="mc-mono h-9 flex-1 border-2 border-zinc-700 bg-zinc-950 px-2 text-[11px] font-bold uppercase tracking-[0.1em] text-zinc-100 focus:border-orange-500 focus:outline-none"
                       >
                         {STATUS_OPTIONS.map((s) => (
                           <option key={s.value} value={s.value}>
@@ -256,23 +267,27 @@ export function AllOrdersClient({ orders: initial }: { orders: ShipperOrderRow[]
                     </div>
                     <input
                       type="text"
-                      placeholder="Mã vận chuyển (tuỳ chọn)"
+                      placeholder="TRACKING CODE (TUỲ CHỌN)"
                       value={r.trackingCode}
                       onChange={(e) =>
                         setRow(order.id, { trackingCode: e.target.value, error: null })
                       }
                       disabled={r.saving}
-                      className="h-9 rounded-lg border border-[var(--color-border)] bg-white px-2 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+                      className="mc-mono h-9 border-2 border-zinc-700 bg-zinc-950 px-2 text-[11px] font-bold uppercase tracking-[0.1em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
                     />
                     <button
                       type="button"
                       disabled={!dirty || r.saving}
                       onClick={() => handleSave(order)}
-                      className="h-9 rounded-lg bg-[var(--color-accent)] px-4 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                      className="mc-btn-primary w-full justify-center disabled:opacity-50"
                     >
-                      {r.saving ? "Đang lưu..." : dirty ? "Lưu thay đổi" : "Chưa thay đổi"}
+                      ⬢ {r.saving ? "ĐANG LƯU..." : dirty ? "LƯU THAY ĐỔI" : "KHÔNG ĐỔI"}
                     </button>
-                    {r.error && <p className="text-[12px] text-red-600">{r.error}</p>}
+                    {r.error && (
+                      <p className="mc-mono text-[10px] font-black uppercase tracking-[0.2em] text-red-400">
+                        ⬢ ERR · {r.error}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

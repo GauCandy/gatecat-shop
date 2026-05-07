@@ -11,6 +11,9 @@ const GENDER_OPTIONS: { value: Gender | ""; label: string }[] = [
   { value: "other", label: "Khác" },
 ];
 
+const FIELD_INPUT =
+  "mc-mono h-11 w-full border-2 border-zinc-700 bg-zinc-950 px-3.5 text-[13px] font-bold uppercase tracking-[0.04em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none transition";
+
 export function AccountInfoForm({ initial }: { initial: UserProfile }) {
   const router = useRouter();
   const [name, setName] = useState(initial.name);
@@ -58,7 +61,7 @@ export function AccountInfoForm({ initial }: { initial: UserProfile }) {
         <input
           value={initial.email}
           disabled
-          className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3.5 text-[14px] text-[var(--color-text-dim)] cursor-not-allowed"
+          className="mc-mono h-11 w-full cursor-not-allowed border-2 border-zinc-800 bg-zinc-900 px-3.5 text-[13px] font-bold uppercase tracking-[0.04em] text-zinc-500"
         />
       </Field>
       <Field label="Họ và tên" required>
@@ -67,7 +70,7 @@ export function AccountInfoForm({ initial }: { initial: UserProfile }) {
           onChange={(e) => setName(e.target.value)}
           required
           maxLength={100}
-          className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+          className={FIELD_INPUT}
         />
       </Field>
       <Field label="Số điện thoại" hint="Định dạng VN, ví dụ 0912345678">
@@ -76,7 +79,7 @@ export function AccountInfoForm({ initial }: { initial: UserProfile }) {
           onChange={(e) => setPhone(e.target.value.replace(/\s+/g, ""))}
           placeholder="0912345678"
           inputMode="tel"
-          className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+          className={FIELD_INPUT}
         />
       </Field>
       <div className="grid gap-5 sm:grid-cols-2">
@@ -86,14 +89,14 @@ export function AccountInfoForm({ initial }: { initial: UserProfile }) {
             value={dob}
             onChange={(e) => setDob(e.target.value)}
             max={new Date().toISOString().slice(0, 10)}
-            className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+            className={FIELD_INPUT}
           />
         </Field>
         <Field label="Giới tính">
           <select
             value={gender}
             onChange={(e) => setGender(e.target.value as Gender | "")}
-            className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+            className={FIELD_INPUT}
           >
             {GENDER_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
@@ -107,23 +110,23 @@ export function AccountInfoForm({ initial }: { initial: UserProfile }) {
       {feedback && (
         <div
           role="status"
-          className={`rounded-lg px-3.5 py-2.5 text-[13px] font-medium ${
+          className={`mc-mono border-2 px-3.5 py-2.5 text-[11px] font-black uppercase tracking-[0.2em] ${
             feedback.kind === "ok"
-              ? "bg-green-500/10 text-green-700"
-              : "bg-red-500/10 text-red-700"
+              ? "border-green-500/60 bg-green-500/10 text-green-300"
+              : "border-red-500/60 bg-red-500/10 text-red-300"
           }`}
         >
-          {feedback.msg}
+          ⬢ {feedback.msg}
         </div>
       )}
 
-      <div className="flex gap-3 pt-3">
+      <div className="flex gap-3 border-t-2 border-zinc-800 pt-5">
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex items-center rounded-lg bg-[var(--color-accent)] px-6 py-2.5 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mc-btn-primary mc-btn-primary-lg disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {busy ? "Đang lưu..." : "Lưu thay đổi"}
+          ⬢ {busy ? "ĐANG LƯU..." : "LƯU THAY ĐỔI"}
         </button>
       </div>
     </form>
@@ -143,14 +146,14 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 flex items-baseline gap-1.5 text-[13px] font-semibold text-[var(--color-text)]">
-        {label}
-        {required && <span className="text-red-500">*</span>}
+      <span className="mc-mono mb-2 flex items-baseline gap-1.5 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+        ⬢ {label}
+        {required && <span className="text-yellow-400">*</span>}
       </span>
       {children}
       {hint && (
-        <span className="mt-1.5 block text-[12px] text-[var(--color-text-dim)]">
-          {hint}
+        <span className="mc-mono mt-1.5 block text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+          ▸ {hint}
         </span>
       )}
     </label>

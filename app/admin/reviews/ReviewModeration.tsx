@@ -76,8 +76,8 @@ export function ReviewModeration({ initial }: { initial: AdminReviewRow[] }) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Tìm theo sản phẩm, người đánh giá, nội dung..."
-          className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] md:max-w-sm"
+          placeholder="QUERY · SP, NGƯỜI ĐÁNH GIÁ, NỘI DUNG..."
+          className="mc-mono h-10 w-full border-2 border-zinc-700 bg-zinc-900 px-3 text-[12px] font-bold uppercase tracking-[0.1em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none md:max-w-md"
         />
         <div className="flex flex-wrap gap-1">
           <Pill active={filter === "all"} onClick={() => setFilter("all")} count={counts.all}>
@@ -101,9 +101,9 @@ export function ReviewModeration({ initial }: { initial: AdminReviewRow[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] p-10 text-center">
-          <p className="text-[14px] font-medium text-[var(--color-text)]">
-            Không có đánh giá nào khớp
+        <div className="border-2 border-dashed border-zinc-700 bg-zinc-900 p-10 text-center">
+          <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
+            ⬢ KHÔNG CÓ ĐÁNH GIÁ NÀO KHỚP
           </p>
         </div>
       ) : (
@@ -111,10 +111,10 @@ export function ReviewModeration({ initial }: { initial: AdminReviewRow[] }) {
           {filtered.map((r) => (
             <div
               key={r.id}
-              className={`rounded-lg border p-4 transition ${
+              className={`border-2 p-4 transition ${
                 r.isHidden
-                  ? "border-red-200 bg-red-50/40"
-                  : "border-[var(--color-border)] bg-white"
+                  ? "border-red-500/40 bg-red-500/5"
+                  : "border-zinc-800 bg-zinc-900"
               }`}
             >
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -123,37 +123,37 @@ export function ReviewModeration({ initial }: { initial: AdminReviewRow[] }) {
                     <Link
                       href={`/products/${r.productSlug}`}
                       target="_blank"
-                      className="text-[13px] font-semibold text-[var(--color-text)] hover:text-[var(--color-accent)] hover:underline"
+                      className="text-[13px] font-black uppercase tracking-tight text-zinc-100 hover:text-orange-400 hover:underline"
                     >
                       {r.productName}
                     </Link>
                     {r.isHidden && (
-                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
-                        Đã ẩn
+                      <span className="mc-mono border-2 border-red-500/60 bg-red-500/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.22em] text-red-300">
+                        ⚠ HIDDEN
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="text-yellow-500">
+                  <div className="mc-mono mt-2 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em]">
+                    <span className="text-orange-500">
                       {"★".repeat(r.rating)}
-                      <span className="text-[var(--color-border-strong)]">
+                      <span className="text-zinc-700">
                         {"★".repeat(5 - r.rating)}
                       </span>
                     </span>
-                    <span className="text-[12px] font-medium text-[var(--color-text)]">
-                      {r.userName}
+                    <span className="font-bold text-zinc-200">
+                      ▸ {r.userName}
                     </span>
-                    <span className="text-[11px] text-[var(--color-text-dim)]">
-                      {formatDate(r.updatedAt)}
+                    <span className="text-zinc-500">
+                      ▸ {formatDate(r.updatedAt)}
                     </span>
                   </div>
                   {r.comment ? (
-                    <p className="mt-2 whitespace-pre-wrap text-[13px] text-[var(--color-text)]">
+                    <p className="mt-2 whitespace-pre-wrap text-[13px] text-zinc-300">
                       {r.comment}
                     </p>
                   ) : (
-                    <p className="mt-2 text-[12px] italic text-[var(--color-text-dim)]">
-                      (Không có nội dung)
+                    <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                      ▸ (KHÔNG CÓ NỘI DUNG)
                     </p>
                   )}
                 </div>
@@ -161,13 +161,13 @@ export function ReviewModeration({ initial }: { initial: AdminReviewRow[] }) {
                   type="button"
                   disabled={busyId === r.id}
                   onClick={() => toggleHidden(r)}
-                  className={`h-9 shrink-0 rounded-lg px-4 text-[12px] font-semibold transition disabled:opacity-50 ${
+                  className={`mc-mono inline-flex h-9 shrink-0 items-center justify-center gap-1 border-2 px-4 text-[10px] font-black uppercase tracking-[0.22em] transition disabled:opacity-50 ${
                     r.isHidden
-                      ? "border border-[var(--color-border)] bg-white text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
-                      : "border border-red-300 bg-white text-red-600 hover:bg-red-50"
+                      ? "border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-orange-500 hover:text-orange-400"
+                      : "border-red-500/60 bg-zinc-950 text-red-400 hover:border-red-500 hover:bg-red-500/10 hover:text-red-300"
                   }`}
                 >
-                  {busyId === r.id ? "..." : r.isHidden ? "Hiện lại" : "Ẩn đánh giá"}
+                  {busyId === r.id ? "..." : r.isHidden ? "⬢ HIỆN LẠI" : "✕ ẨN"}
                 </button>
               </div>
             </div>
@@ -193,16 +193,16 @@ function Pill({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition ${
+      className={`mc-mono inline-flex items-center gap-2 border-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] transition ${
         active
-          ? "bg-[var(--color-text)] text-white"
-          : "border border-[var(--color-border)] bg-white text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+          ? "border-orange-500 bg-orange-500 text-zinc-950 shadow-[2px_2px_0_#09090b]"
+          : "border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-zinc-500 hover:text-zinc-100"
       }`}
     >
-      {children}
+      ⬢ {children}
       <span
-        className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
-          active ? "bg-white/20" : "bg-[var(--color-surface-2)]"
+        className={`px-1.5 py-0.5 text-[9px] ${
+          active ? "bg-zinc-950 text-orange-400" : "bg-zinc-800 text-zinc-300"
         }`}
       >
         {count}

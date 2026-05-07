@@ -15,36 +15,37 @@ export function PageHeader({
   description?: string;
 }) {
   return (
-    <div className="mb-6">
-      <nav className="mb-4 flex items-center gap-1.5 text-[13px] text-[var(--color-text-dim)]">
+    <div className="mb-6 border-b-2 border-zinc-800 pb-5">
+      <nav className="mc-mono mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-500">
         {breadcrumbs.map((crumb, idx) => (
-          <div key={idx} className="flex items-center gap-1.5">
+          <div key={idx} className="flex items-center gap-2">
             {crumb.href ? (
               <Link
                 href={crumb.href}
-                className="transition hover:text-[var(--color-text)]"
+                className="transition hover:text-orange-400"
               >
-                {crumb.label}
+                ▸ {crumb.label}
               </Link>
             ) : (
-              <span className="font-medium text-[var(--color-text)]">
-                {crumb.label}
+              <span className="font-black text-orange-400">
+                ⬢ {crumb.label}
               </span>
             )}
             {idx < breadcrumbs.length - 1 && (
-              <span className="text-[var(--color-border)]">/</span>
+              <span className="text-zinc-700">/</span>
             )}
           </div>
         ))}
       </nav>
 
       <div>
-        <h1 className="text-[24px] font-bold text-[var(--color-text)]">
+        <h1 className="text-[26px] font-black uppercase leading-[1.05] tracking-[-0.03em] text-zinc-100 sm:text-[32px]">
           {title}
+          <span className="text-orange-500">.</span>
         </h1>
         {description && (
-          <p className="mt-1 text-[14px] text-[var(--color-text-dim)]">
-            {description}
+          <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+            ▸ {description}
           </p>
         )}
       </div>

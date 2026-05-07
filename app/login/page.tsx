@@ -18,49 +18,125 @@ export default async function LoginPage({ searchParams }: Props) {
   return (
     <>
       <Header />
-      <main className="flex flex-1 items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md rounded-2xl border border-[var(--color-border)] bg-white p-8 shadow-sm">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-[var(--color-text)] text-[12px] font-semibold text-white">
-            G
-          </span>
-          <span className="text-[16px] font-semibold tracking-tight">
-            Gatecat
-          </span>
-        </Link>
+      <main className="relative flex flex-1 items-center justify-center bg-zinc-950 px-4 py-16">
+        <div aria-hidden className="mc-hex pointer-events-none absolute inset-0 opacity-20" />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-24 top-10 h-96 w-96 rounded-full bg-orange-500/15 blur-[140px]"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -left-24 bottom-10 h-72 w-72 rounded-full bg-yellow-500/8 blur-[140px]"
+        />
 
-        <h1 className="mt-6 text-[26px] font-semibold tracking-tight">
-          Đăng nhập
-        </h1>
-        <p className="mt-1 text-[14px] text-[var(--color-text-dim)]">
-          Tiếp tục để mua sắm và theo dõi đơn hàng của bạn
-        </p>
+        <div className="relative w-full max-w-md">
+          {/* Authentication terminal frame */}
+          <div className="relative border-2 border-zinc-700 bg-zinc-900 p-8">
+            <span className="mc-rivet mc-rivet-tl mc-rivet-lg" />
+            <span className="mc-rivet mc-rivet-tr mc-rivet-lg" />
+            <span className="mc-rivet mc-rivet-bl mc-rivet-lg" />
+            <span className="mc-rivet mc-rivet-br mc-rivet-lg" />
 
-        {message && (
-          <div className="mt-5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700">
-            {message}
+            {/* HUD strip */}
+            <div className="mb-6 flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+              <p className="mc-mono text-[10px] font-bold uppercase tracking-[0.32em] text-orange-500">
+                ⬢ AUTH TERMINAL
+              </p>
+              <span className="mc-mono flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-orange-500 [animation:mc-pulse_1.4s_ease-in-out_infinite]" />
+                ONLINE
+              </span>
+            </div>
+
+            <Link href="/" className="flex items-center gap-3">
+              <span
+                aria-hidden
+                className="relative grid h-10 w-10 shrink-0 place-items-center border-2 border-zinc-600 bg-zinc-950"
+              >
+                <span className="mc-rivet mc-rivet-tl" />
+                <span className="mc-rivet mc-rivet-tr" />
+                <span className="mc-rivet mc-rivet-bl" />
+                <span className="mc-rivet mc-rivet-br" />
+                <span className="text-[14px] font-black text-orange-500">GC</span>
+              </span>
+              <span className="leading-none">
+                <span className="block text-[16px] font-black uppercase tracking-[0.06em] text-zinc-100">
+                  Gatecat<span className="text-orange-500">/</span>MCH
+                </span>
+                <span className="mc-mono mt-1 block text-[8px] font-bold uppercase tracking-[0.4em] text-orange-500">
+                  ⬢ heavy industries
+                </span>
+              </span>
+            </Link>
+
+            <h1 className="mt-7 text-[28px] font-black uppercase leading-[1.05] tracking-[-0.03em] text-zinc-100">
+              ACCESS REQUEST<span className="text-orange-500">.</span>
+            </h1>
+            <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+              ▸ Xác thực để vào hệ thống & theo dõi đơn vận hành
+            </p>
+
+            {message && (
+              <div className="relative mt-6 border-2 border-red-500/60 bg-red-500/10 px-4 py-3">
+                <span className="mc-mono mb-1 block text-[10px] font-black uppercase tracking-[0.28em] text-red-400">
+                  ⬢ ERR · AUTH FAILED
+                </span>
+                <p className="mc-mono text-[11px] uppercase tracking-[0.12em] text-red-300">
+                  {message}
+                </p>
+              </div>
+            )}
+
+            <a
+              href="/api/auth/google/start"
+              className="mc-mono group relative mt-7 flex w-full items-center justify-center gap-3 border-2 border-zinc-700 bg-zinc-950 px-4 py-3.5 text-[12px] font-black uppercase tracking-[0.2em] text-zinc-100 transition hover:border-orange-500 hover:bg-zinc-900 hover:text-orange-400 hover:shadow-[4px_4px_0_#09090b] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+            >
+              <GoogleIcon />
+              <span>⬢ Đăng nhập với Google</span>
+            </a>
+
+            <div className="mt-6 grid grid-cols-3 gap-2 text-center">
+              {[
+                { l: "ENC", v: "OAuth2" },
+                { l: "SVR", v: "SG·1" },
+                { l: "TLS", v: "1.3" },
+              ].map((s) => (
+                <div
+                  key={s.l}
+                  className="border border-zinc-700 bg-zinc-950 px-2 py-2"
+                >
+                  <p className="mc-mono text-[8px] font-bold uppercase tracking-[0.32em] text-zinc-500">
+                    {s.l}
+                  </p>
+                  <p className="mc-mono mt-1 text-[11px] font-black uppercase tracking-[0.15em] text-orange-400">
+                    {s.v}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <p className="mc-mono mt-7 border-t-2 border-zinc-800 pt-4 text-center text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+              ▸ Bằng cách tiếp tục, bạn đồng ý với{" "}
+              <Link
+                href="/terms"
+                className="text-orange-400 underline transition hover:text-orange-300"
+              >
+                điều khoản
+              </Link>{" "}
+              và{" "}
+              <Link
+                href="/privacy"
+                className="text-orange-400 underline transition hover:text-orange-300"
+              >
+                bảo mật
+              </Link>
+              .
+            </p>
           </div>
-        )}
 
-        <a
-          href="/api/auth/google/start"
-          className="mt-6 flex w-full items-center justify-center gap-3 rounded-full border border-[var(--color-border)] bg-white px-4 py-2.5 text-[14px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
-        >
-          <GoogleIcon />
-          Đăng nhập với Google
-        </a>
-
-        <p className="mt-8 text-center text-[12px] text-[var(--color-text-dim)]">
-          Bằng cách tiếp tục, bạn đồng ý với{" "}
-          <Link href="/terms" className="underline hover:text-[var(--color-text)]">
-            điều khoản dịch vụ
-          </Link>{" "}
-          và{" "}
-          <Link href="/privacy" className="underline hover:text-[var(--color-text)]">
-            chính sách bảo mật
-          </Link>
-          .
-        </p>
+          <p className="mc-mono mt-4 text-center text-[10px] font-bold uppercase tracking-[0.32em] text-zinc-600">
+            ⬢ SN · GC·AUTH·26 · PLANT 01
+          </p>
         </div>
       </main>
       <Footer />

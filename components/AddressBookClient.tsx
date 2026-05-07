@@ -15,6 +15,9 @@ const EMPTY: AddressInput = {
   isDefault: false,
 };
 
+const FIELD_INPUT =
+  "mc-mono h-11 w-full border-2 border-zinc-700 bg-zinc-950 px-3.5 text-[13px] font-bold uppercase tracking-[0.04em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none transition";
+
 export function AddressBookClient({ initial }: { initial: Address[] }) {
   const router = useRouter();
   const [items, setItems] = useState<Address[]>(initial);
@@ -129,20 +132,23 @@ export function AddressBookClient({ initial }: { initial: Address[] }) {
         <button
           type="button"
           onClick={openCreate}
-          className="inline-flex items-center gap-2 rounded-lg bg-[var(--color-accent)] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:brightness-110"
+          className="mc-btn-primary mc-btn-primary-lg"
         >
-          <span className="text-[16px] leading-none">+</span>
-          Thêm địa chỉ
+          ⬢ THÊM ĐỊA CHỈ
         </button>
       </div>
 
       {items.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] px-6 py-12 text-center">
-          <p className="text-[15px] font-semibold text-[var(--color-text)]">
-            Chưa có địa chỉ nào
+        <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 px-6 py-12 text-center">
+          <span className="mc-rivet mc-rivet-tl" />
+          <span className="mc-rivet mc-rivet-tr" />
+          <span className="mc-rivet mc-rivet-bl" />
+          <span className="mc-rivet mc-rivet-br" />
+          <p className="text-[15px] font-black uppercase tracking-tight text-zinc-100">
+            ⬢ CHƯA CÓ DEPLOY POINT
           </p>
-          <p className="mt-2 text-[13px] text-[var(--color-text-dim)]">
-            Thêm địa chỉ để dùng khi đặt hàng.
+          <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+            ▸ Thêm địa chỉ để dùng khi đặt hàng.
           </p>
         </div>
       ) : (
@@ -150,32 +156,37 @@ export function AddressBookClient({ initial }: { initial: Address[] }) {
           {items.map((a) => (
             <li
               key={a.id}
-              className="rounded-lg border border-[var(--color-border)] bg-white p-5 transition hover:shadow-sm"
+              className="relative border-2 border-zinc-800 bg-zinc-900 p-5 transition hover:border-zinc-700"
             >
+              <span className="mc-rivet mc-rivet-tl" />
+              <span className="mc-rivet mc-rivet-tr" />
+              <span className="mc-rivet mc-rivet-bl" />
+              <span className="mc-rivet mc-rivet-br" />
+
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="text-[15px] font-semibold text-[var(--color-text)]">
+                    <span className="text-[15px] font-black uppercase tracking-tight text-zinc-100">
                       {a.recipientName}
                     </span>
-                    <span className="text-[13px] text-[var(--color-text-dim)]">
+                    <span className="mc-mono text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-500">
                       · {a.phone}
                     </span>
                     {a.isDefault && (
-                      <span className="rounded-full bg-[var(--color-accent)]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-accent)]">
-                        Mặc định
+                      <span className="mc-tag-warning">
+                        ⬢ MẶC ĐỊNH
                       </span>
                     )}
                   </div>
-                  <p className="mt-2 text-[14px] text-[var(--color-text)]">
-                    {a.addressLine}
+                  <p className="mc-mono mt-3 text-[12px] uppercase tracking-[0.08em] text-zinc-200">
+                    ▸ {a.addressLine}
                   </p>
-                  <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
+                  <p className="mc-mono mt-1 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
                     {a.ward}, {a.district}, {a.province}
                   </p>
                   {a.note && (
-                    <p className="mt-2 text-[13px] text-[var(--color-text-dim)]">
-                      <span className="font-medium">Ghi chú:</span> {a.note}
+                    <p className="mc-mono mt-3 border-t-2 border-zinc-800 pt-3 text-[11px] uppercase tracking-[0.12em] text-zinc-400">
+                      <span className="font-black text-orange-400">NOTE ▸</span> {a.note}
                     </p>
                   )}
                 </div>
@@ -185,26 +196,26 @@ export function AddressBookClient({ initial }: { initial: Address[] }) {
                       type="button"
                       disabled={busy}
                       onClick={() => setDefault(a.id)}
-                      className="rounded-lg border border-[var(--color-border)] bg-white px-3.5 py-2 text-[12px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:opacity-50"
+                      className="mc-btn-outline disabled:opacity-50"
                     >
-                      Mặc định
+                      ⬢ ĐẶT MẶC ĐỊNH
                     </button>
                   )}
                   <button
                     type="button"
                     disabled={busy}
                     onClick={() => openEdit(a)}
-                    className="rounded-lg border border-[var(--color-border)] bg-white px-3.5 py-2 text-[12px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:opacity-50"
+                    className="mc-btn-outline disabled:opacity-50"
                   >
-                    Sửa
+                    / SỬA
                   </button>
                   <button
                     type="button"
                     disabled={busy}
                     onClick={() => onDelete(a.id)}
-                    className="rounded-lg border border-red-200 bg-white px-3.5 py-2 text-[12px] font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                    className="mc-mono inline-flex items-center gap-1 border-2 border-red-500/50 bg-zinc-950 px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-red-400 transition hover:border-red-500 hover:bg-red-500/10 hover:text-red-300 disabled:opacity-50"
                   >
-                    Xoá
+                    ✕ XOÁ
                   </button>
                 </div>
               </div>
@@ -214,8 +225,8 @@ export function AddressBookClient({ initial }: { initial: Address[] }) {
       )}
 
       {error && !editing && (
-        <div role="alert" className="rounded-lg bg-red-500/10 px-4 py-3 text-[13px] font-medium text-red-700">
-          {error}
+        <div role="alert" className="mc-mono border-2 border-red-500/60 bg-red-500/10 px-4 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-red-300">
+          ⬢ ERR · {error}
         </div>
       )}
 
@@ -261,18 +272,26 @@ function AddressModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 grid place-items-center bg-zinc-950/80 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
     >
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg"
+        className="relative w-full max-w-lg border-2 border-orange-500/60 bg-zinc-900 p-6 shadow-[8px_8px_0_#09090b]"
       >
-        <h2 className="text-[18px] font-semibold text-[var(--color-text)]">
-          {title}
-        </h2>
-        <div className="mt-5 grid gap-4">
+        <span className="mc-rivet mc-rivet-tl mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-tr mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-bl mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-br mc-rivet-lg" />
+
+        <div className="mb-5 flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+          <h2 className="text-[18px] font-black uppercase tracking-tight text-zinc-100">
+            ⬢ {title}<span className="text-orange-500">.</span>
+          </h2>
+        </div>
+
+        <div className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <Labeled label="Họ và tên người nhận" required>
               <input
@@ -280,7 +299,7 @@ function AddressModal({
                 onChange={(e) => set("recipientName", e.target.value)}
                 required
                 maxLength={100}
-                className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+                className={FIELD_INPUT}
               />
             </Labeled>
             <Labeled label="Số điện thoại" required>
@@ -290,7 +309,7 @@ function AddressModal({
                 placeholder="0912345678"
                 inputMode="tel"
                 required
-                className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+                className={FIELD_INPUT}
               />
             </Labeled>
           </div>
@@ -299,7 +318,7 @@ function AddressModal({
               value={data.province}
               onChange={(e) => set("province", e.target.value)}
               required
-              className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+              className={FIELD_INPUT}
             />
           </Labeled>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -308,7 +327,7 @@ function AddressModal({
                 value={data.district}
                 onChange={(e) => set("district", e.target.value)}
                 required
-                className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+                className={FIELD_INPUT}
               />
             </Labeled>
             <Labeled label="Phường/Xã" required>
@@ -316,7 +335,7 @@ function AddressModal({
                 value={data.ward}
                 onChange={(e) => set("ward", e.target.value)}
                 required
-                className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+                className={FIELD_INPUT}
               />
             </Labeled>
           </div>
@@ -325,7 +344,7 @@ function AddressModal({
               value={data.addressLine}
               onChange={(e) => set("addressLine", e.target.value)}
               required
-              className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition"
+              className={FIELD_INPUT}
             />
           </Labeled>
           <Labeled label="Ghi chú cho shipper (tuỳ chọn)">
@@ -333,21 +352,21 @@ function AddressModal({
               value={data.note ?? ""}
               onChange={(e) => set("note", e.target.value || null)}
               rows={2}
-              className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3.5 py-2.5 text-[14px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 transition resize-none"
+              className="mc-mono w-full resize-none border-2 border-zinc-700 bg-zinc-950 px-3.5 py-2.5 text-[12px] uppercase tracking-[0.04em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none transition"
             />
           </Labeled>
-          <label className="flex items-center gap-2.5 text-[14px] text-[var(--color-text)]">
+          <label className="mc-mono flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-300">
             <input
               type="checkbox"
               checked={data.isDefault || onlyOne}
               disabled={onlyOne}
               onChange={(e) => set("isDefault", e.target.checked)}
-              className="h-4 w-4 rounded accent-[var(--color-accent)]"
+              className="h-4 w-4 accent-orange-500"
             />
-            Đặt làm địa chỉ mặc định
+            ⬢ ĐẶT LÀM ĐỊA CHỈ MẶC ĐỊNH
             {onlyOne && (
-              <span className="text-[12px] text-[var(--color-text-dim)]">
-                (địa chỉ đầu tiên sẽ tự đặt mặc định)
+              <span className="text-[10px] font-normal text-zinc-500">
+                (địa chỉ đầu tiên tự mặc định)
               </span>
             )}
           </label>
@@ -356,27 +375,27 @@ function AddressModal({
         {error && (
           <div
             role="alert"
-            className="mt-4 rounded-lg bg-red-500/10 px-4 py-3 text-[13px] font-medium text-red-700"
+            className="mc-mono mt-4 border-2 border-red-500/60 bg-red-500/10 px-4 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-red-300"
           >
-            {error}
+            ⬢ ERR · {error}
           </div>
         )}
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex justify-end gap-3 border-t-2 border-zinc-800 pt-5">
           <button
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="rounded-lg border border-[var(--color-border)] bg-white px-5 py-2.5 text-[14px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:opacity-50"
+            className="mc-btn-outline disabled:opacity-50"
           >
-            Huỷ
+            ✕ HUỶ
           </button>
           <button
             type="submit"
             disabled={busy}
-            className="rounded-lg bg-[var(--color-accent)] px-6 py-2.5 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+            className="mc-btn-primary mc-btn-primary-lg disabled:opacity-60"
           >
-            {busy ? "Đang lưu..." : "Lưu"}
+            ⬢ {busy ? "ĐANG LƯU..." : "LƯU"}
           </button>
         </div>
       </form>
@@ -395,9 +414,9 @@ function Labeled({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 flex items-baseline gap-1.5 text-[13px] font-semibold text-[var(--color-text)]">
-        {label}
-        {required && <span className="text-red-500">*</span>}
+      <span className="mc-mono mb-2 flex items-baseline gap-1.5 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+        ⬢ {label}
+        {required && <span className="text-yellow-400">*</span>}
       </span>
       {children}
     </label>

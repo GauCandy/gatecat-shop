@@ -44,14 +44,14 @@ export function Toaster() {
         <div
           key={t.id}
           role="status"
-          className={`pointer-events-auto flex items-start gap-2 rounded-lg border px-3 py-2.5 text-[13px] shadow-lg backdrop-blur-sm ${
+          className={`mc-mono pointer-events-auto relative flex items-start gap-2 border-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.15em] shadow-[4px_4px_0_#09090b] backdrop-blur-sm ${
             t.type === "success"
-              ? "border-green-200 bg-green-50/95 text-green-800"
-              : "border-red-200 bg-red-50/95 text-red-800"
+              ? "border-orange-500/70 bg-zinc-900/95 text-orange-300"
+              : "border-red-500/70 bg-zinc-900/95 text-red-300"
           }`}
         >
-          <span className="mt-0.5 text-[14px]">
-            {t.type === "success" ? "✓" : "⚠"}
+          <span className="mt-0.5 font-black">
+            {t.type === "success" ? "⬢" : "⚠"}
           </span>
           <span className="min-w-0 flex-1 whitespace-pre-wrap break-words">
             {t.message}

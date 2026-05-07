@@ -40,9 +40,13 @@ export function PendingOrdersClient({ orders: initial }: { orders: ShipperOrderR
 
   if (orders.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] p-10 text-center">
-        <p className="text-[14px] font-medium text-[var(--color-text)]">
-          Không có đơn hàng chờ xác nhận
+      <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 p-10 text-center">
+        <span className="mc-rivet mc-rivet-tl" />
+        <span className="mc-rivet mc-rivet-tr" />
+        <span className="mc-rivet mc-rivet-bl" />
+        <span className="mc-rivet mc-rivet-br" />
+        <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
+          ⬢ KHÔNG CÓ ĐƠN CHỜ XÁC NHẬN
         </p>
       </div>
     );
@@ -51,89 +55,94 @@ export function PendingOrdersClient({ orders: initial }: { orders: ShipperOrderR
   return (
     <div className="space-y-3">
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700">
-          {error}
+        <div className="mc-mono border-2 border-red-500/60 bg-red-500/10 px-3 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-red-300">
+          ⬢ ERR · {error}
         </div>
       )}
       {orders.map((order) => {
         const isPickup = order.deliveryMethod === "pickup";
         return (
-        <div
-          key={order.id}
-          className="rounded-lg border border-[var(--color-border)] bg-white p-4"
-        >
-          <div className="flex flex-col gap-4">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[13px] font-semibold text-[var(--color-text)]">
-                  Đơn #{order.id.slice(0, 8).toUpperCase()}
-                </span>
-                <span className="text-[11px] text-[var(--color-text-dim)]">
-                  {formatDate(order.createdAt)}
-                </span>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                    isPickup
-                      ? "bg-amber-100 text-amber-700"
-                      : "bg-blue-100 text-blue-700"
-                  }`}
-                >
-                  {isPickup ? "Lấy tại shop" : "Giao hàng"}
-                </span>
-              </div>
-              {order.recipientName && (
-                <p className="mt-2 text-[13px] font-medium text-[var(--color-text)]">
-                  {order.recipientName}
-                </p>
-              )}
-              {order.phone && (
-                <p className="text-[12px]">
-                  <a
-                    href={`tel:${order.phone}`}
-                    className="text-[var(--color-accent)] underline-offset-2 hover:underline"
-                  >
-                    {order.phone}
-                  </a>
-                </p>
-              )}
-              {!isPickup && order.addressLine && (
-                <>
-                  <p className="mt-1 text-[13px] text-[var(--color-text)]">
-                    {order.addressLine}
-                  </p>
-                  <p className="text-[12px] text-[var(--color-text-dim)]">
-                    {order.ward}, {order.district}, {order.province}
-                  </p>
-                </>
-              )}
-              {isPickup && (
-                <p className="mt-1 text-[12px] italic text-[var(--color-text-dim)]">
-                  Khách sẽ đến shop lấy trực tiếp.
-                </p>
-              )}
-              <div className="mt-2 flex items-center gap-3">
-                <p className="text-[14px] font-bold text-[var(--color-text)]">
-                  {formatVnd(order.totalAmount)}
-                </p>
-                <Link
-                  href={`/shipping/orders/${order.id}`}
-                  className="text-[12px] font-medium text-[var(--color-accent)] hover:underline"
-                >
-                  Xem chi tiết →
-                </Link>
-              </div>
-            </div>
+          <div
+            key={order.id}
+            className="relative border-2 border-zinc-800 bg-zinc-900 p-4"
+          >
+            <span className="mc-rivet mc-rivet-tl" />
+            <span className="mc-rivet mc-rivet-tr" />
+            <span className="mc-rivet mc-rivet-bl" />
+            <span className="mc-rivet mc-rivet-br" />
 
-            <button
-              type="button"
-              disabled={busyId === order.id}
-              onClick={() => handleConfirm(order.id)}
-              className="w-full rounded-lg bg-[var(--color-accent)] px-4 py-2.5 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
-            >
-              {busyId === order.id ? "..." : "✓ Xác nhận đơn hàng"}
-            </button>
+            <div className="flex flex-col gap-4">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="mc-mono text-[12px] font-black uppercase tracking-[0.22em] text-orange-400">
+                    ⬢ ORD#{order.id.slice(0, 8).toUpperCase()}
+                  </span>
+                  <span className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                    ▸ {formatDate(order.createdAt)}
+                  </span>
+                  <span
+                    className={`mc-mono border-2 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] ${
+                      isPickup
+                        ? "border-amber-500/60 bg-amber-500/10 text-amber-300"
+                        : "border-cyan-500/60 bg-cyan-500/10 text-cyan-300"
+                    }`}
+                  >
+                    {isPickup ? "PICKUP" : "DELIVERY"}
+                  </span>
+                </div>
+                {order.recipientName && (
+                  <p className="mt-3 text-[14px] font-black uppercase tracking-tight text-zinc-100">
+                    {order.recipientName}
+                  </p>
+                )}
+                {order.phone && (
+                  <p className="mc-mono text-[11px] uppercase tracking-[0.15em]">
+                    ▸ <a
+                      href={`tel:${order.phone}`}
+                      className="text-orange-400 underline-offset-2 hover:underline"
+                    >
+                      {order.phone}
+                    </a>
+                  </p>
+                )}
+                {!isPickup && order.addressLine && (
+                  <>
+                    <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
+                      ▸ {order.addressLine}
+                    </p>
+                    <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                      {order.ward}, {order.district}, {order.province}
+                    </p>
+                  </>
+                )}
+                {isPickup && (
+                  <p className="mc-mono mt-1 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                    ▸ Khách sẽ đến shop lấy trực tiếp.
+                  </p>
+                )}
+                <div className="mt-3 flex flex-wrap items-center gap-3 border-t-2 border-zinc-800 pt-3">
+                  <p className="mc-mono text-[16px] font-black text-orange-400">
+                    {formatVnd(order.totalAmount)}
+                  </p>
+                  <Link
+                    href={`/shipping/orders/${order.id}`}
+                    className="mc-mono text-[10px] font-black uppercase tracking-[0.22em] text-orange-400 hover:text-orange-300"
+                  >
+                    ▸ XEM CHI TIẾT →
+                  </Link>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                disabled={busyId === order.id}
+                onClick={() => handleConfirm(order.id)}
+                className="mc-btn-primary mc-btn-primary-lg w-full justify-center disabled:opacity-50"
+              >
+                ⬢ {busyId === order.id ? "..." : "XÁC NHẬN ĐƠN"}
+              </button>
+            </div>
           </div>
-        </div>
         );
       })}
     </div>

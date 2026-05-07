@@ -77,12 +77,12 @@ function describeDiscount(v: Voucher): string {
 }
 
 function describeStatus(v: Voucher): { label: string; color: string } {
-  if (!v.isActive) return { label: "Đã tắt", color: "bg-gray-200 text-gray-700" };
+  if (!v.isActive) return { label: "Đã tắt", color: "bg-zinc-800 text-zinc-300" };
   if (v.expiresAt && v.expiresAt.getTime() <= Date.now())
-    return { label: "Hết hạn", color: "bg-red-100 text-red-700" };
+    return { label: "Hết hạn", color: "bg-red-500/15 text-red-300" };
   if (v.usageLimit != null && v.usedCount >= v.usageLimit)
-    return { label: "Hết lượt", color: "bg-orange-100 text-orange-700" };
-  return { label: "Đang hoạt động", color: "bg-green-100 text-green-700" };
+    return { label: "Hết lượt", color: "bg-orange-500/15 text-orange-300" };
+  return { label: "Đang hoạt động", color: "bg-green-500/15 text-green-300" };
 }
 
 export function VoucherManager({ initial }: { initial: Voucher[] }) {
@@ -193,7 +193,7 @@ export function VoucherManager({ initial }: { initial: Voucher[] }) {
           <p className="text-[14px] font-medium text-[var(--color-text)]">Chưa có voucher nào</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] bg-white">
+        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] bg-zinc-900">
           <table className="min-w-full text-[13px]">
             <thead className="border-b border-[var(--color-border)] bg-[var(--color-surface-2)] text-[12px] uppercase tracking-wider text-[var(--color-text-dim)]">
               <tr>
@@ -247,7 +247,7 @@ export function VoucherManager({ initial }: { initial: Voucher[] }) {
                       <button
                         type="button"
                         onClick={() => handleDelete(v)}
-                        className="rounded-md border border-red-200 px-2 py-1 text-[12px] text-red-600 transition hover:bg-red-50"
+                        className="rounded-md border border-red-500/40 px-2 py-1 text-[12px] text-red-400 transition hover:bg-red-500/10"
                       >
                         Xoá
                       </button>
@@ -261,8 +261,8 @@ export function VoucherManager({ initial }: { initial: Voucher[] }) {
       )}
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-zinc-900 shadow-xl">
             <form onSubmit={handleSubmit} className="p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-[18px] font-bold text-[var(--color-text)]">
@@ -285,7 +285,7 @@ export function VoucherManager({ initial }: { initial: Voucher[] }) {
                     value={form.code}
                     onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                     placeholder="SALE50"
-                    className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] font-mono uppercase focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+                    className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-zinc-900 px-3 text-[13px] font-mono uppercase focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
                   />
                 </Field>
 
@@ -403,14 +403,14 @@ export function VoucherManager({ initial }: { initial: Voucher[] }) {
                       value={form.description}
                       onChange={(e) => setForm({ ...form, description: e.target.value })}
                       rows={2}
-                      className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+                      className="w-full rounded-lg border border-[var(--color-border)] bg-zinc-900 px-3 py-2 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
                     />
                   </Field>
                 </div>
               </div>
 
               {error && (
-                <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700">
+                <p className="mt-3 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-[12px] text-red-300">
                   {error}
                 </p>
               )}
@@ -420,7 +420,7 @@ export function VoucherManager({ initial }: { initial: Voucher[] }) {
                   type="button"
                   onClick={close}
                   disabled={busy}
-                  className="rounded-lg border border-[var(--color-border)] bg-white px-4 py-2 text-[13px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:opacity-50"
+                  className="rounded-lg border border-[var(--color-border)] bg-zinc-900 px-4 py-2 text-[13px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:opacity-50"
                 >
                   Huỷ
                 </button>
@@ -441,7 +441,7 @@ export function VoucherManager({ initial }: { initial: Voucher[] }) {
 }
 
 const inputCls =
-  "h-10 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] disabled:bg-[var(--color-surface-2)] disabled:text-[var(--color-text-dim)]";
+  "h-10 w-full rounded-lg border border-[var(--color-border)] bg-zinc-900 px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] disabled:bg-[var(--color-surface-2)] disabled:text-[var(--color-text-dim)]";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

@@ -12,14 +12,24 @@ export default async function AddressesPage() {
   const addresses = await listAddresses(session.id);
 
   return (
-    <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-6 shadow-sm">
-      <div className="mb-6 border-b border-[var(--color-border)] pb-6">
-        <h1 className="text-[20px] font-bold text-[var(--color-text)]">
-          Sổ địa chỉ
-        </h1>
-        <p className="mt-1.5 text-[14px] text-[var(--color-text-dim)]">
-          Quản lý các địa chỉ giao hàng của bạn.
-        </p>
+    <div className="relative border-2 border-zinc-700 bg-zinc-900 p-6">
+      <span className="mc-rivet mc-rivet-tl" />
+      <span className="mc-rivet mc-rivet-tr" />
+      <span className="mc-rivet mc-rivet-bl" />
+      <span className="mc-rivet mc-rivet-br" />
+
+      <div className="mb-6 flex items-center justify-between border-b-2 border-zinc-800 pb-5">
+        <div>
+          <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ DEPLOY POINTS · ADDRESS BOOK
+          </p>
+          <h1 className="mt-2 text-[22px] font-black uppercase tracking-tight text-zinc-100 sm:text-[26px]">
+            Sổ địa chỉ<span className="text-orange-500">.</span>
+          </h1>
+          <p className="mc-mono mt-1.5 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+            ▸ Quản lý các địa chỉ giao hàng của bạn.
+          </p>
+        </div>
       </div>
       <AddressBookClient initial={addresses} />
     </div>

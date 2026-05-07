@@ -190,214 +190,236 @@ export function ProductsBrowser({
     (selectedCats.size > 0 ? 1 : 0);
 
   return (
-    <div className="mx-auto w-full px-4 py-6 sm:px-6 lg:w-2/3 lg:px-0">
-      <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-text)] sm:text-[26px]">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
-              {subtitle}
+    <div className="relative">
+      <div aria-hidden className="mc-hex pointer-events-none absolute inset-0 opacity-15" />
+
+      <div className="relative mx-auto w-full px-4 py-8 sm:px-6 lg:w-2/3 lg:px-0">
+        <header className="mb-8 grid items-end gap-4 border-b-2 border-zinc-800 pb-5 sm:grid-cols-12">
+          <div className="sm:col-span-8">
+            <p className="mc-mono text-[10px] font-bold uppercase tracking-[0.4em] text-orange-500">
+              ⬢ MODULE BAY · {lockedCategory ? "FILTERED" : "BROWSE"}
             </p>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setMobileOpen((v) => !v)}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-white px-4 py-1.5 text-[13px] text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] lg:hidden"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-              className="h-4 w-4"
-            >
-              <path d="M3 6h18M6 12h12M10 18h4" />
-            </svg>
-            Bộ lọc{activeCount > 0 ? ` (${activeCount})` : ""}
-          </button>
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            className="h-9 rounded-full border border-[var(--color-border)] bg-white px-3 text-[13px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
-          >
-            <option value="default">Sắp xếp: Mặc định</option>
-            <option value="price-asc">Giá thấp → cao</option>
-            <option value="price-desc">Giá cao → thấp</option>
-            <option value="name-asc">Tên A → Z</option>
-          </select>
-        </div>
-      </header>
-
-      <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-        <aside
-          className={`${
-            mobileOpen ? "block" : "hidden"
-          } lg:block lg:self-start lg:sticky lg:top-[4.75rem]`}
-        >
-          <div className="flex flex-col gap-5 rounded-2xl border border-[var(--color-border-strong)] bg-white p-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[13px] font-semibold text-[var(--color-text)]">
-                Bộ lọc
-              </h2>
-              {activeCount > 0 && (
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="text-[12px] text-[var(--color-accent)] hover:underline"
-                >
-                  Xoá tất cả
-                </button>
-              )}
-            </div>
-
-            <FilterBlock label="Khuyến mãi & tồn kho">
-              <div className="flex flex-col gap-2">
-                <label className="flex cursor-pointer items-center gap-2 text-[13px] text-[var(--color-text)]">
-                  <input
-                    type="checkbox"
-                    checked={onlyInStock}
-                    onChange={(e) => setOnlyInStock(e.target.checked)}
-                    className="h-4 w-4 accent-[var(--color-accent)]"
-                  />
-                  Chỉ hiện còn hàng
-                </label>
-                <label className="flex cursor-pointer items-center gap-2 text-[13px] text-[var(--color-text)]">
-                  <input
-                    type="checkbox"
-                    checked={onlySale}
-                    onChange={(e) => setOnlySale(e.target.checked)}
-                    className="h-4 w-4 accent-[var(--color-accent)]"
-                  />
-                  Đang giảm giá
-                </label>
-              </div>
-            </FilterBlock>
-
-            <FilterBlock label="Giá (₫)">
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={minPrice ? formatVnd(Number(minPrice)) : ""}
-                  onChange={(e) => setMinPrice(parseDigits(e.target.value))}
-                  placeholder="Từ"
-                  className="h-9 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
-                />
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={maxPrice ? formatVnd(Number(maxPrice)) : ""}
-                  onChange={(e) => setMaxPrice(parseDigits(e.target.value))}
-                  placeholder="Đến"
-                  className="h-9 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
-                />
-              </div>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {[
-                  { label: "Dưới 1tr", max: 1_000_000 },
-                  { label: "1–5tr", min: 1_000_000, max: 5_000_000 },
-                  { label: "5–15tr", min: 5_000_000, max: 15_000_000 },
-                  { label: "Trên 15tr", min: 15_000_000 },
-                ].map((r) => (
-                  <button
-                    key={r.label}
-                    type="button"
-                    onClick={() => {
-                      setMinPrice(r.min ? String(r.min) : "");
-                      setMaxPrice(r.max ? String(r.max) : "");
-                    }}
-                    className="rounded-full border border-[var(--color-border)] bg-white px-2.5 py-0.5 text-[11px] text-[var(--color-text-dim)] transition hover:border-[var(--color-text)]/30 hover:text-[var(--color-text)]"
-                  >
-                    {r.label}
-                  </button>
-                ))}
-              </div>
-            </FilterBlock>
-
-            {catRows.length > 0 && (
-              <FilterBlock
-                label={
-                  lockedCategory
-                    ? `Danh mục con của ${lockedCategory.name}`
-                    : "Danh mục"
-                }
-              >
-                <div className="max-h-64 overflow-y-auto pr-1">
-                  <ul className="flex flex-col">
-                    {catRows
-                      .filter(
-                        (r) =>
-                          !lockedCategory || r.category.id !== lockedCategory.id
-                      )
-                      .map(({ category, depth }) => {
-                        const checked = selectedCats.has(category.id);
-                        const extraIndent = lockedCategory ? 1 : 0;
-                        return (
-                          <li key={category.id}>
-                            <label
-                              className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-[13px] text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
-                              style={{
-                                paddingLeft: `${(depth - extraIndent) * 12 + 4}px`,
-                              }}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={() => toggleCat(category.id)}
-                                className="h-4 w-4 accent-[var(--color-accent)]"
-                              />
-                              <span className="truncate">{category.name}</span>
-                            </label>
-                          </li>
-                        );
-                      })}
-                  </ul>
-                </div>
-              </FilterBlock>
+            <h1 className="mt-3 text-[28px] font-black uppercase leading-[1.05] tracking-[-0.03em] text-zinc-100 sm:text-[40px]">
+              {title}
+              <span className="text-orange-500">.</span>
+            </h1>
+            {subtitle && (
+              <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                ▸ {subtitle}
+              </p>
             )}
           </div>
-        </aside>
-
-        <section>
-          <div className="mb-3 flex items-center justify-between text-[12px] text-[var(--color-text-dim)]">
-            <span>
-              {sorted.length} / {products.length} sản phẩm
-            </span>
+          <div className="flex items-center gap-2 sm:col-span-4 sm:justify-end">
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              className="mc-btn-outline lg:hidden"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+                className="h-3.5 w-3.5"
+              >
+                <path d="M3 6h18M6 12h12M10 18h4" />
+              </svg>
+              FILTER {activeCount > 0 ? `(${activeCount})` : ""}
+            </button>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortKey)}
+              className="mc-mono h-10 border-2 border-zinc-700 bg-zinc-900 px-3 text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-100 focus:border-orange-500 focus:outline-none"
+            >
+              <option value="default">SORT · DEFAULT</option>
+              <option value="price-asc">SORT · GIÁ ↑</option>
+              <option value="price-desc">SORT · GIÁ ↓</option>
+              <option value="name-asc">SORT · A → Z</option>
+            </select>
           </div>
+        </header>
 
-          {sorted.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[var(--color-border-strong)] bg-white px-6 py-16 text-center">
-              <p className="text-[14px] font-medium text-[var(--color-text)]">
-                Không tìm thấy sản phẩm phù hợp
-              </p>
-              <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
-                Thử bỏ bớt bộ lọc hoặc thay đổi từ khoá.
-              </p>
+        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+          <aside
+            className={`${
+              mobileOpen ? "block" : "hidden"
+            } lg:block lg:self-start lg:sticky lg:top-[5.5rem]`}
+          >
+            <div className="relative border-2 border-zinc-700 bg-zinc-900 p-5">
+              <span className="mc-rivet mc-rivet-tl" />
+              <span className="mc-rivet mc-rivet-tr" />
+              <span className="mc-rivet mc-rivet-bl" />
+              <span className="mc-rivet mc-rivet-br" />
+
+              <div className="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+                <h2 className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                  ⬢ FILTER PANEL
+                </h2>
+                {activeCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    className="mc-mono text-[10px] font-bold uppercase tracking-[0.22em] text-orange-400 transition hover:text-orange-300"
+                  >
+                    ▸ CLEAR ({activeCount})
+                  </button>
+                )}
+              </div>
+
+              <div className="mt-5 flex flex-col gap-6">
+                <FilterBlock label="STATUS · STOCK">
+                  <div className="flex flex-col gap-2">
+                    <label className="mc-mono flex cursor-pointer items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-300 hover:text-zinc-100">
+                      <input
+                        type="checkbox"
+                        checked={onlyInStock}
+                        onChange={(e) => setOnlyInStock(e.target.checked)}
+                        className="h-4 w-4 accent-orange-500"
+                      />
+                      ▸ Còn hàng
+                    </label>
+                    <label className="mc-mono flex cursor-pointer items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-300 hover:text-zinc-100">
+                      <input
+                        type="checkbox"
+                        checked={onlySale}
+                        onChange={(e) => setOnlySale(e.target.checked)}
+                        className="h-4 w-4 accent-orange-500"
+                      />
+                      ▸ Đang giảm giá
+                    </label>
+                  </div>
+                </FilterBlock>
+
+                <FilterBlock label="UNIT COST · ₫">
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={minPrice ? formatVnd(Number(minPrice)) : ""}
+                      onChange={(e) => setMinPrice(parseDigits(e.target.value))}
+                      placeholder="Từ"
+                      className="mc-mono h-9 w-full border-2 border-zinc-700 bg-zinc-950 px-3 text-[11px] font-bold uppercase text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
+                    />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={maxPrice ? formatVnd(Number(maxPrice)) : ""}
+                      onChange={(e) => setMaxPrice(parseDigits(e.target.value))}
+                      placeholder="Đến"
+                      className="mc-mono h-9 w-full border-2 border-zinc-700 bg-zinc-950 px-3 text-[11px] font-bold uppercase text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
+                    />
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {[
+                      { label: "<1tr", max: 1_000_000 },
+                      { label: "1-5tr", min: 1_000_000, max: 5_000_000 },
+                      { label: "5-15tr", min: 5_000_000, max: 15_000_000 },
+                      { label: ">15tr", min: 15_000_000 },
+                    ].map((r) => (
+                      <button
+                        key={r.label}
+                        type="button"
+                        onClick={() => {
+                          setMinPrice(r.min ? String(r.min) : "");
+                          setMaxPrice(r.max ? String(r.max) : "");
+                        }}
+                        className="mc-mono border border-zinc-700 bg-zinc-950 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400 transition hover:border-orange-500 hover:text-orange-400"
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                </FilterBlock>
+
+                {catRows.length > 0 && (
+                  <FilterBlock
+                    label={
+                      lockedCategory
+                        ? `SUB · ${lockedCategory.name.toUpperCase()}`
+                        : "CLASS"
+                    }
+                  >
+                    <div className="max-h-64 overflow-y-auto pr-1">
+                      <ul className="flex flex-col">
+                        {catRows
+                          .filter(
+                            (r) =>
+                              !lockedCategory || r.category.id !== lockedCategory.id
+                          )
+                          .map(({ category, depth }) => {
+                            const checked = selectedCats.has(category.id);
+                            const extraIndent = lockedCategory ? 1 : 0;
+                            return (
+                              <li key={category.id}>
+                                <label
+                                  className="mc-mono flex cursor-pointer items-center gap-2 px-1 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-300 transition hover:bg-zinc-950 hover:text-orange-400"
+                                  style={{
+                                    paddingLeft: `${(depth - extraIndent) * 12 + 4}px`,
+                                  }}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => toggleCat(category.id)}
+                                    className="h-4 w-4 accent-orange-500"
+                                  />
+                                  <span className="truncate">{category.name}</span>
+                                </label>
+                              </li>
+                            );
+                          })}
+                      </ul>
+                    </div>
+                  </FilterBlock>
+                )}
+              </div>
+            </div>
+          </aside>
+
+          <section>
+            <div className="mc-mono mb-4 flex items-center justify-between border-b-2 border-zinc-800 pb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-400">
+              <span>
+                <span className="text-orange-500">▸</span> {sorted.length} / {products.length} UNITS
+              </span>
               {activeCount > 0 && (
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="mt-4 inline-flex items-center rounded-full border border-[var(--color-text)] bg-white px-4 py-1.5 text-[12px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
-                >
-                  Xoá bộ lọc
-                </button>
+                <span className="text-orange-400">⬢ {activeCount} FILTER ACTIVE</span>
               )}
             </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {sorted.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-          )}
-        </section>
+
+            {sorted.length === 0 ? (
+              <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 px-6 py-16 text-center">
+                <span className="mc-rivet mc-rivet-tl" />
+                <span className="mc-rivet mc-rivet-tr" />
+                <span className="mc-rivet mc-rivet-bl" />
+                <span className="mc-rivet mc-rivet-br" />
+                <p className="text-[16px] font-black uppercase tracking-tight text-zinc-100">
+                  ⬢ NO UNITS MATCHED
+                </p>
+                <p className="mc-mono mt-2 text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-500">
+                  ▸ Thử bỏ bớt bộ lọc hoặc thay đổi từ khoá.
+                </p>
+                {activeCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    className="mc-btn-outline mt-5"
+                  >
+                    ▸ CLEAR FILTERS
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {sorted.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       </div>
     </div>
   );
@@ -412,8 +434,8 @@ function FilterBlock({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[12px] font-medium text-[var(--color-text-dim)]">
-        {label}
+      <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+        ⬢ {label}
       </p>
       {children}
     </div>

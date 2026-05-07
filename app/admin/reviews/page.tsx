@@ -10,10 +10,15 @@ export default async function AdminReviewsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-[22px] font-semibold tracking-tight">Kiểm duyệt đánh giá</h1>
-        <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
-          Ẩn các đánh giá đểu / spam. Đánh giá bị ẩn sẽ không hiện trên trang sản phẩm và không tính vào điểm trung bình — nhưng vẫn giữ trong DB để có thể bỏ ẩn.
+      <div className="border-b-2 border-zinc-800 pb-4">
+        <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ ADMIN · 07 · REPORTS · MODERATION
+        </p>
+        <h1 className="mt-2 text-[22px] font-black uppercase tracking-tight sm:text-[28px]">
+          Kiểm duyệt đánh giá<span className="text-orange-500">.</span>
+        </h1>
+        <p className="mc-mono mt-1.5 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+          ▸ Ẩn đánh giá spam. Bị ẩn = không tính avg & không hiện public, vẫn giữ DB để khôi phục.
         </p>
       </div>
       <ReviewModeration initial={reviews} />

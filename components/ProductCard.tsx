@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Product } from "@/lib/products";
+import { getProductVisualUrl } from "@/lib/home-assets";
 
 const formatVnd = (n: number) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
@@ -19,7 +20,7 @@ function getDisplayPrice(p: Product) {
 
 export function ProductCard({ product }: { product: Product }) {
   const priceInfo = getDisplayPrice(product);
-  const image = product.imageUrl ?? priceInfo?.imageUrl ?? null;
+  const image = getProductVisualUrl(product, priceInfo?.imageUrl);
   const category = product.categories[0]?.name ?? null;
   const discount = priceInfo?.oldPrice
     ? Math.round(
@@ -30,55 +31,70 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--color-border-strong)] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.06)] transition hover:-translate-y-1 hover:border-[var(--color-text)]/30 hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_12px_28px_rgba(0,0,0,0.12)]"
+      className="group relative flex flex-col overflow-hidden border-2 border-zinc-800 bg-zinc-900 transition duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-[6px_6px_0_#09090b]"
     >
-      <div className="relative aspect-square overflow-hidden border-b border-[var(--color-border)] bg-[var(--color-surface-2)]">
-        {image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={image}
-            alt={product.name}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="grid h-full w-full place-items-center text-[11px] text-[var(--color-text-dim)]">
-            Không có ảnh
-          </div>
-        )}
+      <span className="mc-rivet mc-rivet-tl" />
+      <span className="mc-rivet mc-rivet-tr" />
+      <span className="mc-rivet mc-rivet-bl" />
+      <span className="mc-rivet mc-rivet-br" />
+
+      <div className="relative m-2 aspect-square overflow-hidden bg-zinc-950">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={image}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+          className="relative h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
+        />
+
+        <div aria-hidden className="mc-hex pointer-events-none absolute inset-0 opacity-25 mix-blend-overlay" />
 
         {discount > 0 && (
-          <span className="absolute right-3 top-3 rounded-full bg-red-500 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
-            −{discount}%
+          <span className="mc-tag-warning absolute right-2 top-2">
+            ⬢ −{discount}%
           </span>
         )}
+
+        {category && (
+          <span className="mc-mono absolute left-2 top-2 border border-orange-500/50 bg-zinc-950/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.28em] text-orange-400 backdrop-blur">
+            /{category}
+          </span>
+        )}
+
+        <span
+          aria-hidden
+          className="mc-mono pointer-events-none absolute inset-x-2 bottom-2 inline-flex translate-y-3 items-center justify-between gap-2 bg-orange-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-950 opacity-0 shadow-[2px_2px_0_#09090b] transition duration-200 group-hover:translate-y-0 group-hover:opacity-100"
+        >
+          <span>⬢ INSPECT</span>
+          <span>→</span>
+        </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        {category && (
-          <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--color-text-dim)]">
-            {category}
-          </p>
-        )}
-        <h3 className="mt-1 line-clamp-2 min-h-[2.6rem] text-[13px] font-semibold leading-snug text-[var(--color-text)]">
+      <div className="flex flex-1 flex-col border-t-2 border-zinc-800 p-3">
+        <h3 className="line-clamp-2 min-h-[2.4rem] text-[13px] font-black uppercase leading-tight tracking-tight text-zinc-100 transition group-hover:text-orange-400">
           {product.name}
         </h3>
 
-        <div className="mt-auto pt-3">
+        <div className="mt-auto pt-3 border-t-2 border-zinc-800">
           {priceInfo ? (
-            <div className="flex items-baseline gap-2">
-              <span className="text-[15px] font-semibold text-[var(--color-text)]">
-                {formatVnd(priceInfo.price)}
-              </span>
-              {priceInfo.oldPrice && (
-                <span className="text-[11px] text-[var(--color-text-dim)] line-through">
-                  {formatVnd(priceInfo.oldPrice)}
+            <>
+              <p className="mc-mono text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-500">
+                UNIT COST
+              </p>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="mc-mono text-[15px] font-black tracking-tight text-orange-400">
+                  {formatVnd(priceInfo.price)}
                 </span>
-              )}
-            </div>
+                {priceInfo.oldPrice && (
+                  <span className="mc-mono text-[10px] text-zinc-500 line-through">
+                    {formatVnd(priceInfo.oldPrice)}
+                  </span>
+                )}
+              </div>
+            </>
           ) : (
-            <span className="text-[13px] text-[var(--color-text-dim)]">
+            <span className="mc-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-500">
               Liên hệ
             </span>
           )}

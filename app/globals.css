@@ -1,18 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-2: #f5f5f7;
-  --color-surface-3: #fafafa;
-  --color-border: #e5e5ea;
-  --color-border-strong: #d2d2d7;
-  --color-text: #1d1d1f;
-  --color-text-dim: #6e6e73;
+  /* === MECHA INDUSTRIAL PALETTE === */
+  --color-bg: #09090b;          /* zinc-950 — body */
+  --color-surface: #18181b;     /* zinc-900 — card */
+  --color-surface-2: #27272a;   /* zinc-800 — section alt */
+  --color-surface-3: #3f3f46;   /* zinc-700 — hover */
+  --color-border: #27272a;      /* zinc-800 — default border */
+  --color-border-strong: #52525b; /* zinc-600 — emphasis border */
+  --color-text: #f4f4f5;        /* zinc-100 — body text */
+  --color-text-dim: #a1a1aa;    /* zinc-400 — dim */
+  --color-text-mute: #71717a;   /* zinc-500 — mute */
 
-  --color-accent: #0071e3;
-  --color-accent-2: #0058b8;
-  --color-accent-soft: #eaf3ff;
+  --color-accent: #f97316;       /* orange-500 — primary */
+  --color-accent-2: #fb923c;     /* orange-400 — hover */
+  --color-accent-soft: rgba(249, 115, 22, 0.08);
+  --color-hazard: #eab308;       /* yellow-500 — warning */
+
+  /* Legacy aliases — pages chưa update vẫn render được */
+  --color-paper: #09090b;
+  --color-paper-2: #18181b;
+  --color-ink: #f4f4f5;
+  --color-ink-2: #fafafa;
+  --color-rule: #27272a;
+  --color-mute: #a1a1aa;
+  --color-cobalt: #f97316;
+  --color-cobalt-soft: rgba(249, 115, 22, 0.12);
 }
 
 html {
@@ -22,15 +35,261 @@ html {
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--font-sans), "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.01em;
 }
 
 h1, h2, h3 {
-  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--font-sans), "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   letter-spacing: -0.03em;
 }
 
+/* === GLOBAL ANIMATIONS === */
+@keyframes home-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes mc-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(20px, -30px, 0) scale(1.05); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translate3d(0, 28px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes draw-line {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes ticker-rise {
+  0% { transform: translateY(110%); opacity: 0; }
+  10%, 90% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-110%); opacity: 0; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  70%, 100% { transform: scale(2); opacity: 0; }
+}
+
+.rise-in { animation: rise-in 800ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.rise-in-100 { animation: rise-in 800ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both; }
+.rise-in-200 { animation: rise-in 800ms cubic-bezier(0.16, 1, 0.3, 1) 160ms both; }
+.rise-in-300 { animation: rise-in 800ms cubic-bezier(0.16, 1, 0.3, 1) 240ms both; }
+.rise-in-400 { animation: rise-in 800ms cubic-bezier(0.16, 1, 0.3, 1) 320ms both; }
+.rise-in-500 { animation: rise-in 800ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both; }
+
+.draw-line {
+  transform-origin: left;
+  animation: draw-line 1200ms cubic-bezier(0.65, 0, 0.35, 1) 200ms both;
+}
+
+/* === MECHA UTILITY CLASSES === */
+
+.mc-mono {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.mc-hazard {
+  background: repeating-linear-gradient(
+    -45deg,
+    #f97316 0, #f97316 14px,
+    #18181b 14px, #18181b 28px
+  );
+}
+
+.mc-hex {
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.05) 8px, transparent 9px),
+    radial-gradient(circle at 50% 100%, rgba(249, 115, 22, 0.05) 8px, transparent 9px),
+    linear-gradient(60deg, transparent 49%, rgba(249, 115, 22, 0.08) 49%, rgba(249, 115, 22, 0.08) 51%, transparent 51%),
+    linear-gradient(-60deg, transparent 49%, rgba(249, 115, 22, 0.08) 49%, rgba(249, 115, 22, 0.08) 51%, transparent 51%);
+  background-size: 48px 56px;
+}
+
+.mc-rivet {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle at 35% 35%, #71717a, #18181b);
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  z-index: 5;
+  pointer-events: none;
+}
+.mc-rivet-lg { width: 8px; height: 8px; }
+.mc-rivet-tl { left: 4px; top: 4px; }
+.mc-rivet-tr { right: 4px; top: 4px; }
+.mc-rivet-bl { left: 4px; bottom: 4px; }
+.mc-rivet-br { right: 4px; bottom: 4px; }
+
+.mc-stroke-orange {
+  -webkit-text-stroke: 2px #f97316;
+  color: transparent;
+  text-shadow: 4px 4px 0 rgba(234, 179, 8, 0.4);
+}
+
+/* Mecha buttons */
+.mc-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f97316;
+  color: #09090b;
+  padding: 0.6rem 1rem;
+  border: 2px solid #f97316;
+  box-shadow: 4px 4px 0 #18181b;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  transition: transform 150ms, box-shadow 150ms, filter 150ms;
+}
+.mc-btn-primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #18181b;
+}
+.mc-btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 #18181b;
+}
+
+.mc-btn-primary-lg {
+  padding: 0.85rem 1.4rem;
+  font-size: 12px;
+}
+
+.mc-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 2px solid #52525b;
+  color: #f4f4f5;
+  padding: 0.55rem 0.95rem;
+  background: transparent;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  transition: all 150ms;
+}
+.mc-btn-outline:hover {
+  border-color: #f97316;
+  color: #fb923c;
+  background: rgba(249, 115, 22, 0.06);
+}
+
+.mc-btn-outline-lg {
+  padding: 0.8rem 1.35rem;
+  font-size: 12px;
+}
+
+.mc-tag-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #eab308;
+  color: #18181b;
+  padding: 0.25rem 0.55rem;
+  border: 2px solid #18181b;
+  box-shadow: 2px 2px 0 #18181b;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 10px;
+}
+
+/* Mecha card frame: rivets + hover lift */
+.mc-card {
+  position: relative;
+  background: #18181b;
+  border: 2px solid #27272a;
+  transition: border-color 150ms, transform 150ms, box-shadow 150ms;
+}
+.mc-card:hover {
+  border-color: #f97316;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #18181b;
+}
+
+/* Mecha plate (smaller card-like surface) */
+.mc-plate {
+  position: relative;
+  background: #18181b;
+  border: 2px solid #27272a;
+}
+
+.mc-tab {
+  padding: 0.4rem 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  border: 2px solid #3f3f46;
+  color: #71717a;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  font-size: 10px;
+  transition: all 150ms;
+}
+.mc-tab:hover {
+  color: #f4f4f5;
+  border-color: #52525b;
+}
+.mc-tab-active {
+  background: #f97316;
+  color: #18181b;
+  border-color: #f97316;
+}
+
+/* === LEGACY GRAIN (giữ vì có thể vài chỗ vẫn dùng) === */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[home-marquee_30s_linear_infinite\],
+  .animate-\[float-slow_14s_ease-in-out_infinite\],
+  .animate-\[float-slow_18s_ease-in-out_infinite_reverse\],
+  .animate-\[float-slow_22s_ease-in-out_infinite\],
+  .animate-\[blink_1\.4s_ease-in-out_infinite\],
+  .animate-\[pulse-ring_2\.4s_ease-out_infinite\],
+  .rise-in, .rise-in-100, .rise-in-200, .rise-in-300, .rise-in-400, .rise-in-500,
+  .draw-line {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

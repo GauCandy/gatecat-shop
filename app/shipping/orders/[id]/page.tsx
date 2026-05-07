@@ -15,12 +15,12 @@ const formatDate = (d: Date) =>
   }).format(new Date(d));
 
 const STATUS_BADGE: Record<string, { label: string; color: string }> = {
-  pending: { label: "Chờ xác nhận", color: "bg-yellow-100 text-yellow-700" },
-  confirmed: { label: "Đang chuẩn bị hàng", color: "bg-blue-100 text-blue-700" },
-  shipping: { label: "Đang giao", color: "bg-purple-100 text-purple-700" },
-  delivered: { label: "Đã giao", color: "bg-green-100 text-green-700" },
-  returned: { label: "Hoàn hàng", color: "bg-orange-100 text-orange-700" },
-  cancelled: { label: "Đã huỷ", color: "bg-gray-200 text-gray-700" },
+  pending: { label: "PENDING", color: "border-yellow-500/60 bg-yellow-500/10 text-yellow-300" },
+  confirmed: { label: "PREPARING", color: "border-cyan-500/60 bg-cyan-500/10 text-cyan-300" },
+  shipping: { label: "IN TRANSIT", color: "border-purple-500/60 bg-purple-500/10 text-purple-300" },
+  delivered: { label: "DELIVERED", color: "border-green-500/60 bg-green-500/10 text-green-300" },
+  returned: { label: "RETURNED", color: "border-orange-500/60 bg-orange-500/10 text-orange-300" },
+  cancelled: { label: "CANCELLED", color: "border-zinc-700 bg-zinc-800 text-zinc-400" },
 };
 
 export default async function ShipperOrderDetailPage({
@@ -35,82 +35,87 @@ export default async function ShipperOrderDetailPage({
   const badge = STATUS_BADGE[order.status];
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <div className="mb-2 flex items-center gap-2 text-[12px] text-[var(--color-text-dim)]">
-          <Link href="/shipping/all" className="hover:text-[var(--color-text)]">
-            Tất cả đơn hàng
+    <div className="flex flex-col gap-6 text-zinc-100">
+      <div className="border-b-2 border-zinc-800 pb-4">
+        <div className="mc-mono mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-500">
+          <Link href="/shipping/all" className="hover:text-orange-400">
+            ▸ Tất cả đơn hàng
           </Link>
-          <span>/</span>
-          <span className="text-[var(--color-text)]">
-            #{order.id.slice(0, 8).toUpperCase()}
+          <span className="text-zinc-700">/</span>
+          <span className="font-black text-orange-400">
+            ⬢ ORD#{order.id.slice(0, 8).toUpperCase()}
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-[22px] font-semibold tracking-tight">
-            Đơn #{order.id.slice(0, 8).toUpperCase()}
+          <h1 className="text-[22px] font-black uppercase tracking-tight sm:text-[28px]">
+            ORD#{order.id.slice(0, 8).toUpperCase()}<span className="text-orange-500">.</span>
           </h1>
           {badge && (
             <span
-              className={`whitespace-nowrap rounded-full px-3 py-1 text-[12px] font-semibold ${badge.color}`}
+              className={`mc-mono whitespace-nowrap border-2 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] ${badge.color}`}
             >
-              {badge.label}
+              ⬢ {badge.label}
             </span>
           )}
         </div>
-        <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
-          Đặt lúc {formatDate(order.createdAt)}
+        <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+          ▸ Đặt lúc {formatDate(order.createdAt)}
         </p>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <div className="space-y-4">
-          <section className="rounded-xl border border-[var(--color-border-strong)] bg-white p-5">
-            <div className="flex items-center gap-2">
-              <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-                {order.deliveryMethod === "pickup"
-                  ? "Khách đến lấy tại shop"
-                  : "Địa chỉ giao hàng"}
-              </h2>
+          <section className="relative border-2 border-zinc-700 bg-zinc-900 p-5">
+            <span className="mc-rivet mc-rivet-tl" />
+            <span className="mc-rivet mc-rivet-tr" />
+            <span className="mc-rivet mc-rivet-bl" />
+            <span className="mc-rivet mc-rivet-br" />
+
+            <div className="mb-3 flex flex-wrap items-center gap-2 border-b-2 border-zinc-800 pb-3">
+              <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                ⬢ {order.deliveryMethod === "pickup"
+                  ? "PICKUP DEPOT"
+                  : "DEPLOY POINT"}
+              </p>
               <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                className={`mc-mono border-2 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] ${
                   order.deliveryMethod === "pickup"
-                    ? "bg-amber-100 text-amber-700"
-                    : "bg-blue-100 text-blue-700"
+                    ? "border-amber-500/60 bg-amber-500/10 text-amber-300"
+                    : "border-cyan-500/60 bg-cyan-500/10 text-cyan-300"
                 }`}
               >
-                {order.deliveryMethod === "pickup" ? "Pickup" : "Delivery"}
+                {order.deliveryMethod === "pickup" ? "PICKUP" : "DELIVERY"}
               </span>
             </div>
-            <div className="mt-3 space-y-0.5">
+            <div className="space-y-1">
               {order.recipientName && (
-                <p className="text-[14px] font-semibold text-[var(--color-text)]">
+                <p className="text-[14px] font-black uppercase tracking-tight">
                   {order.recipientName}
                 </p>
               )}
               {order.phone && (
-                <p className="text-[13px] text-[var(--color-text)]">
-                  <a
+                <p className="mc-mono text-[12px] uppercase tracking-[0.15em] text-zinc-300">
+                  ▸ <a
                     href={`tel:${order.phone}`}
-                    className="text-[var(--color-accent)] underline-offset-2 hover:underline"
+                    className="text-orange-400 underline-offset-2 hover:underline"
                   >
                     {order.phone}
                   </a>
                 </p>
               )}
               {order.deliveryMethod === "pickup" ? (
-                <p className="mt-2 text-[13px] italic text-[var(--color-text-dim)]">
-                  Đơn lấy tại shop — không cần giao đến địa chỉ.
+                <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                  ▸ Đơn lấy tại shop — không cần giao đến địa chỉ.
                 </p>
               ) : (
                 <>
                   {order.addressLine && (
-                    <p className="mt-2 text-[13px] text-[var(--color-text)]">
-                      {order.addressLine}
+                    <p className="mc-mono mt-2 text-[12px] uppercase tracking-[0.08em] text-zinc-300">
+                      ▸ {order.addressLine}
                     </p>
                   )}
                   {(order.ward || order.district || order.province) && (
-                    <p className="text-[12px] text-[var(--color-text-dim)]">
+                    <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                       {[order.ward, order.district, order.province]
                         .filter(Boolean)
                         .join(", ")}
@@ -119,27 +124,32 @@ export default async function ShipperOrderDetailPage({
                 </>
               )}
               {order.note && (
-                <p className="mt-2 text-[12px] text-[var(--color-text-dim)]">
-                  <span className="font-medium">Ghi chú của khách:</span> {order.note}
+                <p className="mc-mono mt-3 border-t-2 border-zinc-800 pt-3 text-[10px] uppercase tracking-[0.12em] text-zinc-400">
+                  <span className="font-black text-orange-400">NOTE ▸</span> {order.note}
                 </p>
               )}
             </div>
           </section>
 
-          <section className="rounded-xl border border-[var(--color-border-strong)] bg-white p-5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-                Sản phẩm trong kiện
-              </h2>
-              <span className="text-[12px] text-[var(--color-text-dim)]">
-                {order.items?.length ?? 0} sản phẩm
+          <section className="relative border-2 border-zinc-700 bg-zinc-900 p-5">
+            <span className="mc-rivet mc-rivet-tl" />
+            <span className="mc-rivet mc-rivet-tr" />
+            <span className="mc-rivet mc-rivet-bl" />
+            <span className="mc-rivet mc-rivet-br" />
+
+            <div className="mb-3 flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+              <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                ⬢ CARGO MANIFEST
+              </p>
+              <span className="mc-mono text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
+                {order.items?.length ?? 0} UNIT
               </span>
             </div>
-            <div className="mt-3 space-y-2">
+            <div className="space-y-2">
               {order.items?.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-start gap-3 rounded-lg border border-[var(--color-border)] p-3"
+                  className="flex items-start gap-3 border-2 border-zinc-800 bg-zinc-950 p-3"
                 >
                   {item.variantImageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -148,58 +158,58 @@ export default async function ShipperOrderDetailPage({
                       alt={item.productName}
                       loading="lazy"
                       decoding="async"
-                      className="h-14 w-14 shrink-0 rounded-md border border-[var(--color-border)] object-cover"
+                      className="h-14 w-14 shrink-0 border-2 border-zinc-700 object-cover"
                     />
                   ) : (
-                    <div className="h-14 w-14 shrink-0 rounded-md bg-[var(--color-surface-2)]" />
+                    <div className="h-14 w-14 shrink-0 border-2 border-zinc-700 bg-zinc-900" />
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-medium text-[var(--color-text)]">
+                    <p className="text-[13px] font-black uppercase tracking-tight">
                       {item.productName}
                     </p>
-                    <p className="text-[11px] text-[var(--color-text-dim)]">
-                      Mã: {item.variantSku}
+                    <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                      ▸ SN: {item.variantSku}
                     </p>
-                    <p className="mt-1 text-[12px] text-[var(--color-text)]">
+                    <p className="mc-mono mt-1 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
                       {formatVnd(item.unitPrice)} × {item.quantity}
                     </p>
                   </div>
-                  <p className="whitespace-nowrap text-[13px] font-semibold text-[var(--color-text)]">
+                  <p className="mc-mono whitespace-nowrap text-[13px] font-black text-orange-400">
                     {formatVnd(item.subtotal)}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 border-t border-[var(--color-border)] pt-3 space-y-1 text-[13px]">
-              <div className="flex justify-between text-[var(--color-text-dim)]">
-                <span>Tạm tính</span>
-                <span className="text-[var(--color-text)]">
+            <div className="mt-4 border-t-2 border-zinc-800 pt-3 mc-mono space-y-1 text-[11px] uppercase tracking-[0.15em]">
+              <div className="flex justify-between">
+                <span className="text-zinc-500">▸ Tạm tính</span>
+                <span className="font-bold text-zinc-100">
                   {formatVnd(order.totalAmount + order.discountAmount)}
                 </span>
               </div>
               {order.discountAmount > 0 && (
-                <div className="flex justify-between text-green-700">
-                  <span>
-                    Voucher
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">
+                    ▸ Voucher
                     {order.voucherCode && (
-                      <span className="ml-1 font-mono">{order.voucherCode}</span>
+                      <span className="ml-1 text-orange-400">{order.voucherCode}</span>
                     )}
                   </span>
-                  <span>-{formatVnd(order.discountAmount)}</span>
+                  <span className="font-bold text-green-400">−{formatVnd(order.discountAmount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-[var(--color-text-dim)]">
-                <span>Phương thức</span>
-                <span className="text-[var(--color-text)]">
+              <div className="flex justify-between">
+                <span className="text-zinc-500">▸ Payment</span>
+                <span className="font-bold text-zinc-100">
                   {order.paymentMethod === "cod"
-                    ? "COD - Thu hộ khi giao"
+                    ? "COD · THU HỘ"
                     : order.paymentMethod}
                 </span>
               </div>
-              <div className="mt-1 flex justify-between border-t border-[var(--color-border)] pt-2">
-                <span className="font-bold text-[var(--color-text)]">Tổng thu</span>
-                <span className="text-[15px] font-bold text-[var(--color-text)]">
+              <div className="mt-2 flex items-baseline justify-between border-t-2 border-zinc-800 pt-3">
+                <span className="text-[12px] font-black tracking-[0.22em] text-orange-500">⬢ TỔNG THU</span>
+                <span className="text-[18px] font-black text-orange-400">
                   {formatVnd(order.totalAmount)}
                 </span>
               </div>
@@ -214,11 +224,15 @@ export default async function ShipperOrderDetailPage({
             initialTrackingCode={order.trackingCode ?? null}
           />
           {order.trackingCode && (
-            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-dim)]">
-                Mã vận chuyển hiện tại
+            <div className="relative border-2 border-zinc-800 bg-zinc-950 p-4">
+              <span className="mc-rivet mc-rivet-tl" />
+              <span className="mc-rivet mc-rivet-tr" />
+              <span className="mc-rivet mc-rivet-bl" />
+              <span className="mc-rivet mc-rivet-br" />
+              <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+                ⬢ TRACKING CODE
               </p>
-              <p className="mt-1 font-mono text-[14px] text-[var(--color-text)]">
+              <p className="mc-mono mt-2 text-[14px] font-black tracking-[0.05em] text-zinc-100">
                 {order.trackingCode}
               </p>
             </div>

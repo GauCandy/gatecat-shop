@@ -205,7 +205,7 @@ function JumpInput({
         }}
         onBlur={commit}
         placeholder={String(totalPages)}
-        className="h-7 w-14 rounded border border-slate-300 bg-white px-1.5 text-center text-[12px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+        className="h-7 w-14 rounded border border-slate-300 bg-zinc-900 px-1.5 text-center text-[12px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
       />
     </div>
   );
@@ -224,7 +224,7 @@ function Pager({
   const disabledNext = page >= totalPages;
   const pages = buildPageList(page, totalPages);
   const btnBase =
-    "min-w-[28px] rounded border border-slate-300 bg-white px-2 py-1 text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50";
+    "min-w-[28px] rounded border border-slate-300 bg-zinc-900 px-2 py-1 text-[12px] font-medium text-slate-700 transition hover:bg-zinc-950 disabled:cursor-not-allowed disabled:opacity-50";
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">
@@ -342,8 +342,8 @@ function ProductList({
   };
 
   return (
-    <div className="overflow-hidden rounded-md border border-slate-300 bg-white">
-      <div className="flex flex-wrap items-center gap-3 border-b border-slate-300 bg-slate-50 px-3 py-2">
+    <div className="overflow-hidden rounded-md border border-slate-300 bg-zinc-900">
+      <div className="flex flex-wrap items-center gap-3 border-b border-slate-300 bg-zinc-950 px-3 py-2">
         <div className="relative min-w-[200px] flex-1">
           <svg
             viewBox="0 0 24 24"
@@ -363,7 +363,7 @@ function ProductList({
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Tìm theo tên, slug, hoặc mã sản phẩm..."
-            className="h-8 w-full rounded border border-slate-300 bg-white pl-8 pr-3 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="h-8 w-full rounded border border-slate-300 bg-zinc-900 pl-8 pr-3 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
           />
         </div>
         <label className="flex items-center gap-1.5 text-[12px] text-slate-600">
@@ -371,7 +371,7 @@ function ProductList({
           <select
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="h-8 rounded border border-slate-300 bg-white px-2 text-[12px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="h-8 rounded border border-slate-300 bg-zinc-900 px-2 text-[12px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
           >
             {PAGE_SIZES.map((n) => (
               <option key={n} value={n}>
@@ -388,7 +388,7 @@ function ProductList({
         <Pager page={page} totalPages={totalPages} onPageChange={onPageChange} />
       </div>
       <table className="w-full text-[13px]">
-        <thead className="border-b border-slate-300 bg-slate-100 text-left text-[12px] text-slate-600">
+        <thead className="border-b border-slate-300 bg-zinc-900 text-left text-[12px] text-slate-600">
           <tr>
             <th className="w-8 px-2 py-2"></th>
             <th className="w-16 px-3 py-2 font-medium">Ảnh</th>
@@ -421,19 +421,19 @@ function ProductList({
                   onDragOver={(e) => handleDragOver(e, idx)}
                   onDrop={(e) => handleDrop(e, idx)}
                   onDragEnd={handleDragEnd}
-                  className={`border-b border-slate-200 last:border-0 ${
+                  className={`border-b border-zinc-800 last:border-0 ${
                     dragIndex === idx ? "opacity-40" : ""
                   } ${
                     hoverIndex === idx && dragIndex !== idx
-                      ? "bg-blue-50"
-                      : "hover:bg-slate-50"
+                      ? "bg-cyan-500/10"
+                      : "hover:bg-zinc-950"
                   }`}
                 >
                   <td className="px-2 py-2">
                     <span
                       className={`grid h-7 w-7 place-items-center rounded ${
                         canDrag
-                          ? "cursor-grab text-slate-400 hover:bg-slate-100 hover:text-slate-600 active:cursor-grabbing"
+                          ? "cursor-grab text-slate-400 hover:bg-zinc-900 hover:text-slate-600 active:cursor-grabbing"
                           : "cursor-not-allowed text-slate-300"
                       }`}
                       title={canDrag ? "Kéo để sắp xếp (trong trang)" : "Xoá ô tìm kiếm để sắp xếp"}
@@ -442,7 +442,7 @@ function ProductList({
                     </span>
                   </td>
                   <td className="px-3 py-2">
-                    <div className="grid h-10 w-10 place-items-center overflow-hidden rounded border border-slate-200 bg-slate-50">
+                    <div className="grid h-10 w-10 place-items-center overflow-hidden rounded border border-zinc-800 bg-zinc-950">
                       {p.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -469,7 +469,7 @@ function ProductList({
                         {p.categories.map((c) => (
                           <span
                             key={c.id}
-                            className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] text-slate-700"
+                            className="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-[11px] text-slate-700"
                           >
                             {c.name}
                           </span>
@@ -496,14 +496,14 @@ function ProductList({
                       <button
                         type="button"
                         onClick={() => onEdit(p)}
-                        className="rounded border border-slate-300 bg-white px-4 py-1.5 text-[13px] font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                        className="rounded border border-slate-300 bg-zinc-900 px-4 py-1.5 text-[13px] font-medium text-slate-700 transition hover:border-slate-400 hover:bg-zinc-950"
                       >
                         Sửa
                       </button>
                       <button
                         type="button"
                         onClick={() => onDelete(p)}
-                        className="rounded border border-red-300 bg-white px-4 py-1.5 text-[13px] font-medium text-red-600 transition hover:border-red-400 hover:bg-red-50"
+                        className="rounded border border-red-500/60 bg-zinc-900 px-4 py-1.5 text-[13px] font-medium text-red-400 transition hover:border-red-400 hover:bg-red-500/10"
                       >
                         Xoá
                       </button>
@@ -516,7 +516,7 @@ function ProductList({
         </tbody>
       </table>
       {products.length > 0 && totalPages > 1 && (
-        <div className="flex items-center justify-end border-t border-slate-300 bg-slate-50 px-3 py-2">
+        <div className="flex items-center justify-end border-t border-slate-300 bg-zinc-950 px-3 py-2">
           <Pager page={page} totalPages={totalPages} onPageChange={onPageChange} />
         </div>
       )}
@@ -732,12 +732,12 @@ function ProductForm({
   };
 
   const inputCls =
-    "h-9 w-full rounded border border-slate-300 bg-white px-3 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]";
+    "h-9 w-full rounded border border-slate-300 bg-zinc-900 px-3 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]";
 
   return (
     <form
       onSubmit={onSubmit}
-      className="sticky top-[4.25rem] flex h-fit flex-col gap-3 self-start rounded-md border border-slate-300 bg-white p-4"
+      className="sticky top-[4.25rem] flex h-fit flex-col gap-3 self-start rounded-md border border-slate-300 bg-zinc-900 p-4"
     >
       <h2 className="text-[14px] font-semibold text-slate-900">
         {editing ? "Sửa sản phẩm" : "Thêm sản phẩm"}
@@ -759,7 +759,7 @@ function ProductForm({
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
           placeholder="Thông tin chi tiết, tính năng nổi bật, chất liệu..."
-          className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+          className="w-full rounded border border-slate-300 bg-zinc-900 px-3 py-2 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
         />
       </Field>
 
@@ -783,7 +783,7 @@ function ProductForm({
 
       <Field label="Ảnh đại diện chính">
         <div className="flex items-center gap-3">
-          <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded border border-slate-300 bg-slate-50">
+          <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded border border-slate-300 bg-zinc-950">
             {mainPreview ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={mainPreview} alt="" className="h-full w-full object-cover" />
@@ -804,7 +804,7 @@ function ProductForm({
                 reader.onload = () => setMainPreview(reader.result as string);
                 reader.readAsDataURL(f);
               }}
-              className="text-[12px] text-slate-600 file:mr-3 file:rounded file:border file:border-slate-400 file:bg-white file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-slate-800 hover:file:bg-slate-50"
+              className="text-[12px] text-slate-600 file:mr-3 file:rounded file:border file:border-slate-400 file:bg-zinc-900 file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-slate-800 hover:file:bg-zinc-950"
             />
             {editing && mainPreview && (
               <button
@@ -814,7 +814,7 @@ function ProductForm({
                   setMainPreview(null);
                   setRemoveMainImage(true);
                 }}
-                className="self-start text-[12px] text-red-600 hover:underline"
+                className="self-start text-[12px] text-red-400 hover:underline"
               >
                 Xoá ảnh hiện tại
               </button>
@@ -830,7 +830,7 @@ function ProductForm({
         <button
           type="button"
           onClick={addVariant}
-          className="rounded border border-slate-300 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+          className="rounded border border-slate-300 bg-zinc-900 px-3 py-1.5 text-[12px] font-medium text-slate-700 transition hover:border-slate-400 hover:bg-zinc-950"
         >
           + Thêm mã
         </button>
@@ -851,7 +851,7 @@ function ProductForm({
       </div>
 
       {error && (
-        <p className="rounded border border-red-300 bg-red-50 px-3 py-2 text-[12px] text-red-700">
+        <p className="rounded border border-red-500/60 bg-red-500/10 px-3 py-2 text-[12px] text-red-300">
           {error}
         </p>
       )}
@@ -868,7 +868,7 @@ function ProductForm({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded border border-slate-300 bg-white px-4 py-2 text-[13px] text-slate-700 transition hover:bg-slate-50"
+            className="rounded border border-slate-300 bg-zinc-900 px-4 py-2 text-[13px] text-slate-700 transition hover:bg-zinc-950"
           >
             Huỷ
           </button>
@@ -899,7 +899,7 @@ function VariantRow({
   });
 
   const inputCls =
-    "h-9 w-full rounded border border-slate-300 bg-white px-3 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]";
+    "h-9 w-full rounded border border-slate-300 bg-zinc-900 px-3 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]";
 
   const listDisplay = variant.listPrice
     ? formatVnd(Number(variant.listPrice))
@@ -909,7 +909,7 @@ function VariantRow({
     : "";
 
   return (
-    <div className="rounded-md border border-slate-200 bg-slate-50 p-3">
+    <div className="rounded-md border border-zinc-800 bg-zinc-950 p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[12px] font-medium text-slate-600">
           Mã #{index + 1}
@@ -920,7 +920,7 @@ function VariantRow({
             onClick={() => onMove(-1)}
             disabled={index === 0}
             aria-label="Lên"
-            className="grid h-7 w-7 place-items-center rounded border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className="grid h-7 w-7 place-items-center rounded border border-slate-300 bg-zinc-900 text-slate-600 transition hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-40"
           >
             ↑
           </button>
@@ -929,7 +929,7 @@ function VariantRow({
             onClick={() => onMove(1)}
             disabled={index === total - 1}
             aria-label="Xuống"
-            className="grid h-7 w-7 place-items-center rounded border border-slate-300 bg-white text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className="grid h-7 w-7 place-items-center rounded border border-slate-300 bg-zinc-900 text-slate-600 transition hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-40"
           >
             ↓
           </button>
@@ -937,7 +937,7 @@ function VariantRow({
             type="button"
             onClick={onRemove}
             aria-label="Xoá mã"
-            className="grid h-7 w-7 place-items-center rounded border border-red-300 bg-white text-red-600 transition hover:bg-red-50"
+            className="grid h-7 w-7 place-items-center rounded border border-red-500/60 bg-zinc-900 text-red-400 transition hover:bg-red-500/10"
           >
             ×
           </button>
@@ -998,7 +998,7 @@ function VariantRow({
 
         <Field label="Ảnh mã sản phẩm">
           <div className="flex items-center gap-3">
-            <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded border border-slate-300 bg-white">
+            <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded border border-slate-300 bg-zinc-900">
               {variant.previewUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -1026,7 +1026,7 @@ function VariantRow({
                     });
                   reader.readAsDataURL(f);
                 }}
-                className="text-[12px] text-slate-600 file:mr-3 file:rounded file:border file:border-slate-400 file:bg-white file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-slate-800 hover:file:bg-slate-50"
+                className="text-[12px] text-slate-600 file:mr-3 file:rounded file:border file:border-slate-400 file:bg-zinc-900 file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-slate-800 hover:file:bg-zinc-950"
               />
               {variant.previewUrl && (
                 <button
@@ -1038,7 +1038,7 @@ function VariantRow({
                       previewUrl: null,
                     });
                   }}
-                  className="self-start text-[12px] text-red-600 hover:underline"
+                  className="self-start text-[12px] text-red-400 hover:underline"
                 >
                   Xoá ảnh
                 </button>
@@ -1095,7 +1095,7 @@ function CategoryPicker({
 
   if (categories.length === 0) {
     return (
-      <p className="rounded border border-dashed border-slate-300 bg-slate-50 px-3 py-4 text-center text-[12px] text-slate-500">
+      <p className="rounded border border-dashed border-slate-300 bg-zinc-950 px-3 py-4 text-center text-[12px] text-slate-500">
         Chưa có danh mục nào. Hãy tạo danh mục trước.
       </p>
     );
@@ -1104,7 +1104,7 @@ function CategoryPicker({
   return (
     <div ref={wrapRef} className="relative">
       <div
-        className="flex min-h-9 flex-wrap items-center gap-1 rounded border border-slate-300 bg-white p-1.5 focus-within:border-[var(--color-accent)] focus-within:ring-1 focus-within:ring-[var(--color-accent)]"
+        className="flex min-h-9 flex-wrap items-center gap-1 rounded border border-slate-300 bg-zinc-900 p-1.5 focus-within:border-[var(--color-accent)] focus-within:ring-1 focus-within:ring-[var(--color-accent)]"
         onClick={() => {
           setOpen(true);
           inputRef.current?.focus();
@@ -1113,7 +1113,7 @@ function CategoryPicker({
         {selectedList.map((c) => (
           <span
             key={c.id}
-            className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[12px] text-slate-700"
+            className="inline-flex items-center gap-1 rounded-full border border-zinc-800 bg-zinc-900 px-2 py-0.5 text-[12px] text-slate-700"
           >
             {c.name}
             <button
@@ -1146,7 +1146,7 @@ function CategoryPicker({
       </div>
 
       {open && (
-        <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-y-auto rounded border border-slate-300 bg-white shadow-lg">
+        <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-y-auto rounded border border-slate-300 bg-zinc-900 ">
           {filtered.length === 0 ? (
             <p className="px-3 py-3 text-center text-[12px] text-slate-500">
               Không có danh mục khớp.
@@ -1157,7 +1157,7 @@ function CategoryPicker({
                 const checked = selected.has(c.id);
                 return (
                   <li key={c.id}>
-                    <label className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-[13px] text-slate-700 hover:bg-slate-50">
+                    <label className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-[13px] text-slate-700 hover:bg-zinc-950">
                       <input
                         type="checkbox"
                         checked={checked}

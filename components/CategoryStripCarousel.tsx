@@ -36,7 +36,7 @@ export function CategoryStripCarousel({ items }: { items: CategoryNode[] }) {
         onClick={() => scrollByPage(-1)}
         aria-label="Danh mục trước"
         disabled={!canPrev}
-        className={`absolute left-0 top-1/2 z-10 grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-text)] shadow transition hover:bg-[var(--color-surface-2)] ${
+        className={`absolute left-0 top-1/2 z-10 grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center border-2 border-zinc-700 bg-zinc-900 text-orange-400 shadow-[2px_2px_0_#09090b] transition hover:border-orange-500 hover:bg-orange-500 hover:text-zinc-950 ${
           canPrev ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
@@ -73,7 +73,7 @@ export function CategoryStripCarousel({ items }: { items: CategoryNode[] }) {
         onClick={() => scrollByPage(1)}
         aria-label="Danh mục tiếp"
         disabled={!canNext}
-        className={`absolute right-0 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-text)] shadow transition hover:bg-[var(--color-surface-2)] ${
+        className={`absolute right-0 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 translate-x-1/2 place-items-center border-2 border-zinc-700 bg-zinc-900 text-orange-400 shadow-[2px_2px_0_#09090b] transition hover:border-orange-500 hover:bg-orange-500 hover:text-zinc-950 ${
           canNext ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >

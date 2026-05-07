@@ -14,6 +14,19 @@ const formatVnd = (n: number) =>
 
 type AppliedVoucher = { code: string; name: string; discount: number };
 
+const PANEL = "relative border-2 border-zinc-700 bg-zinc-900 p-6";
+
+function PanelRivets() {
+  return (
+    <>
+      <span className="mc-rivet mc-rivet-tl" />
+      <span className="mc-rivet mc-rivet-tr" />
+      <span className="mc-rivet mc-rivet-bl" />
+      <span className="mc-rivet mc-rivet-br" />
+    </>
+  );
+}
+
 export function CheckoutClient({
   addresses,
   items,
@@ -124,16 +137,20 @@ export function CheckoutClient({
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
       <div className="flex flex-col gap-5">
-        <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-6">
-          <h2 className="text-[18px] font-bold text-[var(--color-text)]">
-            Phương thức nhận hàng
+        <div className={PANEL}>
+          <PanelRivets />
+          <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ 01 · DELIVERY METHOD
+          </p>
+          <h2 className="mt-2 text-[18px] font-black uppercase tracking-tight text-zinc-100">
+            Phương thức nhận hàng<span className="text-orange-500">.</span>
           </h2>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             <label
-              className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition ${
+              className={`mc-mono flex cursor-pointer items-start gap-3 border-2 p-3 transition ${
                 deliveryMethod === "delivery"
-                  ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5"
-                  : "border-[var(--color-border)] hover:bg-[var(--color-surface-2)]"
+                  ? "border-orange-500 bg-orange-500/8"
+                  : "border-zinc-800 bg-zinc-950 hover:border-zinc-700"
               }`}
             >
               <input
@@ -142,22 +159,22 @@ export function CheckoutClient({
                 value="delivery"
                 checked={deliveryMethod === "delivery"}
                 onChange={() => setDeliveryMethod("delivery")}
-                className="mt-1 h-4 w-4 accent-[var(--color-accent)]"
+                className="mt-1 h-4 w-4 accent-orange-500"
               />
               <div>
-                <p className="font-semibold text-[var(--color-text)]">
-                  Giao hàng tận nơi
+                <p className="text-[12px] font-black uppercase tracking-[0.18em] text-zinc-100">
+                  ⬢ GIAO TẬN NƠI
                 </p>
-                <p className="mt-0.5 text-[12px] text-[var(--color-text-dim)]">
-                  Shipper giao đến địa chỉ của bạn, miễn phí ship.
+                <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-zinc-500">
+                  ▸ Shipper giao đến địa chỉ, miễn phí ship.
                 </p>
               </div>
             </label>
             <label
-              className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition ${
+              className={`mc-mono flex cursor-pointer items-start gap-3 border-2 p-3 transition ${
                 deliveryMethod === "pickup"
-                  ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5"
-                  : "border-[var(--color-border)] hover:bg-[var(--color-surface-2)]"
+                  ? "border-orange-500 bg-orange-500/8"
+                  : "border-zinc-800 bg-zinc-950 hover:border-zinc-700"
               }`}
             >
               <input
@@ -166,14 +183,14 @@ export function CheckoutClient({
                 value="pickup"
                 checked={deliveryMethod === "pickup"}
                 onChange={() => setDeliveryMethod("pickup")}
-                className="mt-1 h-4 w-4 accent-[var(--color-accent)]"
+                className="mt-1 h-4 w-4 accent-orange-500"
               />
               <div>
-                <p className="font-semibold text-[var(--color-text)]">
-                  Lấy hàng tại shop
+                <p className="text-[12px] font-black uppercase tracking-[0.18em] text-zinc-100">
+                  ⬢ LẤY TẠI SHOP
                 </p>
-                <p className="mt-0.5 text-[12px] text-[var(--color-text-dim)]">
-                  Đến shop nhận trực tiếp. Không cần địa chỉ.
+                <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-zinc-500">
+                  ▸ Đến shop nhận trực tiếp. Không cần địa chỉ.
                 </p>
               </div>
             </label>
@@ -181,20 +198,24 @@ export function CheckoutClient({
         </div>
 
         {deliveryMethod === "delivery" ? (
-          <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-6">
-            <h2 className="text-[18px] font-bold text-[var(--color-text)]">
-              Địa chỉ giao hàng
+          <div className={PANEL}>
+            <PanelRivets />
+            <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+              ⬢ 02 · DEPLOY POINT
+            </p>
+            <h2 className="mt-2 text-[18px] font-black uppercase tracking-tight text-zinc-100">
+              Địa chỉ giao hàng<span className="text-orange-500">.</span>
             </h2>
             {addresses.length === 0 ? (
-              <div className="mt-4 rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-surface-2)] p-4 text-center">
-                <p className="text-[13px] text-[var(--color-text-dim)]">
-                  Bạn chưa có địa chỉ nào. Vui lòng thêm địa chỉ.
+              <div className="mt-4 border-2 border-dashed border-zinc-700 bg-zinc-950 p-4 text-center">
+                <p className="mc-mono text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-400">
+                  ⚠ Bạn chưa có địa chỉ nào.
                 </p>
                 <a
                   href="/account/addresses"
-                  className="mt-2 inline-flex text-[13px] font-medium text-[var(--color-accent)] hover:underline"
+                  className="mc-mono mt-3 inline-flex text-[11px] font-black uppercase tracking-[0.22em] text-orange-400 hover:text-orange-300"
                 >
-                  Thêm địa chỉ
+                  ▸ THÊM ĐỊA CHỈ →
                 </a>
               </div>
             ) : (
@@ -202,7 +223,11 @@ export function CheckoutClient({
                 {addresses.map((addr) => (
                   <label
                     key={addr.id}
-                    className="flex cursor-pointer items-start gap-3 rounded-lg border border-[var(--color-border)] p-3 transition hover:bg-[var(--color-surface-2)]"
+                    className={`flex cursor-pointer items-start gap-3 border-2 p-3 transition ${
+                      selectedAddressId === addr.id
+                        ? "border-orange-500 bg-orange-500/8"
+                        : "border-zinc-800 bg-zinc-950 hover:border-zinc-700"
+                    }`}
                   >
                     <input
                       type="radio"
@@ -210,26 +235,24 @@ export function CheckoutClient({
                       value={addr.id}
                       checked={selectedAddressId === addr.id}
                       onChange={() => setSelectedAddressId(addr.id)}
-                      className="mt-1 h-4 w-4 accent-[var(--color-accent)]"
+                      className="mt-1 h-4 w-4 accent-orange-500"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-[var(--color-text)]">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
                           {addr.recipientName}
                         </span>
-                        <span className="text-[12px] text-[var(--color-text-dim)]">
+                        <span className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                           {addr.phone}
                         </span>
                         {addr.isDefault && (
-                          <span className="rounded-full bg-[var(--color-accent)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--color-accent)]">
-                            Mặc định
-                          </span>
+                          <span className="mc-tag-warning">⬢ MẶC ĐỊNH</span>
                         )}
                       </div>
-                      <p className="mt-1 text-[13px] text-[var(--color-text)]">
-                        {addr.addressLine}
+                      <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
+                        ▸ {addr.addressLine}
                       </p>
-                      <p className="text-[12px] text-[var(--color-text-dim)]">
+                      <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                         {addr.ward}, {addr.district}, {addr.province}
                       </p>
                     </div>
@@ -239,49 +262,57 @@ export function CheckoutClient({
             )}
           </div>
         ) : (
-          <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-6">
-            <h2 className="text-[18px] font-bold text-[var(--color-text)]">
-              Địa điểm lấy hàng
+          <div className={PANEL}>
+            <PanelRivets />
+            <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+              ⬢ 02 · PICKUP DEPOT
+            </p>
+            <h2 className="mt-2 text-[18px] font-black uppercase tracking-tight text-zinc-100">
+              Địa điểm lấy hàng<span className="text-orange-500">.</span>
             </h2>
-            <div className="mt-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4">
-              <p className="text-[14px] font-semibold text-[var(--color-text)]">
+            <div className="mt-4 border-2 border-zinc-800 bg-zinc-950 p-4">
+              <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
                 {SHOP_INFO.name}
               </p>
-              <p className="mt-1 text-[13px] text-[var(--color-text)]">
-                {shopFullAddress()}
+              <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
+                ▸ {shopFullAddress()}
               </p>
-              <p className="mt-2 text-[12px] text-[var(--color-text-dim)]">
-                Hotline: <span className="text-[var(--color-text)]">{SHOP_INFO.phone}</span>
-              </p>
-              <p className="text-[12px] text-[var(--color-text-dim)]">
-                Giờ mở cửa: <span className="text-[var(--color-text)]">{SHOP_INFO.hours}</span>
-              </p>
-              <p className="mt-3 text-[12px] text-[var(--color-text-dim)]">
-                Shop sẽ chuẩn bị đơn và báo lại khi sẵn sàng. Vui lòng mang CCCD khớp với tên tài khoản khi đến lấy.
+              <div className="mc-mono mt-3 grid grid-cols-2 gap-2 border-t-2 border-zinc-800 pt-3 text-[10px] uppercase tracking-[0.15em] text-zinc-500">
+                <p>HOTLINE: <span className="text-orange-400">{SHOP_INFO.phone}</span></p>
+                <p>OPEN: <span className="text-orange-400">{SHOP_INFO.hours}</span></p>
+              </div>
+              <p className="mc-mono mt-3 border-t-2 border-zinc-800 pt-3 text-[10px] uppercase tracking-[0.15em] text-zinc-500">
+                ▸ Shop sẽ chuẩn bị đơn và báo lại khi sẵn sàng. Mang CCCD khớp tên tài khoản.
               </p>
             </div>
           </div>
         )}
 
-        <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-6">
-          <h2 className="text-[18px] font-bold text-[var(--color-text)]">Voucher</h2>
+        <div className={PANEL}>
+          <PanelRivets />
+          <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ 03 · DISCOUNT TOKEN
+          </p>
+          <h2 className="mt-2 text-[18px] font-black uppercase tracking-tight text-zinc-100">
+            Voucher<span className="text-orange-500">.</span>
+          </h2>
 
           {applied ? (
-            <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 p-3">
+            <div className="mc-mono mt-4 flex items-center justify-between gap-3 border-2 border-orange-500 bg-orange-500/10 p-3">
               <div className="min-w-0">
-                <p className="font-mono text-[13px] font-semibold text-green-800">
-                  {applied.code}
+                <p className="text-[12px] font-black uppercase tracking-[0.22em] text-orange-300">
+                  ⬢ {applied.code}
                 </p>
-                <p className="text-[12px] text-green-700">
-                  {applied.name} · giảm {formatVnd(applied.discount)}
+                <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-zinc-300">
+                  ▸ {applied.name} · giảm {formatVnd(applied.discount)}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={removeVoucher}
-                className="shrink-0 rounded-md border border-green-300 bg-white px-3 py-1 text-[12px] font-medium text-green-700 transition hover:bg-green-100"
+                className="mc-btn-outline shrink-0"
               >
-                Bỏ
+                ✕ BỎ
               </button>
             </div>
           ) : (
@@ -291,28 +322,30 @@ export function CheckoutClient({
                   type="text"
                   value={voucherCode}
                   onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
-                  placeholder="Nhập mã voucher"
-                  className="h-10 flex-1 rounded-lg border border-[var(--color-border)] bg-white px-3 font-mono text-[13px] uppercase focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+                  placeholder="MÃ VOUCHER"
+                  className="mc-mono h-10 flex-1 border-2 border-zinc-700 bg-zinc-950 px-3 text-[12px] font-bold uppercase tracking-[0.15em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => applyVoucher(voucherCode)}
                   disabled={voucherBusy || !voucherCode.trim()}
-                  className="rounded-lg bg-[var(--color-accent)] px-4 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                  className="mc-btn-primary disabled:opacity-50"
                 >
-                  Áp dụng
+                  ⬢ ÁP DỤNG
                 </button>
               </div>
               {voucherError && (
-                <p className="mt-2 text-[12px] text-red-600">{voucherError}</p>
+                <p className="mc-mono mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-red-400">
+                  ⬢ ERR · {voucherError}
+                </p>
               )}
             </>
           )}
 
           {available.length > 0 && (
-            <div className="mt-4">
-              <p className="mb-2 text-[12px] font-medium text-[var(--color-text-dim)]">
-                Voucher đang có
+            <div className="mt-5 border-t-2 border-zinc-800 pt-4">
+              <p className="mc-mono mb-3 text-[10px] font-black uppercase tracking-[0.32em] text-zinc-400">
+                ▸ VOUCHER ĐANG CÓ
               </p>
               <div className="space-y-2">
                 {available.map((v) => {
@@ -321,27 +354,29 @@ export function CheckoutClient({
                   return (
                     <div
                       key={v.id}
-                      className={`flex items-start justify-between gap-3 rounded-lg border p-3 ${
+                      className={`flex items-start justify-between gap-3 border-2 p-3 ${
                         isApplied
-                          ? "border-green-300 bg-green-50"
-                          : "border-[var(--color-border)] bg-white"
+                          ? "border-orange-500 bg-orange-500/10"
+                          : "border-zinc-800 bg-zinc-950"
                       }`}
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-[12px] font-semibold text-[var(--color-text)]">
-                            {v.code}
+                          <span className="mc-mono text-[12px] font-black uppercase tracking-[0.22em] text-orange-400">
+                            ⬢ {v.code}
                           </span>
-                          <span className="text-[11px] text-[var(--color-text-dim)]">
+                          <span className="mc-mono text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
                             {v.discountType === "percent"
                               ? `-${v.discountValue}%`
                               : `-${formatVnd(v.discountValue)}`}
                           </span>
                         </div>
-                        <p className="text-[12px] text-[var(--color-text)]">{v.name}</p>
+                        <p className="mc-mono mt-1 text-[11px] uppercase tracking-[0.08em] text-zinc-300">
+                          {v.name}
+                        </p>
                         {v.minOrderTotal != null && (
-                          <p className="text-[11px] text-[var(--color-text-dim)]">
-                            Đơn từ {formatVnd(v.minOrderTotal)}
+                          <p className="mc-mono mt-0.5 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                            ▸ Đơn từ {formatVnd(v.minOrderTotal)}
                           </p>
                         )}
                       </div>
@@ -349,9 +384,9 @@ export function CheckoutClient({
                         type="button"
                         disabled={voucherBusy || isApplied || !eligible}
                         onClick={() => applyVoucher(v.code)}
-                        className="shrink-0 rounded-md border border-[var(--color-accent)] bg-white px-3 py-1 text-[12px] font-medium text-[var(--color-accent)] transition hover:bg-[var(--color-accent)]/10 disabled:cursor-not-allowed disabled:border-[var(--color-border)] disabled:text-[var(--color-text-dim)]"
+                        className="mc-btn-outline shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        {isApplied ? "Đã dùng" : eligible ? "Dùng" : "Chưa đủ"}
+                        {isApplied ? "✓ ĐÃ DÙNG" : eligible ? "⬢ DÙNG" : "✕ CHƯA ĐỦ"}
                       </button>
                     </div>
                   );
@@ -361,32 +396,44 @@ export function CheckoutClient({
           )}
         </div>
 
-        <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-6">
-          <h2 className="text-[18px] font-bold text-[var(--color-text)]">
-            Phương thức thanh toán
+        <div className={PANEL}>
+          <PanelRivets />
+          <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ 04 · PAYMENT METHOD
+          </p>
+          <h2 className="mt-2 text-[18px] font-black uppercase tracking-tight text-zinc-100">
+            Thanh toán<span className="text-orange-500">.</span>
           </h2>
-          <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--color-accent)] bg-[var(--color-accent)]/5 p-3">
+          <label className="mc-mono mt-4 flex cursor-pointer items-center gap-3 border-2 border-orange-500 bg-orange-500/8 p-3">
             <input
               type="radio"
               name="payment"
               value="cod"
               checked
               disabled
-              className="h-4 w-4 accent-[var(--color-accent)]"
+              className="h-4 w-4 accent-orange-500"
             />
-            <span className="font-medium text-[var(--color-text)]">
-              COD - Thanh toán khi nhận hàng
+            <span className="text-[12px] font-black uppercase tracking-[0.2em] text-zinc-100">
+              ⬢ COD · Thanh toán khi nhận hàng
             </span>
           </label>
         </div>
       </div>
 
-      <aside className="h-fit rounded-xl border border-[var(--color-border-strong)] bg-white p-6 lg:sticky lg:top-28">
-        <h2 className="text-[16px] font-bold text-[var(--color-text)]">
-          Chi tiết đơn hàng
+      <aside className="relative h-fit border-2 border-orange-500/60 bg-zinc-900 p-6 lg:sticky lg:top-28">
+        <span className="mc-rivet mc-rivet-tl mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-tr mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-bl mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-br mc-rivet-lg" />
+
+        <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ DISPATCH MANIFEST
+        </p>
+        <h2 className="mt-2 text-[16px] font-black uppercase tracking-tight text-zinc-100">
+          Chi tiết đơn<span className="text-orange-500">.</span>
         </h2>
 
-        <div className="mt-4 space-y-3">
+        <div className="mt-4 space-y-3 border-t-2 border-zinc-800 pt-4">
           {items.map((item) => {
             const img = item.variantImageUrl ?? item.productImageUrl;
             const lineTotal = item.salePrice * item.quantity;
@@ -398,21 +445,21 @@ export function CheckoutClient({
                   alt={item.productName}
                   loading="lazy"
                   decoding="async"
-                  className="h-14 w-14 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] object-cover"
+                  className="h-14 w-14 border-2 border-zinc-800 bg-zinc-950 object-cover"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="line-clamp-1 text-[12px] font-medium text-[var(--color-text)]">
+                  <p className="line-clamp-1 text-[12px] font-black uppercase leading-tight tracking-tight text-zinc-100">
                     {item.productName}
                   </p>
-                  <p className="text-[11px] text-[var(--color-text-dim)]">
+                  <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                     {item.sku}
                   </p>
-                  <p className="mt-1 text-[12px] font-semibold text-[var(--color-text)]">
+                  <p className="mc-mono mt-1 text-[11px] font-bold text-zinc-300">
                     {formatVnd(item.salePrice)} × {item.quantity}
                   </p>
                 </div>
                 <div className="whitespace-nowrap text-right">
-                  <p className="text-[12px] font-semibold text-[var(--color-text)]">
+                  <p className="mc-mono text-[12px] font-black text-orange-400">
                     {formatVnd(lineTotal)}
                   </p>
                 </div>
@@ -421,36 +468,36 @@ export function CheckoutClient({
           })}
         </div>
 
-        <div className="my-4 h-px bg-[var(--color-border)]" />
+        <div className="my-4 h-[2px] bg-zinc-800" />
 
-        <div className="space-y-2 text-[13px]">
-          <div className="flex justify-between text-[var(--color-text-dim)]">
-            <span>Tạm tính</span>
-            <span className="text-[var(--color-text)]">{formatVnd(subtotal)}</span>
+        <div className="mc-mono space-y-2 text-[11px] uppercase tracking-[0.15em]">
+          <div className="flex justify-between">
+            <span className="text-zinc-500">▸ Tạm tính</span>
+            <span className="font-bold text-zinc-100">{formatVnd(subtotal)}</span>
           </div>
           {applied && (
-            <div className="flex justify-between text-green-700">
-              <span>Voucher {applied.code}</span>
-              <span>-{formatVnd(applied.discount)}</span>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">▸ Voucher {applied.code}</span>
+              <span className="font-bold text-green-400">−{formatVnd(applied.discount)}</span>
             </div>
           )}
-          <div className="flex justify-between text-[var(--color-text-dim)]">
-            <span>{deliveryMethod === "pickup" ? "Nhận tại shop" : "Phí ship"}</span>
-            <span className="text-green-600 font-medium">
-              {deliveryMethod === "pickup" ? "Không phát sinh" : "Miễn phí"}
+          <div className="flex justify-between">
+            <span className="text-zinc-500">▸ {deliveryMethod === "pickup" ? "Nhận tại shop" : "Phí ship"}</span>
+            <span className="font-bold text-green-400">
+              {deliveryMethod === "pickup" ? "Free" : "Free"}
             </span>
           </div>
-          <div className="flex justify-between pt-2">
-            <span className="font-semibold text-[var(--color-text)]">Tổng cộng</span>
-            <span className="text-[16px] font-bold text-[var(--color-text)]">
+          <div className="flex items-baseline justify-between border-t-2 border-zinc-800 pt-3">
+            <span className="text-[11px] font-black tracking-[0.22em] text-orange-500">⬢ TỔNG</span>
+            <span className="text-[20px] font-black text-orange-400">
               {formatVnd(total)}
             </span>
           </div>
         </div>
 
         {error && (
-          <div className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-[12px] text-red-700">
-            {error}
+          <div className="mc-mono mt-4 border-2 border-red-500/60 bg-red-500/10 px-3 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-red-300">
+            ⬢ ERR · {error}
           </div>
         )}
 
@@ -462,9 +509,9 @@ export function CheckoutClient({
               (!selectedAddressId || addresses.length === 0))
           }
           onClick={handleCheckout}
-          className="mt-5 w-full rounded-lg bg-[var(--color-accent)] px-5 py-3 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mc-btn-primary mc-btn-primary-lg mt-5 w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {busy ? "Đang xử lý..." : "Đặt hàng"}
+          ⬢ {busy ? "ĐANG XỬ LÝ..." : "ĐẶT HÀNG →"}
         </button>
       </aside>
     </div>

@@ -15,7 +15,7 @@ function initials(name: string) {
 
 function Avatar({ user }: { user: SessionUser }) {
   return (
-    <span className="relative grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-full bg-[var(--color-text)] text-[11px] font-semibold text-white">
+    <span className="relative grid h-7 w-7 shrink-0 place-items-center overflow-hidden border-2 border-zinc-700 bg-orange-500 text-[11px] font-black text-zinc-950">
       <span aria-hidden>{initials(user.name)}</span>
       {user.avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -28,7 +28,7 @@ function Avatar({ user }: { user: SessionUser }) {
           onError={(e) => {
             e.currentTarget.style.display = "none";
           }}
-          className="absolute inset-0 h-full w-full rounded-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
       ) : null}
     </span>
@@ -85,10 +85,10 @@ export function UserMenu({ user }: { user: SessionUser }) {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-full px-1 py-1 pr-3 transition hover:bg-[var(--color-surface-2)] focus:outline-none"
+        className="flex items-center gap-2 border-2 border-zinc-700 bg-zinc-900 px-2 py-1 transition hover:border-orange-500 focus:outline-none"
       >
         <Avatar user={user} />
-        <span className="max-w-[10rem] truncate text-[13px] font-medium text-[var(--color-text)]">
+        <span className="mc-mono max-w-[10rem] truncate text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-100">
           {user.name}
         </span>
       </button>
@@ -96,8 +96,15 @@ export function UserMenu({ user }: { user: SessionUser }) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--color-border)] bg-white p-1 shadow-lg"
+          className="absolute right-0 top-full z-50 mt-2 w-60 border-2 border-zinc-700 bg-zinc-900 p-1 shadow-[4px_4px_0_#09090b]"
         >
+          <span className="mc-rivet mc-rivet-tl" />
+          <span className="mc-rivet mc-rivet-tr" />
+          <span className="mc-rivet mc-rivet-bl" />
+          <span className="mc-rivet mc-rivet-br" />
+          <p className="mc-mono px-3 pb-2 pt-2 text-[9px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ OPERATOR MENU
+          </p>
           <MenuLink href="/account">Tài khoản của tôi</MenuLink>
           <MenuLink href="/cart">Giỏ hàng</MenuLink>
           <MenuLink href="/orders">Đơn mua</MenuLink>
@@ -105,14 +112,14 @@ export function UserMenu({ user }: { user: SessionUser }) {
             <MenuLink href="/shipping">Quản lý vận chuyển</MenuLink>
           )}
           {isAdmin && <MenuLink href="/admin">Trang quản trị</MenuLink>}
-          <div className="my-1 h-px bg-[var(--color-border)]" />
+          <div className="my-1 h-[2px] bg-zinc-800" />
           <form action="/api/auth/logout" method="post">
             <button
               type="submit"
               role="menuitem"
-              className="block w-full rounded-lg px-3 py-2 text-left text-[13px] text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
+              className="mc-mono block w-full px-3 py-2 text-left text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-300 transition hover:bg-orange-500 hover:text-zinc-950"
             >
-              Đăng xuất
+              ▸ Đăng xuất
             </button>
           </form>
         </div>
@@ -132,9 +139,9 @@ function MenuLink({
     <Link
       href={href}
       role="menuitem"
-      className="block rounded-lg px-3 py-2 text-[13px] text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
+      className="mc-mono block px-3 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-300 transition hover:bg-orange-500 hover:text-zinc-950"
     >
-      {children}
+      ▸ {children}
     </Link>
   );
 }

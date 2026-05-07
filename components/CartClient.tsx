@@ -129,8 +129,12 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-[var(--color-border)] bg-white p-10 text-center">
-        <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-dim)]">
+      <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 p-12 text-center">
+        <span className="mc-rivet mc-rivet-tl" />
+        <span className="mc-rivet mc-rivet-tr" />
+        <span className="mc-rivet mc-rivet-bl" />
+        <span className="mc-rivet mc-rivet-br" />
+        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center border-2 border-zinc-700 bg-zinc-950 text-orange-500">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -139,33 +143,30 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden
-            className="h-6 w-6"
+            className="h-7 w-7"
           >
             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
             <path d="M3 6h18" />
             <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
         </div>
-        <p className="text-[15px] font-medium text-[var(--color-text)]">
-          Giỏ hàng trống
+        <p className="text-[16px] font-black uppercase tracking-tight text-zinc-100">
+          ⬢ CARGO BAY EMPTY
         </p>
-        <p className="mt-1 text-[13px] text-[var(--color-text-dim)]">
-          Khám phá sản phẩm và thêm vào giỏ để xem ở đây.
+        <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+          ▸ Chưa có unit nào trong giỏ. Khám phá sản phẩm để bắt đầu.
         </p>
-        <Link
-          href="/products"
-          className="mt-5 inline-flex items-center rounded-full bg-[var(--color-accent)] px-5 py-2 text-[13px] font-semibold text-white transition hover:brightness-110"
-        >
-          Xem sản phẩm
+        <Link href="/products" className="mc-btn-primary mc-btn-primary-lg mt-6">
+          ⬢ XEM SẢN PHẨM
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+    <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
+        <div className="flex items-center gap-3 border-2 border-zinc-700 bg-zinc-900 p-3">
           <input
             type="checkbox"
             checked={allSelected}
@@ -173,13 +174,13 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
               if (el) el.indeterminate = partialSelected;
             }}
             onChange={toggleSelectAll}
-            className="h-4 w-4 accent-[var(--color-accent)]"
+            className="h-4 w-4 accent-orange-500"
             aria-label="Chọn tất cả"
           />
-          <span className="text-[13px] font-medium text-[var(--color-text)]">
+          <span className="mc-mono text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-100">
             {selectedIds.size > 0
-              ? `Đã chọn ${selectedIds.size} sản phẩm`
-              : "Chọn tất cả"}
+              ? `▸ ĐÃ CHỌN ${selectedIds.size} UNIT`
+              : "⬢ CHỌN TẤT CẢ"}
           </span>
         </div>
 
@@ -192,22 +193,27 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
           return (
             <div
               key={it.id}
-              className={`flex gap-3 rounded-lg border p-3 sm:gap-4 sm:p-4 transition ${
+              className={`relative flex gap-3 border-2 p-3 sm:gap-4 sm:p-4 transition ${
                 isSelected
-                  ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5"
-                  : "border-[var(--color-border)] bg-white"
+                  ? "border-orange-500 bg-orange-500/5"
+                  : "border-zinc-800 bg-zinc-900"
               }`}
             >
+              <span className="mc-rivet mc-rivet-tl" />
+              <span className="mc-rivet mc-rivet-tr" />
+              <span className="mc-rivet mc-rivet-bl" />
+              <span className="mc-rivet mc-rivet-br" />
+
               <input
                 type="checkbox"
                 checked={isSelected}
                 onChange={() => toggleSelectItem(it.id)}
-                className="mt-1 h-4 w-4 accent-[var(--color-accent)]"
+                className="mt-1 h-4 w-4 accent-orange-500"
                 aria-label={`Chọn ${it.productName}`}
               />
               <Link
                 href={`/products/${it.productSlug}`}
-                className="block h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] sm:h-24 sm:w-24"
+                className="block h-20 w-20 shrink-0 overflow-hidden border-2 border-zinc-800 bg-zinc-950 sm:h-24 sm:w-24"
               >
                 {img ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -219,7 +225,7 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="grid h-full w-full place-items-center text-[10px] text-[var(--color-text-dim)]">
+                  <div className="grid h-full w-full place-items-center text-[10px] text-zinc-600">
                     —
                   </div>
                 )}
@@ -228,30 +234,30 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <Link
                   href={`/products/${it.productSlug}`}
-                  className="line-clamp-2 text-[14px] font-medium text-[var(--color-text)] hover:text-[var(--color-accent)]"
+                  className="line-clamp-2 text-[14px] font-black uppercase leading-tight tracking-tight text-zinc-100 hover:text-orange-400"
                 >
                   {it.productName}
                 </Link>
-                <p className="text-[11px] text-[var(--color-text-dim)]">
-                  Mã: <span className="font-medium">{it.sku}</span>
+                <p className="mc-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                  SN: <span className="font-bold text-zinc-300">{it.sku}</span>
                   {" · "}
-                  Còn{" "}
-                  <span className="font-medium text-[var(--color-text)]">
+                  STOCK:{" "}
+                  <span className="font-bold text-orange-400">
                     {it.stock}
                   </span>
                 </p>
                 <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-2">
-                  <div className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-white">
+                  <div className="inline-flex items-center border-2 border-zinc-700 bg-zinc-950">
                     <button
                       type="button"
                       aria-label="Giảm"
                       disabled={isBusy || it.quantity <= 1}
                       onClick={() => setQuantity(it.id, it.quantity - 1)}
-                      className="grid h-8 w-8 place-items-center text-[var(--color-text-dim)] transition hover:text-[var(--color-text)] disabled:opacity-40"
+                      className="grid h-8 w-8 place-items-center text-zinc-400 transition hover:bg-zinc-900 hover:text-orange-400 disabled:opacity-40"
                     >
                       −
                     </button>
-                    <span className="min-w-8 text-center text-[13px] font-medium">
+                    <span className="mc-mono min-w-8 text-center text-[13px] font-black text-zinc-100">
                       {it.quantity}
                     </span>
                     <button
@@ -259,18 +265,18 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
                       aria-label="Tăng"
                       disabled={isBusy || maxed}
                       onClick={() => setQuantity(it.id, it.quantity + 1)}
-                      className="grid h-8 w-8 place-items-center text-[var(--color-text-dim)] transition hover:text-[var(--color-text)] disabled:opacity-40"
+                      className="grid h-8 w-8 place-items-center text-zinc-400 transition hover:bg-zinc-900 hover:text-orange-400 disabled:opacity-40"
                     >
                       +
                     </button>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <div className="text-[14px] font-semibold text-[var(--color-text)]">
+                      <div className="mc-mono text-[14px] font-black text-orange-400">
                         {formatVnd(lineTotal)}
                       </div>
                       {it.listPrice > it.salePrice && (
-                        <div className="text-[11px] text-[var(--color-text-dim)] line-through">
+                        <div className="mc-mono text-[10px] text-zinc-600 line-through">
                           {formatVnd(it.listPrice * it.quantity)}
                         </div>
                       )}
@@ -280,7 +286,7 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
                       aria-label="Xoá"
                       disabled={isBusy}
                       onClick={() => removeItem(it.id)}
-                      className="grid h-8 w-8 place-items-center rounded-full text-[var(--color-text-dim)] transition hover:bg-red-500/10 hover:text-red-600 disabled:opacity-40"
+                      className="grid h-9 w-9 place-items-center border-2 border-zinc-700 text-zinc-400 transition hover:border-red-500 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-40"
                     >
                       <svg
                         viewBox="0 0 24 24"
@@ -304,31 +310,41 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
           );
         })}
         {error && (
-          <div role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-[12px] text-red-700">
-            {error}
+          <div role="alert" className="mc-mono border-2 border-red-500/60 bg-red-500/10 px-3 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-red-300">
+            ⬢ ERR · {error}
           </div>
         )}
       </div>
 
-      <aside className="h-fit rounded-lg border border-[var(--color-border-strong)] bg-white p-5 lg:sticky lg:top-28">
-        <h2 className="text-[14px] font-semibold text-[var(--color-text)]">
-          Tóm tắt đơn
+      <aside className="relative h-fit border-2 border-orange-500/60 bg-zinc-900 p-5 lg:sticky lg:top-28">
+        <span className="mc-rivet mc-rivet-tl mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-tr mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-bl mc-rivet-lg" />
+        <span className="mc-rivet mc-rivet-br mc-rivet-lg" />
+
+        <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+          ⬢ DISPATCH SUMMARY
+        </p>
+        <h2 className="mt-2 text-[18px] font-black uppercase tracking-tight text-zinc-100">
+          Tóm tắt đơn<span className="text-orange-500">.</span>
         </h2>
-        <dl className="mt-4 space-y-2 text-[13px]">
-          <div className="flex justify-between text-[var(--color-text-dim)]">
-            <dt>Tạm tính ({totalQty} sp)</dt>
-            <dd className="text-[var(--color-text)]">{formatVnd(subtotal)}</dd>
+        <dl className="mt-4 space-y-2.5 border-t-2 border-zinc-800 pt-4 text-[12px]">
+          <div className="mc-mono flex justify-between uppercase tracking-[0.15em]">
+            <dt className="text-zinc-500">▸ Tạm tính ({totalQty} unit)</dt>
+            <dd className="font-bold text-zinc-100">{formatVnd(subtotal)}</dd>
           </div>
           {saved > 0 && (
-            <div className="flex justify-between text-[var(--color-text-dim)]">
-              <dt>Tiết kiệm</dt>
-              <dd className="text-green-600">−{formatVnd(saved)}</dd>
+            <div className="mc-mono flex justify-between uppercase tracking-[0.15em]">
+              <dt className="text-zinc-500">▸ Tiết kiệm</dt>
+              <dd className="font-bold text-green-400">−{formatVnd(saved)}</dd>
             </div>
           )}
-          <div className="my-2 h-px bg-[var(--color-border)]" />
+          <div className="my-2 h-[2px] bg-zinc-800" />
           <div className="flex items-baseline justify-between">
-            <dt className="text-[var(--color-text-dim)]">Tổng cộng</dt>
-            <dd className="text-[20px] font-semibold text-[var(--color-text)]">
+            <dt className="mc-mono text-[11px] font-bold uppercase tracking-[0.22em] text-orange-500">
+              ⬢ TỔNG
+            </dt>
+            <dd className="mc-mono text-[22px] font-black text-orange-400">
               {formatVnd(subtotal)}
             </dd>
           </div>
@@ -337,15 +353,15 @@ export function CartClient({ initialItems }: { initialItems: CartItem[] }) {
           type="button"
           disabled={selectedIds.size === 0}
           onClick={goToCheckout}
-          className="mt-5 w-full rounded-lg bg-[var(--color-accent)] px-6 py-3 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mc-btn-primary mc-btn-primary-lg mt-5 w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Thanh toán
+          ⬢ THANH TOÁN →
         </button>
         <Link
           href="/products"
-          className="mt-2 inline-flex w-full items-center justify-center rounded-lg border border-[var(--color-border)] bg-white px-6 py-3 text-[13px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
+          className="mc-btn-outline mc-btn-outline-lg mt-2 w-full justify-center"
         >
-          Tiếp tục mua sắm
+          / TIẾP TỤC MUA
         </Link>
       </aside>
     </div>

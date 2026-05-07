@@ -6,30 +6,31 @@ export async function ProductGrid() {
 
   return (
     <section className="mx-auto w-full px-4 py-8 sm:px-6 lg:w-2/3 lg:px-0">
-      <div className="mb-5 flex items-end justify-between">
+      <div className="mb-5 flex items-end justify-between border-b-2 border-zinc-800 pb-4">
         <div>
-          <p className="text-[12px] font-medium text-[var(--color-accent)]">
-            Sản phẩm
+          <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ INVENTORY · TẤT CẢ SẢN PHẨM
           </p>
-          <h2 className="mt-0.5 text-[22px] font-semibold tracking-tight text-[var(--color-text)] sm:text-[26px]">
-            Tất cả sản phẩm
+          <h2 className="mt-2 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.03em] text-zinc-100 sm:text-[28px]">
+            Production line<span className="text-orange-500">.</span>
           </h2>
         </div>
-        <a
-          href="/products"
-          className="hidden text-[13px] font-medium text-[var(--color-accent)] transition hover:underline sm:inline"
-        >
-          Xem tất cả →
+        <a href="/products" className="mc-btn-outline hidden sm:inline-flex">
+          / FULL CATALOG →
         </a>
       </div>
 
       {products.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--color-border-strong)] bg-white px-6 py-16 text-center">
-          <p className="text-[14px] font-medium text-[var(--color-text)]">
-            Chưa có sản phẩm nào
+        <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 px-6 py-16 text-center">
+          <span className="mc-rivet mc-rivet-tl" />
+          <span className="mc-rivet mc-rivet-tr" />
+          <span className="mc-rivet mc-rivet-bl" />
+          <span className="mc-rivet mc-rivet-br" />
+          <p className="text-[14px] font-black uppercase tracking-tight text-zinc-100">
+            ⬢ INVENTORY EMPTY
           </p>
-          <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
-            Thêm sản phẩm trong trang quản trị để hiển thị tại đây.
+          <p className="mc-mono mt-2 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+            ▸ Thêm sản phẩm trong trang quản trị để hiển thị tại đây.
           </p>
         </div>
       ) : (

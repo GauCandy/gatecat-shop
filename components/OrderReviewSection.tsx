@@ -15,12 +15,15 @@ export function OrderReviewSection({
   if (products.length === 0) return null;
 
   return (
-    <div className="mt-6 border-t border-[var(--color-border)] pt-6">
-      <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-        Đánh giá sản phẩm
+    <div className="mt-6 border-t-2 border-zinc-800 pt-6">
+      <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+        ⬢ FIELD REPORT · GIVE FEEDBACK
+      </p>
+      <h2 className="mt-2 text-[16px] font-black uppercase tracking-tight text-zinc-100">
+        Đánh giá sản phẩm<span className="text-orange-500">.</span>
       </h2>
-      <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
-        Chia sẻ trải nghiệm của bạn. Mỗi sản phẩm chỉ được đánh giá 1 lần trong đơn này, nhưng có thể sửa bất kỳ lúc nào.
+      <p className="mc-mono mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        ▸ Mỗi sản phẩm chỉ đánh giá 1 lần / đơn — sửa bất kỳ lúc nào.
       </p>
       <div className="mt-4 space-y-3">
         {products.map((p) => (
@@ -78,7 +81,7 @@ function ProductReviewForm({
   };
 
   return (
-    <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
+    <div className="border-2 border-zinc-800 bg-zinc-950 p-3">
       <div className="flex items-start gap-3">
         {product.variantImageUrl ? (
           /* eslint-disable-next-line @next/next/no-img-element */
@@ -86,26 +89,26 @@ function ProductReviewForm({
             src={product.variantImageUrl}
             alt={product.productName}
             loading="lazy"
-            className="h-12 w-12 shrink-0 rounded-md border border-[var(--color-border)] bg-white object-cover"
+            className="h-12 w-12 shrink-0 border-2 border-zinc-700 bg-zinc-900 object-cover"
           />
         ) : (
-          <div className="h-12 w-12 shrink-0 rounded-md bg-white" />
+          <div className="h-12 w-12 shrink-0 border-2 border-zinc-700 bg-zinc-900" />
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-medium text-[var(--color-text)]">
+          <p className="text-[13px] font-black uppercase tracking-tight text-zinc-100">
             {product.productName}
           </p>
-          <p className="text-[11px] text-[var(--color-text-dim)]">
-            {product.variantSku}
+          <p className="mc-mono text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
+            ▸ SN: {product.variantSku}
           </p>
         </div>
         {existing && !editing && (
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="shrink-0 text-[12px] text-[var(--color-accent)] hover:underline"
+            className="mc-mono shrink-0 text-[10px] font-black uppercase tracking-[0.22em] text-orange-400 hover:text-orange-300"
           >
-            Sửa
+            ▸ SỬA
           </button>
         )}
       </div>
@@ -119,16 +122,16 @@ function ProductReviewForm({
             placeholder="Chia sẻ cảm nhận của bạn (tuỳ chọn)"
             rows={2}
             disabled={busy}
-            className="mt-2 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="mc-mono mt-2 w-full resize-none border-2 border-zinc-700 bg-zinc-900 px-3 py-2 text-[12px] uppercase tracking-[0.04em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
           />
           <div className="mt-2 flex gap-2">
             <button
               type="button"
               onClick={handleSubmit}
               disabled={busy || rating < 1}
-              className="rounded-lg bg-[var(--color-accent)] px-4 py-1.5 text-[12px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+              className="mc-btn-primary disabled:opacity-50"
             >
-              {busy ? "Đang lưu..." : existing ? "Lưu thay đổi" : "Gửi đánh giá"}
+              ⬢ {busy ? "ĐANG LƯU..." : existing ? "LƯU" : "GỬI"}
             </button>
             {existing && (
               <button
@@ -139,24 +142,24 @@ function ProductReviewForm({
                   setRating(existing.rating);
                   setComment(existing.comment ?? "");
                 }}
-                className="rounded-lg border border-[var(--color-border)] bg-white px-4 py-1.5 text-[12px] font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:opacity-50"
+                className="mc-btn-outline disabled:opacity-50"
               >
-                Huỷ
+                ✕ HUỶ
               </button>
             )}
           </div>
         </div>
       ) : (
         existing && (
-          <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-white p-3">
+          <div className="mt-3 border-2 border-zinc-800 bg-zinc-900 p-3">
             <StarDisplay rating={existing.rating} />
             {existing.comment && (
-              <p className="mt-2 text-[13px] text-[var(--color-text)]">
+              <p className="mt-2 text-[13px] text-zinc-300">
                 {existing.comment}
               </p>
             )}
-            <p className="mt-1 text-[11px] text-[var(--color-text-dim)]">
-              Đánh giá lúc{" "}
+            <p className="mc-mono mt-2 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+              ▸ Đánh giá lúc{" "}
               {new Intl.DateTimeFormat("vi-VN", {
                 dateStyle: "short",
                 timeStyle: "short",
@@ -190,15 +193,15 @@ function StarInput({
           onClick={() => onChange(i)}
           onMouseEnter={() => setHover(i)}
           aria-label={`${i} sao`}
-          className={`text-[22px] transition ${
-            i <= display ? "text-yellow-500" : "text-[var(--color-border-strong)]"
-          } disabled:cursor-not-allowed`}
+          className={`text-[24px] transition ${
+            i <= display ? "text-orange-500" : "text-zinc-700"
+          } disabled:cursor-not-allowed hover:scale-110`}
         >
           ★
         </button>
       ))}
-      <span className="ml-2 text-[12px] text-[var(--color-text-dim)]">
-        {value > 0 ? `${value}/5` : "Chọn số sao"}
+      <span className="mc-mono ml-2 text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-400">
+        {value > 0 ? `${value}/5 STAR` : "▸ CHỌN SAO"}
       </span>
     </div>
   );
@@ -211,7 +214,7 @@ export function StarDisplay({ rating }: { rating: number }) {
         <span
           key={i}
           className={`text-[16px] ${
-            i <= rating ? "text-yellow-500" : "text-[var(--color-border-strong)]"
+            i <= rating ? "text-orange-500" : "text-zinc-700"
           }`}
         >
           ★

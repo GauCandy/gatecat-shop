@@ -57,15 +57,23 @@ export function ShipperOrderEditor({
   };
 
   return (
-    <div className="rounded-xl border border-[var(--color-border-strong)] bg-white p-5">
-      <h2 className="text-[14px] font-bold text-[var(--color-text)]">
-        Cập nhật trạng thái
+    <div className="relative border-2 border-orange-500/60 bg-zinc-900 p-5 shadow-[6px_6px_0_#09090b]">
+      <span className="mc-rivet mc-rivet-tl mc-rivet-lg" />
+      <span className="mc-rivet mc-rivet-tr mc-rivet-lg" />
+      <span className="mc-rivet mc-rivet-bl mc-rivet-lg" />
+      <span className="mc-rivet mc-rivet-br mc-rivet-lg" />
+
+      <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+        ⬢ STATUS UPDATE
+      </p>
+      <h2 className="mt-2 text-[16px] font-black uppercase tracking-tight text-zinc-100">
+        Cập nhật trạng thái<span className="text-orange-500">.</span>
       </h2>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-5 space-y-3 border-t-2 border-zinc-800 pt-4">
         <div>
-          <label className="mb-1 block text-[12px] font-medium text-[var(--color-text-dim)]">
-            Trạng thái
+          <label className="mc-mono mb-2 block text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ TRẠNG THÁI
           </label>
           <select
             value={status}
@@ -74,7 +82,7 @@ export function ShipperOrderEditor({
               setMessage(null);
             }}
             disabled={saving}
-            className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-white px-2 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="mc-mono h-10 w-full border-2 border-zinc-700 bg-zinc-950 px-2 text-[12px] font-bold uppercase tracking-[0.1em] text-zinc-100 focus:border-orange-500 focus:outline-none"
           >
             {STATUS_OPTIONS.map((s) => (
               <option key={s.value} value={s.value}>
@@ -85,8 +93,8 @@ export function ShipperOrderEditor({
         </div>
 
         <div>
-          <label className="mb-1 block text-[12px] font-medium text-[var(--color-text-dim)]">
-            Mã vận chuyển
+          <label className="mc-mono mb-2 block text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ TRACKING CODE
           </label>
           <input
             type="text"
@@ -95,9 +103,9 @@ export function ShipperOrderEditor({
               setTrackingCode(e.target.value);
               setMessage(null);
             }}
-            placeholder="Để trống để xoá"
+            placeholder="ĐỂ TRỐNG ĐỂ XOÁ"
             disabled={saving}
-            className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="mc-mono h-10 w-full border-2 border-zinc-700 bg-zinc-950 px-3 text-[12px] font-bold uppercase tracking-[0.1em] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
           />
         </div>
 
@@ -105,18 +113,20 @@ export function ShipperOrderEditor({
           type="button"
           disabled={!dirty || saving}
           onClick={handleSave}
-          className="w-full rounded-lg bg-[var(--color-accent)] px-4 py-2.5 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+          className="mc-btn-primary mc-btn-primary-lg w-full justify-center disabled:opacity-50"
         >
-          {saving ? "Đang lưu..." : dirty ? "Lưu thay đổi" : "Chưa thay đổi"}
+          ⬢ {saving ? "ĐANG LƯU..." : dirty ? "LƯU THAY ĐỔI" : "KHÔNG ĐỔI"}
         </button>
 
         {message && (
           <p
-            className={`text-[12px] ${
-              message.type === "ok" ? "text-green-700" : "text-red-600"
+            className={`mc-mono border-2 px-3 py-2 text-[11px] font-black uppercase tracking-[0.2em] ${
+              message.type === "ok"
+                ? "border-green-500/60 bg-green-500/10 text-green-300"
+                : "border-red-500/60 bg-red-500/10 text-red-300"
             }`}
           >
-            {message.text}
+            ⬢ {message.text}
           </p>
         )}
       </div>

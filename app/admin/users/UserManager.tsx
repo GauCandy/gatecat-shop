@@ -7,9 +7,9 @@ import { toast } from "@/components/Toaster";
 const ROLE_OPTIONS: UserRole[] = ["USER", "SHIPPER", "ADMIN"];
 
 const ROLE_BADGE: Record<UserRole, string> = {
-  USER: "bg-gray-100 text-gray-700",
-  SHIPPER: "bg-blue-100 text-blue-700",
-  ADMIN: "bg-purple-100 text-purple-700",
+  USER: "bg-zinc-800 text-zinc-300",
+  SHIPPER: "bg-cyan-500/15 text-cyan-300",
+  ADMIN: "bg-purple-500/15 text-purple-300",
 };
 
 const formatDate = (d: Date) =>
@@ -95,7 +95,7 @@ export function UserManager({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Tìm theo tên, email, ID..."
-          className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-white px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] md:max-w-sm"
+          className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-zinc-900 px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] md:max-w-sm"
         />
         <div className="flex flex-wrap gap-1">
           <FilterPill
@@ -119,7 +119,7 @@ export function UserManager({
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700">
+        <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-[13px] text-red-300">
           {error}
         </div>
       )}
@@ -131,7 +131,7 @@ export function UserManager({
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] bg-white">
+        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] bg-zinc-900">
           <table className="min-w-full text-[13px]">
             <thead className="border-b border-[var(--color-border)] bg-[var(--color-surface-2)] text-[11px] uppercase tracking-wider text-[var(--color-text-dim)]">
               <tr>
@@ -191,7 +191,7 @@ export function UserManager({
                       value={u.role}
                       disabled={busyId === u.id}
                       onChange={(e) => handleRoleChange(u, e.target.value as UserRole)}
-                      className="h-8 rounded-md border border-[var(--color-border)] bg-white px-2 text-[12px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+                      className="h-8 rounded-md border border-[var(--color-border)] bg-zinc-900 px-2 text-[12px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
                     >
                       {ROLE_OPTIONS.map((r) => (
                         <option key={r} value={r}>
@@ -228,13 +228,13 @@ function FilterPill({
       className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition ${
         active
           ? "bg-[var(--color-text)] text-white"
-          : "border border-[var(--color-border)] bg-white text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+          : "border border-[var(--color-border)] bg-zinc-900 text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
       }`}
     >
       {children}
       <span
         className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
-          active ? "bg-white/20" : "bg-[var(--color-surface-2)]"
+          active ? "bg-zinc-900/20" : "bg-[var(--color-surface-2)]"
         }`}
       >
         {count}

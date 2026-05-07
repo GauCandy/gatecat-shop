@@ -73,21 +73,28 @@ export function ProductDetailClient({ product }: { product: Product }) {
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
       <div className="flex flex-col gap-3">
-        <div className="aspect-square w-full overflow-hidden rounded-2xl border border-[var(--color-border-strong)] bg-[var(--color-surface-2)]">
-          {mainImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={mainImage}
-              alt={product.name}
-              decoding="async"
-              fetchPriority="high"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="grid h-full w-full place-items-center text-[13px] text-[var(--color-text-dim)]">
-              Không có ảnh
-            </div>
-          )}
+        <div className="relative aspect-square w-full overflow-hidden">
+          <span className="mc-rivet mc-rivet-tl mc-rivet-lg" />
+          <span className="mc-rivet mc-rivet-tr mc-rivet-lg" />
+          <span className="mc-rivet mc-rivet-bl mc-rivet-lg" />
+          <span className="mc-rivet mc-rivet-br mc-rivet-lg" />
+          <div className="absolute inset-2 overflow-hidden border-2 border-zinc-700 bg-zinc-900">
+            {mainImage ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={mainImage}
+                alt={product.name}
+                decoding="async"
+                fetchPriority="high"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="mc-mono grid h-full w-full place-items-center text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-600">
+                ⬢ NO IMAGE
+              </div>
+            )}
+            <div aria-hidden className="mc-hex pointer-events-none absolute inset-0 opacity-15 mix-blend-overlay" />
+          </div>
         </div>
 
         {product.variants.length > 1 && (
@@ -101,10 +108,10 @@ export function ProductDetailClient({ product }: { product: Product }) {
                   type="button"
                   onClick={() => setSelectedId(v.id)}
                   aria-label={v.sku}
-                  className={`aspect-square overflow-hidden rounded-lg border transition ${
+                  className={`aspect-square overflow-hidden border-2 transition ${
                     active
-                      ? "border-[var(--color-accent)] ring-2 ring-[var(--color-accent)]/40"
-                      : "border-[var(--color-border)] hover:border-[var(--color-text)]/40"
+                      ? "border-orange-500 shadow-[3px_3px_0_#09090b]"
+                      : "border-zinc-800 hover:border-zinc-600"
                   }`}
                 >
                   {img ? (
@@ -117,7 +124,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="grid h-full w-full place-items-center bg-[var(--color-surface-2)] text-[10px] text-[var(--color-text-dim)]">
+                    <div className="grid h-full w-full place-items-center bg-zinc-950 text-[10px] text-zinc-600">
                       —
                     </div>
                   )}
@@ -135,31 +142,44 @@ export function ProductDetailClient({ product }: { product: Product }) {
               <Link
                 key={c.id}
                 href={`/category/${c.slug}`}
-                className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-dim)] transition hover:border-[var(--color-text)]/30 hover:text-[var(--color-text)]"
+                className="mc-mono inline-flex items-center border border-orange-500/50 bg-zinc-900 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.22em] text-orange-400 transition hover:border-orange-500 hover:text-orange-300"
               >
-                {c.name}
+                /{c.name}
               </Link>
             ))}
           </div>
         )}
 
-        <h1 className="text-[24px] font-semibold leading-tight tracking-tight text-[var(--color-text)] sm:text-[28px]">
-          {product.name}
-        </h1>
+        <div>
+          <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+            ⬢ DOSSIER
+          </p>
+          <h1 className="mt-2 text-[24px] font-black uppercase leading-tight tracking-[-0.03em] text-zinc-100 sm:text-[30px]">
+            {product.name}<span className="text-orange-500">.</span>
+          </h1>
+        </div>
 
         {selected ? (
-          <div className="rounded-2xl border border-[var(--color-border-strong)] bg-white p-5">
-            <div className="flex items-baseline gap-3">
-              <span className="text-[26px] font-semibold text-[var(--color-text)]">
+          <div className="relative border-2 border-orange-500/60 bg-zinc-900 p-5">
+            <span className="mc-rivet mc-rivet-tl" />
+            <span className="mc-rivet mc-rivet-tr" />
+            <span className="mc-rivet mc-rivet-bl" />
+            <span className="mc-rivet mc-rivet-br" />
+
+            <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+              ⬢ UNIT COST
+            </p>
+            <div className="mt-2 flex flex-wrap items-baseline gap-3">
+              <span className="mc-mono text-[28px] font-black text-orange-400">
                 {formatVnd(selected.salePrice)}
               </span>
               {selected.listPrice > selected.salePrice && (
                 <>
-                  <span className="text-[14px] text-[var(--color-text-dim)] line-through">
+                  <span className="mc-mono text-[14px] text-zinc-500 line-through">
                     {formatVnd(selected.listPrice)}
                   </span>
-                  <span className="rounded-full bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold text-red-600">
-                    −
+                  <span className="mc-tag-warning">
+                    ⬢ −
                     {Math.round(
                       ((selected.listPrice - selected.salePrice) /
                         selected.listPrice) *
@@ -170,15 +190,15 @@ export function ProductDetailClient({ product }: { product: Product }) {
                 </>
               )}
             </div>
-            <p className="mt-2 text-[12px] text-[var(--color-text-dim)]">
-              Mã: <span className="font-medium">{selected.sku}</span>
+            <p className="mc-mono mt-3 border-t-2 border-zinc-800 pt-3 text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500">
+              SN: <span className="text-zinc-300">{selected.sku}</span>
               {" · "}
               {outOfStock ? (
-                <span className="font-medium text-red-600">Hết hàng</span>
+                <span className="text-red-400">⚠ HẾT HÀNG</span>
               ) : (
                 <>
-                  Tồn kho:{" "}
-                  <span className="font-medium text-[var(--color-text)]">
+                  STOCK:{" "}
+                  <span className="text-orange-400">
                     {selected.stock}
                   </span>
                 </>
@@ -186,13 +206,15 @@ export function ProductDetailClient({ product }: { product: Product }) {
             </p>
           </div>
         ) : (
-          <p className="text-[13px] text-[var(--color-text-dim)]">Liên hệ để biết giá</p>
+          <p className="mc-mono text-[12px] font-bold uppercase tracking-[0.22em] text-zinc-500">
+            ▸ Liên hệ để biết giá
+          </p>
         )}
 
         {product.variants.length > 1 && (
           <div>
-            <p className="mb-2 text-[12px] font-medium text-[var(--color-text-dim)]">
-              Chọn mã ({product.variants.length})
+            <p className="mc-mono mb-2 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+              ⬢ CHỌN MÃ ({product.variants.length})
             </p>
             <div className="flex flex-wrap gap-2">
               {product.variants.map((v) => {
@@ -203,17 +225,17 @@ export function ProductDetailClient({ product }: { product: Product }) {
                     key={v.id}
                     type="button"
                     onClick={() => setSelectedId(v.id)}
-                    className={`rounded-lg border px-3 py-2 text-left text-[12px] transition ${
+                    className={`mc-mono border-2 px-3 py-2 text-left transition ${
                       active
-                        ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5 text-[var(--color-text)]"
-                        : "border-[var(--color-border)] bg-white text-[var(--color-text-dim)] hover:border-[var(--color-text)]/40 hover:text-[var(--color-text)]"
+                        ? "border-orange-500 bg-orange-500/8 text-zinc-100 shadow-[3px_3px_0_#09090b]"
+                        : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                     }`}
                   >
-                    <div className="font-medium">{v.sku}</div>
-                    <div className="mt-0.5 text-[11px]">
+                    <div className="text-[11px] font-black uppercase tracking-[0.18em]">{v.sku}</div>
+                    <div className="mt-1 text-[11px] font-bold text-orange-400">
                       {formatVnd(v.salePrice)}
                       {empty && (
-                        <span className="ml-1 text-red-600">(hết)</span>
+                        <span className="ml-1 text-red-400">⚠ HẾT</span>
                       )}
                     </div>
                   </button>
@@ -225,26 +247,26 @@ export function ProductDetailClient({ product }: { product: Product }) {
 
         {selected && (
           <div>
-            <p className="mb-2 text-[12px] font-medium text-[var(--color-text)]">
-              Số lượng
+            <p className="mc-mono mb-2 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+              ⬢ SỐ LƯỢNG
             </p>
-            <div className="inline-flex items-center rounded-lg border border-[var(--color-border)] bg-white">
+            <div className="inline-flex items-center border-2 border-zinc-700 bg-zinc-900">
               <button
                 type="button"
                 disabled={quantity <= 1 || outOfStock || busy}
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="grid h-10 w-10 place-items-center text-[var(--color-text-dim)] transition hover:text-[var(--color-text)] disabled:opacity-40"
+                className="grid h-10 w-10 place-items-center text-zinc-400 transition hover:bg-zinc-950 hover:text-orange-400 disabled:opacity-40"
               >
                 −
               </button>
-              <span className="min-w-10 text-center text-[14px] font-semibold">
+              <span className="mc-mono min-w-10 text-center text-[14px] font-black text-zinc-100">
                 {quantity}
               </span>
               <button
                 type="button"
                 disabled={quantity >= selected.stock || outOfStock || busy}
                 onClick={() => setQuantity(Math.min(selected.stock, quantity + 1))}
-                className="grid h-10 w-10 place-items-center text-[var(--color-text-dim)] transition hover:text-[var(--color-text)] disabled:opacity-40"
+                className="grid h-10 w-10 place-items-center text-zinc-400 transition hover:bg-zinc-950 hover:text-orange-400 disabled:opacity-40"
               >
                 +
               </button>
@@ -252,20 +274,20 @@ export function ProductDetailClient({ product }: { product: Product }) {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 border-t-2 border-zinc-800 pt-4">
           <button
             type="button"
             onClick={onBuy}
             disabled={!selected || outOfStock || busy}
-            className="inline-flex flex-1 items-center justify-center rounded-full bg-[var(--color-accent)] px-6 py-3 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+            className="mc-btn-primary mc-btn-primary-lg flex-1 justify-center disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Mua ngay
+            ⬢ MUA NGAY →
           </button>
           <button
             type="button"
             onClick={onAddToCart}
             disabled={!selected || outOfStock || busy}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-[var(--color-text)] bg-white px-6 py-3 text-[14px] font-semibold text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="mc-btn-outline mc-btn-outline-lg flex-1 justify-center disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg
               viewBox="0 0 24 24"
@@ -281,29 +303,33 @@ export function ProductDetailClient({ product }: { product: Product }) {
               <path d="M3 6h18" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
-            Thêm vào giỏ
+            THÊM GIỎ
           </button>
         </div>
 
         {feedback && (
           <div
             role="status"
-            className={`rounded-lg px-3 py-2 text-[12px] ${
+            className={`mc-mono border-2 px-3 py-2 text-[11px] font-black uppercase tracking-[0.2em] ${
               feedback.kind === "ok"
-                ? "bg-green-500/10 text-green-700"
-                : "bg-red-500/10 text-red-700"
+                ? "border-green-500/60 bg-green-500/10 text-green-300"
+                : "border-red-500/60 bg-red-500/10 text-red-300"
             }`}
           >
-            {feedback.msg}
+            ⬢ {feedback.msg}
           </div>
         )}
 
         {product.description && (
-          <div className="mt-2 rounded-2xl border border-[var(--color-border)] bg-white p-5">
-            <h2 className="mb-2 text-[14px] font-semibold text-[var(--color-text)]">
-              Mô tả sản phẩm
-            </h2>
-            <p className="whitespace-pre-wrap text-[13px] leading-6 text-[var(--color-text-dim)]">
+          <div className="relative mt-2 border-2 border-zinc-800 bg-zinc-900 p-5">
+            <span className="mc-rivet mc-rivet-tl" />
+            <span className="mc-rivet mc-rivet-tr" />
+            <span className="mc-rivet mc-rivet-bl" />
+            <span className="mc-rivet mc-rivet-br" />
+            <p className="mc-mono mb-3 text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
+              ⬢ MANUAL · MÔ TẢ SẢN PHẨM
+            </p>
+            <p className="whitespace-pre-wrap text-[13px] leading-6 text-zinc-400">
               {product.description}
             </p>
           </div>
