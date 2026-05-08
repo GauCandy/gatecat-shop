@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { EmailOtpForm } from "@/components/EmailOtpForm";
+import { getSiteSettings } from "@/lib/site";
 
 type Props = {
   searchParams: Promise<{ error?: string }>;
@@ -12,7 +14,10 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export default async function LoginPage({ searchParams }: Props) {
-  const { error } = await searchParams;
+  const [{ error }, settings] = await Promise.all([
+    searchParams,
+    getSiteSettings(),
+  ]);
   const message = error ? ERROR_MESSAGES[error] : null;
 
   return (
@@ -49,19 +54,24 @@ export default async function LoginPage({ searchParams }: Props) {
             </div>
 
             <Link href="/" className="flex items-center gap-3">
-              <span
-                aria-hidden
-                className="relative grid h-10 w-10 shrink-0 place-items-center border-2 border-zinc-600 bg-zinc-950"
-              >
-                <span className="mc-rivet mc-rivet-tl" />
-                <span className="mc-rivet mc-rivet-tr" />
-                <span className="mc-rivet mc-rivet-bl" />
-                <span className="mc-rivet mc-rivet-br" />
-                <span className="text-[14px] font-black text-orange-500">GC</span>
-              </span>
+              {settings.logoUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={settings.logoUrl} alt={settings.siteName} className="h-10 w-auto object-contain" />
+              ) : (
+                <span
+                  aria-hidden
+                  className="relative grid h-10 w-10 shrink-0 place-items-center border-2 border-zinc-600 bg-zinc-950"
+                >
+                  <span className="mc-rivet mc-rivet-tl" />
+                  <span className="mc-rivet mc-rivet-tr" />
+                  <span className="mc-rivet mc-rivet-bl" />
+                  <span className="mc-rivet mc-rivet-br" />
+                  <span className="text-[14px] font-black text-orange-500">GC</span>
+                </span>
+              )}
               <span className="leading-none">
                 <span className="block text-[16px] font-black uppercase tracking-[0.06em] text-zinc-100">
-                  Gatecat<span className="text-orange-500">/</span>MCH
+                  {settings.siteName}
                 </span>
                 <span className="mc-mono mt-1 block text-[8px] font-bold uppercase tracking-[0.4em] text-orange-500">
                   ⬢ heavy industries
@@ -95,9 +105,21 @@ export default async function LoginPage({ searchParams }: Props) {
               <span>⬢ Đăng nhập với Google</span>
             </a>
 
+            <div className="mt-6 flex items-center gap-3">
+              <span aria-hidden className="h-px flex-1 bg-zinc-800" />
+              <span className="mc-mono text-[10px] font-bold uppercase tracking-[0.32em] text-zinc-500">
+                hoặc
+              </span>
+              <span aria-hidden className="h-px flex-1 bg-zinc-800" />
+            </div>
+
+            <div className="mt-6">
+              <EmailOtpForm />
+            </div>
+
             <div className="mt-6 grid grid-cols-3 gap-2 text-center">
               {[
-                { l: "ENC", v: "OAuth2" },
+                { l: "ENC", v: "OTP·HMAC" },
                 { l: "SVR", v: "SG·1" },
                 { l: "TLS", v: "1.3" },
               ].map((s) => (

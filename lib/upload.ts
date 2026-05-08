@@ -2,7 +2,8 @@ import crypto from "node:crypto";
 import path from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+/** Upload directory — outside of public/ so we serve via API route */
+const UPLOAD_DIR = path.join(process.cwd(), "data", "uploads");
 const DEFAULT_MAX_SIZE = 5 * 1024 * 1024;
 
 const EXT_BY_MIME: Record<string, string> = {
@@ -13,8 +14,26 @@ const EXT_BY_MIME: Record<string, string> = {
   "image/avif": "avif",
 };
 
+const MIME_BY_EXT: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+  avif: "image/avif",
+  svg: "image/svg+xml",
+};
+
 export type UploadResult = { url: string };
 export type UploadOptions = { maxSize?: number };
+
+export function getUploadDir() {
+  return UPLOAD_DIR;
+}
+
+export function getMimeForExt(ext: string): string {
+  return MIME_BY_EXT[ext.toLowerCase()] ?? "application/octet-stream";
+}
 
 export async function saveImageUpload(
   file: File,
@@ -34,7 +53,8 @@ export async function saveImageUpload(
   const buf = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(UPLOAD_DIR, name), buf);
 
-  return { url: `/uploads/${name}` };
+  // Serve via API route — works in production without rebuild
+  return { url: `/api/uploads/${name}` };
 }
 
 export class UploadError extends Error {}

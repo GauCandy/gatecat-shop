@@ -191,29 +191,24 @@ export function ProductsBrowser({
 
   return (
     <div className="relative">
-      <div aria-hidden className="mc-hex pointer-events-none absolute inset-0 opacity-15" />
-
       <div className="relative mx-auto w-full px-4 py-8 sm:px-6 lg:w-2/3 lg:px-0">
-        <header className="mb-8 grid items-end gap-4 border-b-2 border-zinc-800 pb-5 sm:grid-cols-12">
-          <div className="sm:col-span-8">
-            <p className="mc-mono text-[10px] font-bold uppercase tracking-[0.4em] text-orange-500">
-              ⬢ MODULE BAY · {lockedCategory ? "FILTERED" : "BROWSE"}
-            </p>
-            <h1 className="mt-3 text-[28px] font-black uppercase leading-[1.05] tracking-[-0.03em] text-zinc-100 sm:text-[40px]">
+        {/* Header */}
+        <header className="mb-8 flex flex-col gap-4 border-b border-zinc-800 pb-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-[24px] font-bold tracking-tight text-zinc-100 sm:text-[32px]">
               {title}
-              <span className="text-orange-500">.</span>
             </h1>
             {subtitle && (
-              <p className="mc-mono mt-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500">
-                ▸ {subtitle}
+              <p className="mt-1.5 text-[14px] text-zinc-500">
+                {subtitle}
               </p>
             )}
           </div>
-          <div className="flex items-center gap-2 sm:col-span-4 sm:justify-end">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setMobileOpen((v) => !v)}
-              className="mc-btn-outline lg:hidden"
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 py-2 text-[13px] font-medium text-zinc-300 transition hover:border-zinc-600 lg:hidden"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -223,77 +218,75 @@ export function ProductsBrowser({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden
-                className="h-3.5 w-3.5"
+                className="h-4 w-4"
               >
                 <path d="M3 6h18M6 12h12M10 18h4" />
               </svg>
-              FILTER {activeCount > 0 ? `(${activeCount})` : ""}
+              Bộ lọc {activeCount > 0 ? `(${activeCount})` : ""}
             </button>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortKey)}
-              className="mc-mono h-10 border-2 border-zinc-700 bg-zinc-900 px-3 text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-100 focus:border-orange-500 focus:outline-none"
+              className="h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[13px] font-medium text-zinc-200 focus:border-orange-500 focus:outline-none"
             >
-              <option value="default">SORT · DEFAULT</option>
-              <option value="price-asc">SORT · GIÁ ↑</option>
-              <option value="price-desc">SORT · GIÁ ↓</option>
-              <option value="name-asc">SORT · A → Z</option>
+              <option value="default">Mặc định</option>
+              <option value="price-asc">Giá tăng dần</option>
+              <option value="price-desc">Giá giảm dần</option>
+              <option value="name-asc">Tên A → Z</option>
             </select>
           </div>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+        <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+          {/* Sidebar filters */}
           <aside
             className={`${
               mobileOpen ? "block" : "hidden"
             } lg:block lg:self-start lg:sticky lg:top-[5.5rem]`}
           >
-            <div className="relative border-2 border-zinc-700 bg-zinc-900 p-5">
-              <span className="mc-rivet mc-rivet-tl" />
-              <span className="mc-rivet mc-rivet-tr" />
-              <span className="mc-rivet mc-rivet-bl" />
-              <span className="mc-rivet mc-rivet-br" />
-
-              <div className="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
-                <h2 className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
-                  ⬢ FILTER PANEL
+            <div className="rounded-xl bg-zinc-900 p-5 ring-1 ring-zinc-800">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <h2 className="text-[14px] font-bold text-zinc-200">
+                  Bộ lọc
                 </h2>
                 {activeCount > 0 && (
                   <button
                     type="button"
                     onClick={clearAll}
-                    className="mc-mono text-[10px] font-bold uppercase tracking-[0.22em] text-orange-400 transition hover:text-orange-300"
+                    className="text-[12px] font-semibold text-orange-400 transition hover:text-orange-300"
                   >
-                    ▸ CLEAR ({activeCount})
+                    Xoá tất cả ({activeCount})
                   </button>
                 )}
               </div>
 
               <div className="mt-5 flex flex-col gap-6">
-                <FilterBlock label="STATUS · STOCK">
-                  <div className="flex flex-col gap-2">
-                    <label className="mc-mono flex cursor-pointer items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-300 hover:text-zinc-100">
+                {/* Stock & sale */}
+                <FilterBlock label="Trạng thái">
+                  <div className="flex flex-col gap-2.5">
+                    <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-zinc-300 hover:text-zinc-100">
                       <input
                         type="checkbox"
                         checked={onlyInStock}
                         onChange={(e) => setOnlyInStock(e.target.checked)}
-                        className="h-4 w-4 accent-orange-500"
+                        className="h-4 w-4 rounded accent-orange-500"
                       />
-                      ▸ Còn hàng
+                      Còn hàng
                     </label>
-                    <label className="mc-mono flex cursor-pointer items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-300 hover:text-zinc-100">
+                    <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-zinc-300 hover:text-zinc-100">
                       <input
                         type="checkbox"
                         checked={onlySale}
                         onChange={(e) => setOnlySale(e.target.checked)}
-                        className="h-4 w-4 accent-orange-500"
+                        className="h-4 w-4 rounded accent-orange-500"
                       />
-                      ▸ Đang giảm giá
+                      Đang giảm giá
                     </label>
                   </div>
                 </FilterBlock>
 
-                <FilterBlock label="UNIT COST · ₫">
+                {/* Price range */}
+                <FilterBlock label="Khoảng giá (₫)">
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       type="text"
@@ -301,7 +294,7 @@ export function ProductsBrowser({
                       value={minPrice ? formatVnd(Number(minPrice)) : ""}
                       onChange={(e) => setMinPrice(parseDigits(e.target.value))}
                       placeholder="Từ"
-                      className="mc-mono h-9 w-full border-2 border-zinc-700 bg-zinc-950 px-3 text-[11px] font-bold uppercase text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
+                      className="h-9 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-[13px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
                     />
                     <input
                       type="text"
@@ -309,15 +302,15 @@ export function ProductsBrowser({
                       value={maxPrice ? formatVnd(Number(maxPrice)) : ""}
                       onChange={(e) => setMaxPrice(parseDigits(e.target.value))}
                       placeholder="Đến"
-                      className="mc-mono h-9 w-full border-2 border-zinc-700 bg-zinc-950 px-3 text-[11px] font-bold uppercase text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
+                      className="h-9 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-[13px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
                     />
                   </div>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
                     {[
-                      { label: "<1tr", max: 1_000_000 },
-                      { label: "1-5tr", min: 1_000_000, max: 5_000_000 },
-                      { label: "5-15tr", min: 5_000_000, max: 15_000_000 },
-                      { label: ">15tr", min: 15_000_000 },
+                      { label: "< 1 triệu", max: 1_000_000 },
+                      { label: "1-5 triệu", min: 1_000_000, max: 5_000_000 },
+                      { label: "5-15 triệu", min: 5_000_000, max: 15_000_000 },
+                      { label: "> 15 triệu", min: 15_000_000 },
                     ].map((r) => (
                       <button
                         key={r.label}
@@ -326,7 +319,7 @@ export function ProductsBrowser({
                           setMinPrice(r.min ? String(r.min) : "");
                           setMaxPrice(r.max ? String(r.max) : "");
                         }}
-                        className="mc-mono border border-zinc-700 bg-zinc-950 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400 transition hover:border-orange-500 hover:text-orange-400"
+                        className="rounded-md border border-zinc-700 bg-zinc-950 px-2.5 py-1 text-[12px] font-medium text-zinc-400 transition hover:border-orange-500/60 hover:text-orange-400"
                       >
                         {r.label}
                       </button>
@@ -334,16 +327,17 @@ export function ProductsBrowser({
                   </div>
                 </FilterBlock>
 
+                {/* Category filter */}
                 {catRows.length > 0 && (
                   <FilterBlock
                     label={
                       lockedCategory
-                        ? `SUB · ${lockedCategory.name.toUpperCase()}`
-                        : "CLASS"
+                        ? `Danh mục con`
+                        : "Danh mục"
                     }
                   >
                     <div className="max-h-64 overflow-y-auto pr-1">
-                      <ul className="flex flex-col">
+                      <ul className="flex flex-col gap-0.5">
                         {catRows
                           .filter(
                             (r) =>
@@ -355,16 +349,16 @@ export function ProductsBrowser({
                             return (
                               <li key={category.id}>
                                 <label
-                                  className="mc-mono flex cursor-pointer items-center gap-2 px-1 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-300 transition hover:bg-zinc-950 hover:text-orange-400"
+                                  className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] text-zinc-300 transition hover:bg-zinc-800 hover:text-zinc-100"
                                   style={{
-                                    paddingLeft: `${(depth - extraIndent) * 12 + 4}px`,
+                                    paddingLeft: `${(depth - extraIndent) * 14 + 8}px`,
                                   }}
                                 >
                                   <input
                                     type="checkbox"
                                     checked={checked}
                                     onChange={() => toggleCat(category.id)}
-                                    className="h-4 w-4 accent-orange-500"
+                                    className="h-4 w-4 rounded accent-orange-500"
                                   />
                                   <span className="truncate">{category.name}</span>
                                 </label>
@@ -379,35 +373,32 @@ export function ProductsBrowser({
             </div>
           </aside>
 
+          {/* Product grid */}
           <section>
-            <div className="mc-mono mb-4 flex items-center justify-between border-b-2 border-zinc-800 pb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-400">
+            <div className="mb-4 flex items-center justify-between text-[13px] text-zinc-500">
               <span>
-                <span className="text-orange-500">▸</span> {sorted.length} / {products.length} UNITS
+                Hiển thị <span className="font-semibold text-zinc-300">{sorted.length}</span> / {products.length} sản phẩm
               </span>
               {activeCount > 0 && (
-                <span className="text-orange-400">⬢ {activeCount} FILTER ACTIVE</span>
+                <span className="text-orange-400">{activeCount} bộ lọc đang áp dụng</span>
               )}
             </div>
 
             {sorted.length === 0 ? (
-              <div className="relative border-2 border-dashed border-zinc-700 bg-zinc-900 px-6 py-16 text-center">
-                <span className="mc-rivet mc-rivet-tl" />
-                <span className="mc-rivet mc-rivet-tr" />
-                <span className="mc-rivet mc-rivet-bl" />
-                <span className="mc-rivet mc-rivet-br" />
-                <p className="text-[16px] font-black uppercase tracking-tight text-zinc-100">
-                  ⬢ NO UNITS MATCHED
+              <div className="rounded-2xl border border-dashed border-zinc-700 bg-zinc-900 px-6 py-16 text-center">
+                <p className="text-[16px] font-bold text-zinc-300">
+                  Không tìm thấy sản phẩm
                 </p>
-                <p className="mc-mono mt-2 text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-500">
-                  ▸ Thử bỏ bớt bộ lọc hoặc thay đổi từ khoá.
+                <p className="mt-2 text-[14px] text-zinc-500">
+                  Thử bỏ bớt bộ lọc hoặc thay đổi từ khoá.
                 </p>
                 {activeCount > 0 && (
                   <button
                     type="button"
                     onClick={clearAll}
-                    className="mc-btn-outline mt-5"
+                    className="mt-5 inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-[13px] font-medium text-zinc-300 transition hover:border-orange-500/60 hover:text-orange-400"
                   >
-                    ▸ CLEAR FILTERS
+                    Xoá bộ lọc
                   </button>
                 )}
               </div>
@@ -433,9 +424,9 @@ function FilterBlock({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2">
-      <p className="mc-mono text-[10px] font-black uppercase tracking-[0.32em] text-orange-500">
-        ⬢ {label}
+    <div className="flex flex-col gap-2.5">
+      <p className="text-[12px] font-bold uppercase tracking-wide text-zinc-400">
+        {label}
       </p>
       {children}
     </div>

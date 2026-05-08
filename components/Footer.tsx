@@ -1,62 +1,65 @@
 import Link from "next/link";
+import { getSiteSettings } from "@/lib/site";
 
 const sections = [
   {
-    title: "Bay",
+    title: "Sản phẩm",
     links: [
-      { href: "/products", label: "Chassis" },
-      { href: "/products", label: "Power" },
-      { href: "/products", label: "Optics" },
-      { href: "/products", label: "Modules" },
+      { href: "/products", label: "Tất cả sản phẩm" },
+      { href: "/products?sale=1", label: "Đang giảm giá" },
+      { href: "/products?instock=1", label: "Hàng mới về" },
     ],
   },
   {
-    title: "Service",
+    title: "Hỗ trợ",
     links: [
-      { href: "/support", label: "Bảo hành" },
-      { href: "/warranty", label: "Trả góp" },
-      { href: "/shipping", label: "Vận chuyển" },
-      { href: "/returns", label: "Manual" },
+      { href: "#", label: "Bảo hành" },
+      { href: "#", label: "Trả góp" },
+      { href: "#", label: "Vận chuyển" },
+      { href: "#", label: "Đổi trả" },
     ],
   },
   {
-    title: "Plant",
+    title: "Về chúng tôi",
     links: [
-      { href: "/about", label: "Về Gatecat" },
-      { href: "/stores", label: "Discord" },
-      { href: "/careers", label: "Tuyển dụng" },
-      { href: "/contact", label: "Liên hệ" },
+      { href: "/about", label: "Giới thiệu" },
+      { href: "#", label: "Liên hệ" },
+      { href: "#", label: "Tuyển dụng" },
     ],
   },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSiteSettings();
   return (
-    <footer className="relative mt-auto border-t-2 border-orange-500 bg-zinc-950 text-zinc-100">
-      <div aria-hidden className="mc-hex pointer-events-none absolute inset-0 opacity-15" />
+    <footer className="relative mt-auto border-t border-zinc-800 bg-zinc-950 text-zinc-100">
       <div className="relative mx-auto w-full px-4 sm:px-6 lg:w-2/3 lg:px-0">
-        <div className="grid gap-10 border-b-2 border-zinc-800 py-16 lg:grid-cols-12 lg:gap-12">
+        {/* Newsletter + links */}
+        <div className="grid gap-10 border-b border-zinc-800 py-14 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-7">
-            <p className="mc-mono text-[10px] font-bold uppercase tracking-[0.4em] text-orange-500">
-              ⬢ DISPATCH BAY
+            <p className="text-[12px] font-semibold uppercase tracking-widest text-orange-500">
+              Đăng ký nhận tin
             </p>
-            <h2 className="mt-5 text-[40px] font-black uppercase leading-[0.95] tracking-[-0.04em] sm:text-[58px]">
-              FACTORY DISPATCH<span className="text-orange-500">.</span>
+            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight sm:text-[36px]">
+              Không bỏ lỡ ưu đãi
             </h2>
-            <p className="mt-5 max-w-md text-[13px] leading-relaxed text-zinc-400">
-              Nhận build report, leak công nghệ và lịch xuất xưởng hằng tuần — biên
-              tập riêng, không spam.
+            <p className="mt-3 max-w-md text-[14px] leading-relaxed text-zinc-400">
+              Nhận thông tin sản phẩm mới, chương trình khuyến mãi và ưu đãi đặc biệt
+              hàng tuần qua email.
             </p>
 
-            <form className="mt-7 flex w-full max-w-md gap-0 border-2 border-zinc-700 bg-zinc-900 transition focus-within:border-orange-500">
+            <form className="mt-6 flex w-full max-w-md gap-0 overflow-hidden rounded-xl ring-1 ring-zinc-700 transition focus-within:ring-orange-500">
               <input
                 type="email"
                 required
-                placeholder="OPERATOR@gatecat.heavy"
-                className="mc-mono min-w-0 flex-1 bg-transparent px-3 py-3 text-[12px] font-bold uppercase tracking-[0.15em] text-zinc-100 placeholder:text-zinc-600 focus:outline-none"
+                placeholder="Email của bạn"
+                className="min-w-0 flex-1 bg-zinc-900 px-4 py-3 text-[14px] text-zinc-100 placeholder:text-zinc-500 focus:outline-none"
               />
-              <button type="submit" className="mc-btn-primary">
-                ⬢ ENLIST
+              <button
+                type="submit"
+                className="shrink-0 bg-orange-500 px-5 py-3 text-[13px] font-bold text-zinc-950 transition hover:bg-orange-400"
+              >
+                Đăng ký
               </button>
             </form>
           </div>
@@ -64,15 +67,15 @@ export function Footer() {
           <div className="grid grid-cols-3 gap-6 lg:col-span-5">
             {sections.map((s) => (
               <div key={s.title}>
-                <h3 className="mc-mono text-[10px] font-bold uppercase tracking-[0.3em] text-orange-500">
-                  ⬢ {s.title}
+                <h3 className="text-[12px] font-bold uppercase tracking-wide text-zinc-400">
+                  {s.title}
                 </h3>
-                <ul className="mt-5 space-y-3">
+                <ul className="mt-4 space-y-2.5">
                   {s.links.map((l) => (
                     <li key={`${s.title}-${l.label}`}>
                       <Link
                         href={l.href}
-                        className="mc-mono text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-400 transition hover:text-orange-400"
+                        className="text-[13px] text-zinc-400 transition hover:text-orange-400"
                       >
                         {l.label}
                       </Link>
@@ -84,40 +87,51 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-between gap-4 border-b-2 border-zinc-800 py-10 sm:flex-row sm:items-end">
+        {/* Brand area */}
+        <div className="flex flex-col items-start justify-between gap-4 border-b border-zinc-800 py-8 sm:flex-row sm:items-center">
           <Link href="/" className="block">
-            <span className="block text-[44px] font-black uppercase leading-none tracking-[-0.04em] sm:text-[64px]">
-              GATECAT<span className="text-orange-500">/</span>MCH
-            </span>
-            <span className="mc-mono mt-3 block text-[10px] font-bold uppercase tracking-[0.32em] text-zinc-500">
-              ⬢ HEAVY INDUSTRIES · ISO 9001 · MADE IN VN
-            </span>
+            {settings.logoUrl ? (
+              <span className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={settings.logoUrl} alt={settings.siteName} className="h-10 w-auto object-contain" />
+                <span className="text-[22px] font-bold tracking-tight">
+                  {settings.siteName}
+                </span>
+              </span>
+            ) : (
+              <span className="text-[22px] font-bold tracking-tight">
+                {settings.siteName}
+              </span>
+            )}
           </Link>
-          <div className="mc-mono flex flex-col gap-1 text-right text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 sm:items-end">
-            <span>© {new Date().getFullYear()} · PLANT 01</span>
-            <span>SN · GC·MCH·26</span>
-          </div>
+          <p className="max-w-sm text-[13px] leading-relaxed text-zinc-500">
+            Cửa hàng trực tuyến uy tín — chất lượng là lời cam kết.
+          </p>
         </div>
 
+        {/* Bottom bar */}
         <div className="flex flex-col items-start justify-between gap-3 py-5 sm:flex-row sm:items-center">
-          <p className="mc-mono text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">
-            © {new Date().getFullYear()} · Gatecat Shop · All rights reserved
+          <p className="text-[12px] text-zinc-500">
+            © {new Date().getFullYear()} {settings.siteName}. All rights reserved.
+            <span className="mx-2 text-zinc-700">·</span>
+            <span>
+              Bản quyền bởi{" "}
+              <span className="font-semibold text-orange-400">GauCandy</span>
+            </span>
           </p>
-          <div className="mc-mono flex gap-5 text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">
-            <Link href="/privacy" className="transition hover:text-orange-400">
-              Privacy
+          <div className="flex gap-5 text-[12px] text-zinc-500">
+            <Link href="#" className="transition hover:text-orange-400">
+              Chính sách bảo mật
             </Link>
-            <Link href="/terms" className="transition hover:text-orange-400">
-              Terms
+            <Link href="#" className="transition hover:text-orange-400">
+              Điều khoản
             </Link>
-            <Link href="/contact" className="transition hover:text-orange-400">
-              Contact
+            <Link href="#" className="transition hover:text-orange-400">
+              Liên hệ
             </Link>
           </div>
         </div>
       </div>
-
-      <div className="mc-hazard mt-4 h-2" />
     </footer>
   );
 }

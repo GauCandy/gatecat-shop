@@ -2,16 +2,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { SESSION_COOKIE, getSessionUser } from "@/lib/session";
+import { getSiteSettings } from "@/lib/site";
 import { ShippingNavLink } from "./ShippingNavLink";
+import { shippingNavItems } from "./nav";
 
 export const dynamic = "force-dynamic";
-
-const navItems = [
-  { href: "/shipping/all", label: "ALL ORDERS", desc: "Tất cả đơn", glyph: "01" },
-  { href: "/shipping", label: "PENDING", desc: "Xác nhận đơn", glyph: "02" },
-  { href: "/shipping/preparing", label: "PREPARING", desc: "Đang chuẩn bị", glyph: "03" },
-  { href: "/shipping/delivering", label: "IN TRANSIT", desc: "Đang giao", glyph: "04" },
-];
 
 export default async function ShippingLayout({
   children,
@@ -19,7 +14,10 @@ export default async function ShippingLayout({
   children: React.ReactNode;
 }) {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  const user = await getSessionUser(token);
+  const [user, settings] = await Promise.all([
+    getSessionUser(token),
+    getSiteSettings(),
+  ]);
   if (!user) redirect("/login");
   if (user.role !== "SHIPPER" && user.role !== "ADMIN") redirect("/");
 
@@ -30,16 +28,21 @@ export default async function ShippingLayout({
         <div aria-hidden className="mc-hex pointer-events-none absolute inset-0 opacity-20" />
         <div className="relative flex h-14 w-full items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-3">
-            <span className="relative grid h-9 w-9 place-items-center border-2 border-zinc-700 bg-zinc-900">
-              <span className="mc-rivet mc-rivet-tl" />
-              <span className="mc-rivet mc-rivet-tr" />
-              <span className="mc-rivet mc-rivet-bl" />
-              <span className="mc-rivet mc-rivet-br" />
-              <span className="text-[12px] font-black text-orange-500">GC</span>
-            </span>
+            {settings.logoUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={settings.logoUrl} alt={settings.siteName} className="h-9 w-auto object-contain" />
+            ) : (
+              <span className="relative grid h-9 w-9 place-items-center border-2 border-zinc-700 bg-zinc-900">
+                <span className="mc-rivet mc-rivet-tl" />
+                <span className="mc-rivet mc-rivet-tr" />
+                <span className="mc-rivet mc-rivet-bl" />
+                <span className="mc-rivet mc-rivet-br" />
+                <span className="text-[12px] font-black text-orange-500">GC</span>
+              </span>
+            )}
             <span className="leading-none">
               <span className="block text-[14px] font-black uppercase tracking-[0.06em] text-zinc-100">
-                Gatecat<span className="text-orange-500">/</span>SHIP
+                {settings.siteName}<span className="text-orange-500">/</span>SHIP
               </span>
               <span className="mc-mono mt-1 block text-[8px] font-bold uppercase tracking-[0.4em] text-orange-500">
                 ⬢ logistics console
@@ -64,7 +67,7 @@ export default async function ShippingLayout({
             ⬢ NAV CONSOLE
           </p>
           <nav aria-label="Điều hướng vận chuyển" className="flex flex-col">
-            {navItems.map((item) => (
+            {shippingNavItems.map((item) => (
               <ShippingNavLink key={item.href} href={item.href}>
                 <span className="flex items-center gap-3">
                   <span className="text-zinc-600">⬢ {item.glyph}</span>

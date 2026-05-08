@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/Toaster";
+import { getSiteSettings } from "@/lib/site";
 
 const inter = Inter({
   subsets: ["latin", "vietnamese"],
@@ -27,17 +28,24 @@ export const metadata: Metadata = {
   description: "Cửa hàng online — đồ công nghệ, phụ kiện, gadget chất lượng",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSiteSettings();
+  const heroBg = settings.heroBgUrl;
+
   return (
     <html
       lang="vi"
       className={`${inter.variable} ${mono.variable} ${serif.variable}`}
     >
-      <body className="min-h-screen flex flex-col">
+      <body
+        className="min-h-screen flex flex-col"
+        {...(heroBg ? { "data-hero-bg": "" } : {})}
+        style={heroBg ? { "--hero-bg-url": `url(${heroBg})` } as React.CSSProperties : undefined}
+      >
         {children}
         <Toaster />
       </body>

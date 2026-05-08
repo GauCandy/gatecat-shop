@@ -1,9 +1,23 @@
 import crypto from "node:crypto";
 import { pool } from "./db";
 
+export const DEFAULT_MARQUEE_ITEMS = [
+  "Freeship toàn quốc",
+  "Trả góp 0% lãi suất",
+  "Bảo hành 24 tháng",
+  "Chính hãng 100%",
+  "Đổi trả miễn phí 7 ngày",
+  "Giao hỏa tốc 2 giờ",
+];
+
 export type SiteSettings = {
   logoUrl: string | null;
   siteName: string;
+  marqueeItems: string[];
+  heroBgUrl: string | null;
+  heroShowcaseLabel: string;
+  heroShowcaseText: string;
+  heroShowcaseImageUrl: string | null;
 };
 
 export type Banner = {
@@ -29,12 +43,30 @@ export type Popup = {
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   const { rows } = await pool.query<{ key: string; value: string | null }>(
-    `SELECT key, value FROM site_settings WHERE key IN ('logo_url', 'site_name')`
+    `SELECT key, value FROM site_settings WHERE key IN (
+      'logo_url', 'site_name', 'marquee_items', 'hero_bg_url',
+      'hero_showcase_label', 'hero_showcase_text', 'hero_showcase_image_url'
+    )`
   );
   const map = new Map(rows.map((r) => [r.key, r.value]));
+
+  let marqueeItems = DEFAULT_MARQUEE_ITEMS;
+  const raw = map.get("marquee_items");
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) marqueeItems = parsed;
+    } catch { /* use defaults */ }
+  }
+
   return {
     logoUrl: map.get("logo_url") ?? null,
     siteName: map.get("site_name") ?? "Gatecat",
+    marqueeItems,
+    heroBgUrl: map.get("hero_bg_url") ?? null,
+    heroShowcaseLabel: map.get("hero_showcase_label") ?? "NOW SHOWING",
+    heroShowcaseText: map.get("hero_showcase_text") ?? "Bộ sưu tập đang được lắp ráp.",
+    heroShowcaseImageUrl: map.get("hero_showcase_image_url") ?? null,
   };
 }
 

@@ -8,6 +8,7 @@ import {
   googleRedirectUri,
 } from "@/lib/oauth";
 import { createSession, SESSION_COOKIE } from "@/lib/session";
+import { sendLoginNotification } from "@/lib/login-notify";
 
 export async function GET(req: NextRequest) {
   const base = requestBase(req);
@@ -22,9 +23,13 @@ export async function GET(req: NextRequest) {
   const redirectUri = googleRedirectUri(req);
 
   let userId: string;
+  let userEmail: string;
+  let userName: string;
   try {
     const tokens = await exchangeGoogleCode({ code, redirectUri });
     const info = await fetchGoogleUserInfo(tokens.access_token);
+    userEmail = info.email;
+    userName = info.name;
 
     const client = await pool.connect();
     try {
@@ -87,6 +92,14 @@ export async function GET(req: NextRequest) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined;
   const { token, expiresAt } = await createSession(userId, { userAgent, ip });
+
+  void sendLoginNotification({
+    email: userEmail,
+    name: userName,
+    method: "google",
+    ip,
+    userAgent,
+  });
 
   const res = NextResponse.redirect(new URL("/", base));
   res.cookies.set(SESSION_COOKIE, token, {

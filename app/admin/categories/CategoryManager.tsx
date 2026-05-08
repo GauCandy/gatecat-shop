@@ -329,7 +329,7 @@ function JumpInput({
   };
 
   return (
-    <div className="flex items-center gap-1.5 text-[12px] text-slate-600">
+    <div className="flex items-center gap-1.5 text-[12px] text-zinc-400">
       <span>Đến trang</span>
       <input
         type="number"
@@ -345,7 +345,7 @@ function JumpInput({
         }}
         onBlur={commit}
         placeholder={String(totalPages)}
-        className="h-7 w-14 rounded border border-slate-300 bg-zinc-900 px-1.5 text-center text-[12px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+        className="h-7 w-14 rounded border border-zinc-700 bg-zinc-900 px-1.5 text-center text-[12px] text-zinc-100 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
       />
     </div>
   );
@@ -365,7 +365,7 @@ function Pager({
   const pages = buildPageList(page, totalPages);
 
   const btnBase =
-    "min-w-[28px] rounded border border-slate-300 bg-zinc-900 px-2 py-1 text-[12px] font-medium text-slate-700 transition hover:bg-zinc-950 disabled:cursor-not-allowed disabled:opacity-50";
+    "min-w-[28px] rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-[12px] font-medium text-zinc-300 transition hover:bg-zinc-950 disabled:cursor-not-allowed disabled:opacity-50";
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">
@@ -382,7 +382,7 @@ function Pager({
         p === "…" ? (
           <span
             key={`e-${i}`}
-            className="px-1 text-[12px] text-slate-400 select-none"
+            className="px-1 text-[12px] text-zinc-500 select-none"
           >
             …
           </span>
@@ -394,7 +394,7 @@ function Pager({
             aria-current={p === page ? "page" : undefined}
             className={
               p === page
-                ? "min-w-[28px] rounded border border-slate-900 bg-slate-900 px-2 py-1 text-[12px] font-medium text-white"
+                ? "min-w-[28px] rounded border border-orange-500 bg-orange-500 px-2 py-1 text-[12px] font-medium text-white"
                 : btnBase
             }
           >
@@ -498,8 +498,8 @@ function CategoryList({
   };
 
   return (
-    <div className="overflow-hidden rounded-md border border-slate-300 bg-zinc-900">
-      <div className="flex flex-wrap items-center gap-3 border-b border-slate-300 bg-zinc-950 px-3 py-2">
+    <div className="overflow-hidden rounded-md border border-zinc-700 bg-zinc-900">
+      <div className="flex flex-wrap items-center gap-3 border-b border-zinc-700 bg-zinc-950 px-3 py-2">
         <div className="relative min-w-[200px] flex-1">
           <svg
             viewBox="0 0 24 24"
@@ -509,7 +509,7 @@ function CategoryList({
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
-            className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
           >
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.3-4.3" />
@@ -519,15 +519,15 @@ function CategoryList({
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Tìm theo tên hoặc slug..."
-            className="h-8 w-full rounded border border-slate-300 bg-zinc-900 pl-8 pr-3 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="h-8 w-full rounded border border-zinc-700 bg-zinc-900 pl-8 pr-3 text-[13px] text-zinc-100 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
           />
         </div>
-        <label className="flex items-center gap-1.5 text-[12px] text-slate-600">
+        <label className="flex items-center gap-1.5 text-[12px] text-zinc-400">
           Hiển thị
           <select
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="h-8 rounded border border-slate-300 bg-zinc-900 px-2 text-[12px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="h-8 rounded border border-zinc-700 bg-zinc-900 px-2 text-[12px] text-zinc-100 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
           >
             {PAGE_SIZES.map((n) => (
               <option key={n} value={n}>
@@ -536,7 +536,7 @@ function CategoryList({
             ))}
           </select>
         </label>
-        <span className="text-[12px] text-slate-500">
+        <span className="text-[12px] text-zinc-400">
           {isFiltered
             ? `${totalFiltered} / ${totalCount} danh mục`
             : `${totalCount} danh mục`}
@@ -546,14 +546,14 @@ function CategoryList({
             <button
               type="button"
               onClick={onExpandAll}
-              className="rounded border border-slate-300 bg-zinc-900 px-2 py-1 text-slate-700 transition hover:bg-zinc-950"
+              className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-300 transition hover:bg-zinc-950"
             >
               Mở tất cả
             </button>
             <button
               type="button"
               onClick={onCollapseAll}
-              className="rounded border border-slate-300 bg-zinc-900 px-2 py-1 text-slate-700 transition hover:bg-zinc-950"
+              className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-300 transition hover:bg-zinc-950"
             >
               Thu gọn
             </button>
@@ -566,7 +566,7 @@ function CategoryList({
         />
       </div>
       <table className="w-full text-[13px]">
-        <thead className="border-b border-slate-300 bg-zinc-900 text-left text-[12px] text-slate-600">
+        <thead className="border-b border-zinc-700 bg-zinc-900 text-left text-[12px] text-zinc-400">
           <tr>
             <th className="w-8 px-2 py-2"></th>
             <th className="w-16 px-3 py-2 font-medium">Ảnh</th>
@@ -580,7 +580,7 @@ function CategoryList({
             <tr>
               <td
                 colSpan={5}
-                className="px-3 py-8 text-center text-slate-500"
+                className="px-3 py-8 text-center text-zinc-400"
               >
                 {isFiltered
                   ? `Không tìm thấy danh mục khớp "${query}".`
@@ -614,8 +614,8 @@ function CategoryList({
                   <span
                     className={`grid h-7 w-7 place-items-center rounded ${
                       canDrag
-                        ? "cursor-grab text-slate-400 hover:bg-zinc-900 hover:text-slate-600 active:cursor-grabbing"
-                        : "cursor-not-allowed text-slate-300"
+                        ? "cursor-grab text-zinc-500 hover:bg-zinc-900 hover:text-zinc-400 active:cursor-grabbing"
+                        : "cursor-not-allowed text-zinc-500"
                     }`}
                     title={
                       canDrag
@@ -638,11 +638,11 @@ function CategoryList({
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="text-[10px] text-slate-400">—</span>
+                      <span className="text-[10px] text-zinc-500">—</span>
                     )}
                   </div>
                 </td>
-                <td className="px-3 py-2 font-medium text-slate-900">
+                <td className="px-3 py-2 font-medium text-zinc-100">
                   <span
                     style={{ paddingLeft: depth * 18 }}
                     className="flex items-center gap-1.5"
@@ -660,7 +660,7 @@ function CategoryList({
                             }}
                             aria-label={isOpen ? "Thu gọn" : "Mở rộng"}
                             aria-expanded={isOpen}
-                            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-slate-500 transition hover:bg-zinc-900 hover:text-slate-900"
+                            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-zinc-400 transition hover:bg-zinc-900 hover:text-zinc-100"
                           >
                             <svg
                               viewBox="0 0 24 24"
@@ -679,7 +679,7 @@ function CategoryList({
                       }
                       if (depth > 0) {
                         return (
-                          <span className="inline-block w-5 text-slate-400" aria-hidden>
+                          <span className="inline-block w-5 text-zinc-500" aria-hidden>
                             └
                           </span>
                         );
@@ -697,13 +697,13 @@ function CategoryList({
                       </span>
                     )}
                     {(childCount.get(c.id) ?? 0) > 0 && (
-                      <span className="text-[11px] font-normal text-slate-400">
+                      <span className="text-[11px] font-normal text-zinc-500">
                         ({childCount.get(c.id)})
                       </span>
                     )}
                   </span>
                 </td>
-                <td className="px-3 py-2 text-slate-500">{c.slug}</td>
+                <td className="px-3 py-2 text-zinc-400">{c.slug}</td>
                 <td className="px-3 py-2 text-right">
                   <div className="flex justify-end gap-2">
                     <button
@@ -714,10 +714,10 @@ function CategoryList({
                       }}
                       aria-pressed={c.isFeatured}
                       title={c.isFeatured ? "Bỏ đánh dấu nổi bật" : "Đánh dấu nổi bật"}
-                      className={`grid h-[30px] w-[30px] place-items-center rounded border text-[16px] leading-none transition ${
+                      className={`grid h-[30px] w-[30px] place-items-center border-2 text-[16px] leading-none transition ${
                         c.isFeatured
-                          ? "border-amber-400 bg-amber-50 text-amber-500 hover:bg-amber-500/15"
-                          : "border-slate-300 bg-zinc-900 text-slate-400 hover:border-amber-300 hover:text-amber-400"
+                          ? "border-amber-500/60 bg-amber-500/15 text-amber-400 hover:bg-amber-500/25"
+                          : "border-zinc-700 bg-zinc-900 text-zinc-500 hover:border-amber-500/60 hover:text-amber-400"
                       }`}
                     >
                       {c.isFeatured ? "★" : "☆"}
@@ -728,7 +728,7 @@ function CategoryList({
                         e.stopPropagation();
                         onEdit(c);
                       }}
-                      className="rounded border border-slate-300 bg-zinc-900 px-4 py-1.5 text-[13px] font-medium text-slate-700 transition hover:border-slate-400 hover:bg-zinc-950"
+                      className="rounded border border-zinc-700 bg-zinc-900 px-4 py-1.5 text-[13px] font-medium text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-950"
                     >
                       Sửa
                     </button>
@@ -751,7 +751,7 @@ function CategoryList({
         </tbody>
       </table>
       {rows.length > 0 && totalPages > 1 && (
-        <div className="flex items-center justify-end border-t border-slate-300 bg-zinc-950 px-3 py-2">
+        <div className="flex items-center justify-end border-t border-zinc-700 bg-zinc-950 px-3 py-2">
           <Pager
             page={page}
             totalPages={totalPages}
@@ -845,14 +845,14 @@ function CategoryForm({
   };
 
   const inputCls =
-    "h-9 w-full rounded border border-slate-300 bg-zinc-900 px-3 text-[13px] text-slate-900 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]";
+    "h-9 w-full rounded border border-zinc-700 bg-zinc-900 px-3 text-[13px] text-zinc-100 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]";
 
   return (
     <form
       onSubmit={onSubmit}
-      className="sticky top-[4.25rem] flex h-fit flex-col gap-3 self-start rounded-md border border-slate-300 bg-zinc-900 p-4"
+      className="sticky top-[4.25rem] flex h-fit flex-col gap-3 self-start rounded-md border border-zinc-700 bg-zinc-900 p-4"
     >
-      <h2 className="text-[14px] font-semibold text-slate-900">
+      <h2 className="text-[14px] font-semibold text-zinc-100">
         {editing ? "Sửa danh mục" : "Thêm danh mục"}
       </h2>
 
@@ -893,24 +893,24 @@ function CategoryForm({
         </select>
       </Field>
 
-      <label className="flex items-center gap-2 text-[13px] text-slate-800">
+      <label className="flex items-center gap-2 text-[13px] text-zinc-200">
         <input
           type="checkbox"
           checked={isFeatured}
           onChange={(e) => setIsFeatured(e.target.checked)}
-          className="h-4 w-4 rounded border-slate-300 text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+          className="h-4 w-4 rounded border-zinc-700 text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
         />
         <span>Danh mục nổi bật (hiển thị ở trang chủ, sắp xếp A–Z)</span>
       </label>
 
       <Field label="Hình ảnh">
         <div className="flex items-center gap-3">
-          <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded border border-slate-300 bg-zinc-950">
+          <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded border border-zinc-700 bg-zinc-950">
             {preview ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={preview} alt="" className="h-full w-full object-cover" />
             ) : (
-              <span className="text-[10px] text-slate-400">—</span>
+              <span className="text-[10px] text-zinc-500">—</span>
             )}
           </div>
           <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -926,7 +926,7 @@ function CategoryForm({
                 reader.onload = () => setPreview(reader.result as string);
                 reader.readAsDataURL(f);
               }}
-              className="text-[12px] text-slate-600 file:mr-3 file:rounded file:border file:border-slate-400 file:bg-zinc-900 file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-slate-800 hover:file:bg-zinc-950"
+              className="text-[12px] text-zinc-400 file:mr-3 file:rounded file:border file:border-zinc-600 file:bg-zinc-900 file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-zinc-200 hover:file:bg-zinc-950"
             />
             {editing && preview && (
               <button
@@ -955,7 +955,7 @@ function CategoryForm({
         <button
           type="submit"
           disabled={pending}
-          className="rounded border border-slate-900 bg-slate-900 px-4 py-2 text-[13px] font-medium text-white transition hover:bg-black disabled:opacity-60"
+          className="rounded border border-orange-500 bg-orange-500 px-4 py-2 text-[13px] font-medium text-white transition hover:bg-black disabled:opacity-60"
         >
           {pending ? "Đang lưu..." : editing ? "Lưu thay đổi" : "Thêm danh mục"}
         </button>
@@ -963,7 +963,7 @@ function CategoryForm({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded border border-slate-300 bg-zinc-900 px-4 py-2 text-[13px] text-slate-700 transition hover:bg-zinc-950"
+            className="rounded border border-zinc-700 bg-zinc-900 px-4 py-2 text-[13px] text-zinc-300 transition hover:bg-zinc-950"
           >
             Huỷ
           </button>
@@ -984,9 +984,9 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[12px] font-medium text-slate-800">{label}</span>
+      <span className="text-[12px] font-medium text-zinc-200">{label}</span>
       {children}
-      {hint && <span className="text-[11px] text-slate-500">{hint}</span>}
+      {hint && <span className="text-[11px] text-zinc-400">{hint}</span>}
     </label>
   );
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/admin";
+import { getSiteSettings } from "@/lib/site";
 import { AdminNavLink } from "./AdminNavLink";
 
 const navItems = [
@@ -17,7 +18,10 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireAdmin();
+  const [user, settings] = await Promise.all([
+    requireAdmin(),
+    getSiteSettings(),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-950">
@@ -26,16 +30,21 @@ export default async function AdminLayout({
         <div aria-hidden className="mc-hex pointer-events-none absolute inset-0 opacity-20" />
         <div className="relative flex h-14 w-full items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-3">
-            <span className="relative grid h-9 w-9 place-items-center border-2 border-zinc-700 bg-zinc-900">
-              <span className="mc-rivet mc-rivet-tl" />
-              <span className="mc-rivet mc-rivet-tr" />
-              <span className="mc-rivet mc-rivet-bl" />
-              <span className="mc-rivet mc-rivet-br" />
-              <span className="text-[12px] font-black text-orange-500">GC</span>
-            </span>
+            {settings.logoUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={settings.logoUrl} alt={settings.siteName} className="h-9 w-auto object-contain" />
+            ) : (
+              <span className="relative grid h-9 w-9 place-items-center border-2 border-zinc-700 bg-zinc-900">
+                <span className="mc-rivet mc-rivet-tl" />
+                <span className="mc-rivet mc-rivet-tr" />
+                <span className="mc-rivet mc-rivet-bl" />
+                <span className="mc-rivet mc-rivet-br" />
+                <span className="text-[12px] font-black text-orange-500">GC</span>
+              </span>
+            )}
             <span className="leading-none">
               <span className="block text-[14px] font-black uppercase tracking-[0.06em] text-zinc-100">
-                Gatecat<span className="text-orange-500">/</span>ADMIN
+                {settings.siteName}<span className="text-orange-500">/</span>ADMIN
               </span>
               <span className="mc-mono mt-1 block text-[8px] font-bold uppercase tracking-[0.4em] text-orange-500">
                 ⬢ control center
