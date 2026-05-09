@@ -110,23 +110,7 @@ export async function createOrder(
 
     const orderId = crypto.randomUUID();
 
-    let voucherId: string | null = null;
-    let discountAmount = 0;
-    if (voucherCode && voucherCode.trim()) {
-      const redeemed = await redeemVoucherInTransaction(client, {
-        code: voucherCode,
-        userId,
-        orderId,
-        subtotal,
-      });
-      if (redeemed) {
-        voucherId = redeemed.voucherId;
-        discountAmount = redeemed.discount;
-      }
-    }
-
-    const finalTotal = subtotalBig - BigInt(discountAmount);
-
+    // Create order first (without voucher info) so the FK reference exists
     await client.query(
       `
       INSERT INTO orders (
@@ -148,10 +132,33 @@ export async function createOrder(
         "cod",
         deliveryMethod,
         "pending",
-        finalTotal.toString(),
-        voucherId,
-        discountAmount.toString(),
+        subtotalBig.toString(),
+        null,
+        "0",
       ]
+    );
+
+    // Redeem voucher AFTER order exists (so FK on voucher_redemptions.order_id is satisfied)
+    let voucherId: string | null = null;
+    let discountAmount = 0;
+    if (voucherCode && voucherCode.trim()) {
+      const redeemed = await redeemVoucherInTransaction(client, {
+        code: voucherCode,
+        userId,
+        orderId,
+        subtotal,
+      });
+      if (redeemed) {
+        voucherId = redeemed.voucherId;
+        discountAmount = redeemed.discount;
+      }
+    }
+
+    // Update order with final total and voucher info
+    const finalTotal = subtotalBig - BigInt(discountAmount);
+    await client.query(
+      `UPDATE orders SET total_amount = $2, voucher_id = $3, discount_amount = $4 WHERE id = $1`,
+      [orderId, finalTotal.toString(), voucherId, discountAmount.toString()]
     );
 
     for (const item of cartItems) {

@@ -64,6 +64,7 @@ export async function PATCH(
       description: parsed.description,
       imageUrl: parsed.imageUrl,
       categoryIds: parsed.categoryIds,
+      isPreorder: parsed.isPreorder,
     },
     parsed.variants.map((v) => ({
       id: v.id,

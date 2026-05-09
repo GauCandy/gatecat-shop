@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
       description: parsed.description,
       imageUrl: parsed.imageUrl,
       categoryIds: parsed.categoryIds,
+      isPreorder: parsed.isPreorder,
     },
     parsed.variants.map((v) => ({
       sku: v.sku,

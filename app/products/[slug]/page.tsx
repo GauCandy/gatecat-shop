@@ -38,7 +38,7 @@ export default async function ProductPage({
               <>
                 <span>/</span>
                 <Link
-                  href={`/category/${product.categories[0].slug}`}
+                  href={`/products?cat=${product.categories[0].id}`}
                   className="hover:text-[var(--color-text)]"
                 >
                   {product.categories[0].name}

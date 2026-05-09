@@ -171,7 +171,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
             {product.categories.map((c) => (
               <Link
                 key={c.id}
-                href={`/category/${c.slug}`}
+                href={`/products?cat=${c.id}`}
                 className="inline-flex items-center rounded-full bg-zinc-800 px-3 py-1 text-[12px] font-medium text-zinc-300 transition hover:bg-orange-500/10 hover:text-orange-400"
               >
                 {c.name}
@@ -180,10 +180,37 @@ export function ProductDetailClient({ product }: { product: Product }) {
           </div>
         )}
 
+        {/* Pre-order badge */}
+        {product.isPreorder && (
+          <div className="flex items-center gap-2 rounded-xl bg-cyan-500/10 px-4 py-2.5 ring-1 ring-cyan-500/30">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0 text-cyan-400" aria-hidden>
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <div>
+              <p className="text-[13px] font-semibold text-cyan-300">Sản phẩm đặt trước</p>
+              <p className="text-[12px] text-cyan-400/70">Sản phẩm này là hàng pre-order, thời gian giao hàng có thể lâu hơn bình thường.</p>
+            </div>
+          </div>
+        )}
+
         {/* Product name */}
         <h1 className="text-[24px] font-bold leading-tight tracking-tight text-zinc-100 sm:text-[30px]">
           {product.name}
         </h1>
+
+        {/* Stats */}
+        <div className="flex flex-wrap items-center gap-4 text-[13px] font-medium text-zinc-400">
+          <div className="flex items-center gap-1.5">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-orange-400" aria-hidden>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            <span className="font-bold text-zinc-200">{product.rating > 0 ? product.rating.toFixed(1) : "0"}</span>
+            <span>({product.reviewCount} đánh giá)</span>
+          </div>
+          <span className="h-4 w-px bg-zinc-800" aria-hidden />
+          <span>Đã bán: <span className="font-semibold text-zinc-200">{product.soldCount}</span></span>
+        </div>
 
         {/* Price panel */}
         {selected ? (

@@ -25,9 +25,13 @@ export type Product = {
   slug: string;
   description: string;
   imageUrl: string | null;
+  isPreorder: boolean;
   categories: ProductCategoryRef[];
   sortOrder: number;
   variants: ProductVariant[];
+  rating: number;
+  reviewCount: number;
+  soldCount: number;
 };
 
 export { slugify };
@@ -80,59 +84,99 @@ async function fetchCategoriesByProductIds(
   return map;
 }
 
+async function fetchStatsByProductIds(
+  ids: string[]
+): Promise<Map<string, { rating: number; reviewCount: number; soldCount: number }>> {
+  const map = new Map<string, { rating: number; reviewCount: number; soldCount: number }>();
+  if (ids.length === 0) return map;
+  const { rows } = await pool.query(
+    `SELECT
+       p.id AS "productId",
+       COALESCE((SELECT SUM(oi.quantity) FROM order_items oi JOIN product_variants pv ON pv.id = oi.variant_id WHERE pv.product_id = p.id), 0) AS "soldCount",
+       COALESCE((SELECT AVG(r.rating) FROM reviews r WHERE r.product_id = p.id AND r.is_hidden = false), 0) AS "rating",
+       COALESCE((SELECT COUNT(r.id) FROM reviews r WHERE r.product_id = p.id AND r.is_hidden = false), 0) AS "reviewCount"
+     FROM products p
+     WHERE p.id = ANY($1::text[])`,
+    [ids]
+  );
+  for (const r of rows) {
+    map.set(r.productId, {
+      rating: parseFloat(r.rating) || 0,
+      reviewCount: parseInt(r.reviewCount, 10) || 0,
+      soldCount: parseInt(r.soldCount, 10) || 0,
+    });
+  }
+  return map;
+}
+
 export async function listProducts(): Promise<Product[]> {
   const { rows } = await pool.query(
-    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder"
+    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder",
+            is_preorder AS "isPreorder"
      FROM products
      ORDER BY sort_order ASC, name ASC`
   );
   const ids = rows.map((r) => r.id);
-  const [variants, categories] = await Promise.all([
+  const [variants, categories, stats] = await Promise.all([
     fetchVariantsByProductIds(ids),
     fetchCategoriesByProductIds(ids),
+    fetchStatsByProductIds(ids),
   ]);
   return rows.map((r) => ({
     ...r,
     variants: variants.get(r.id) ?? [],
     categories: categories.get(r.id) ?? [],
+    rating: stats.get(r.id)?.rating ?? 0,
+    reviewCount: stats.get(r.id)?.reviewCount ?? 0,
+    soldCount: stats.get(r.id)?.soldCount ?? 0,
   }));
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
   const { rows } = await pool.query(
-    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder"
+    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder",
+            is_preorder AS "isPreorder"
      FROM products WHERE id = $1 LIMIT 1`,
     [id]
   );
   const p = rows[0];
   if (!p) return null;
-  const [variants, categories] = await Promise.all([
+  const [variants, categories, stats] = await Promise.all([
     fetchVariantsByProductIds([p.id]),
     fetchCategoriesByProductIds([p.id]),
+    fetchStatsByProductIds([p.id]),
   ]);
   return {
     ...p,
     variants: variants.get(p.id) ?? [],
     categories: categories.get(p.id) ?? [],
+    rating: stats.get(p.id)?.rating ?? 0,
+    reviewCount: stats.get(p.id)?.reviewCount ?? 0,
+    soldCount: stats.get(p.id)?.soldCount ?? 0,
   };
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { rows } = await pool.query(
-    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder"
+    `SELECT id, name, slug, description, image_url AS "imageUrl", sort_order AS "sortOrder",
+            is_preorder AS "isPreorder"
      FROM products WHERE slug = $1 LIMIT 1`,
     [slug]
   );
   const p = rows[0];
   if (!p) return null;
-  const [variants, categories] = await Promise.all([
+  const [variants, categories, stats] = await Promise.all([
     fetchVariantsByProductIds([p.id]),
     fetchCategoriesByProductIds([p.id]),
+    fetchStatsByProductIds([p.id]),
   ]);
   return {
     ...p,
     variants: variants.get(p.id) ?? [],
     categories: categories.get(p.id) ?? [],
+    rating: stats.get(p.id)?.rating ?? 0,
+    reviewCount: stats.get(p.id)?.reviewCount ?? 0,
+    soldCount: stats.get(p.id)?.soldCount ?? 0,
   };
 }
 
@@ -192,6 +236,7 @@ export type ProductInput = {
   description: string;
   imageUrl: string | null;
   categoryIds: string[];
+  isPreorder: boolean;
 };
 
 async function syncCategories(
@@ -222,10 +267,10 @@ export async function createProduct(
   try {
     await client.query("BEGIN");
     await client.query(
-      `INSERT INTO products (id, name, slug, description, image_url, sort_order)
-       VALUES ($1, $2, $3, $4, $5,
+      `INSERT INTO products (id, name, slug, description, image_url, is_preorder, sort_order)
+       VALUES ($1, $2, $3, $4, $5, $6,
                (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM products))`,
-      [id, data.name, data.slug, data.description, data.imageUrl]
+      [id, data.name, data.slug, data.description, data.imageUrl, data.isPreorder]
     );
     await syncCategories(client, id, data.categoryIds);
     for (let i = 0; i < variants.length; i++) {
@@ -268,9 +313,9 @@ export async function updateProduct(
     await client.query("BEGIN");
     const { rowCount } = await client.query(
       `UPDATE products
-       SET name = $2, slug = $3, description = $4, image_url = $5, updated_at = NOW()
+       SET name = $2, slug = $3, description = $4, image_url = $5, is_preorder = $6, updated_at = NOW()
        WHERE id = $1`,
-      [id, data.name, data.slug, data.description, data.imageUrl]
+      [id, data.name, data.slug, data.description, data.imageUrl, data.isPreorder]
     );
     if (!rowCount) {
       await client.query("ROLLBACK");

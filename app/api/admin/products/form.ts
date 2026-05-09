@@ -15,6 +15,7 @@ export type ParsedProductForm = {
   description: string;
   categoryIds: string[];
   imageUrl: string | null;
+  isPreorder: boolean;
   variants: ParsedVariant[];
 };
 
@@ -125,11 +126,14 @@ export async function parseProductForm(
     });
   }
 
+  const isPreorder = form.get("isPreorder") === "1";
+
   return {
     name,
     description,
     categoryIds,
     imageUrl,
+    isPreorder,
     variants,
   };
 }

@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env -- next dev",
-    "build": "dotenv -e .env -- next build",
+    "dev": "next dev",
+    "build": "next build",
     "start": "dotenv -e .env -- next start",
-    "lint": "eslint .",
+    "lint": "next lint",
     "db:migrate": "dotenv -e .env -- node scripts/migrate.mjs"
   },
   "dependencies": {

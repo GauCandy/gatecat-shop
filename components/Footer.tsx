@@ -13,18 +13,18 @@ const sections = [
   {
     title: "Hỗ trợ",
     links: [
-      { href: "#", label: "Bảo hành" },
-      { href: "#", label: "Trả góp" },
-      { href: "#", label: "Vận chuyển" },
-      { href: "#", label: "Đổi trả" },
+      { href: "/legal#terms", label: "Vận chuyển" },
+      { href: "/legal#terms", label: "Đổi trả & Bảo hành" },
+      { href: "/legal#terms", label: "Thanh toán" },
+      { href: "/legal#terms", label: "Trả góp" },
     ],
   },
   {
     title: "Về chúng tôi",
     links: [
       { href: "/about", label: "Giới thiệu" },
-      { href: "#", label: "Liên hệ" },
-      { href: "#", label: "Tuyển dụng" },
+      { href: "/legal", label: "Pháp lý" },
+      { href: "mailto:support@gatecat.net", label: "Liên hệ" },
     ],
   },
 ];
@@ -120,13 +120,10 @@ export async function Footer() {
             </span>
           </p>
           <div className="flex gap-5 text-[12px] text-zinc-500">
-            <Link href="#" className="transition hover:text-orange-400">
-              Chính sách bảo mật
+            <Link href="/legal" className="transition hover:text-orange-400">
+              Pháp lý
             </Link>
-            <Link href="#" className="transition hover:text-orange-400">
-              Điều khoản
-            </Link>
-            <Link href="#" className="transition hover:text-orange-400">
+            <Link href="mailto:support@gatecat.net" className="transition hover:text-orange-400">
               Liên hệ
             </Link>
           </div>

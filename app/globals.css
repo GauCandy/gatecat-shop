@@ -42,6 +42,12 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* Disable hover re-evaluation while scrolling.
+   Toggled via inline <script> in layout.tsx. */
+html.is-scrolling * {
+  pointer-events: none !important;
+}
+
 /* Force dark on native form controls */
 input, select, textarea, button {
   color-scheme: dark;

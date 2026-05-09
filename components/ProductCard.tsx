@@ -47,11 +47,18 @@ export function ProductCard({ product }: { product: Product }) {
 
         {/* Badges */}
         <div className="absolute left-2 right-2 top-2 flex items-start justify-between">
-          {discount > 0 && (
-            <span className="rounded-md bg-red-500 px-2 py-0.5 text-[11px] font-bold text-white shadow-sm">
-              −{discount}%
-            </span>
-          )}
+          <div className="flex gap-1.5">
+            {product.isPreorder && (
+              <span className="rounded-md bg-cyan-500 px-2 py-0.5 text-[11px] font-bold text-white shadow-sm">
+                Đặt trước
+              </span>
+            )}
+            {discount > 0 && (
+              <span className="rounded-md bg-red-500 px-2 py-0.5 text-[11px] font-bold text-white shadow-sm">
+                −{discount}%
+              </span>
+            )}
+          </div>
           {category && (
             <span className="ml-auto rounded-md bg-zinc-950/70 px-2 py-0.5 text-[10px] font-medium text-zinc-300 backdrop-blur-sm">
               {category}
@@ -85,6 +92,19 @@ export function ProductCard({ product }: { product: Product }) {
         </h3>
 
         <div className="mt-auto pt-2.5">
+          <div className="mb-2.5 flex items-center justify-between text-[11px] font-medium text-zinc-500">
+            <div className="flex items-center gap-1">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-orange-400" aria-hidden>
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+              <span>
+                {product.rating > 0 ? product.rating.toFixed(1) : "0"} ({product.reviewCount})
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span>Đã bán: {product.soldCount}</span>
+            </div>
+          </div>
           {priceInfo ? (
             <div className="flex items-baseline gap-2">
               <span className="text-[16px] font-bold tracking-tight text-orange-400">

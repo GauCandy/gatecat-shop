@@ -6,6 +6,8 @@ import { toast } from "@/components/Toaster";
 
 const TABS = [
   { id: "general", label: "Logo & tên" },
+  { id: "marquee", label: "Marquee" },
+  { id: "hero", label: "Hero" },
   { id: "banners", label: "Banner trang chủ" },
   { id: "popups", label: "Popup quảng cáo" },
 ] as const;
@@ -46,6 +48,8 @@ export function SiteManager({
       </div>
 
       {tab === "general" && <GeneralTab initial={initialSettings} />}
+      {tab === "marquee" && <MarqueeTab initial={initialSettings} />}
+      {tab === "hero" && <HeroTab initial={initialSettings} />}
       {tab === "banners" && <BannerTab initial={initialBanners} />}
       {tab === "popups" && <PopupTab initial={initialPopups} />}
     </div>
@@ -202,6 +206,339 @@ function GeneralTab({ initial }: { initial: SiteSettings }) {
           className="rounded-lg bg-[var(--color-accent)] px-5 py-2 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
         >
           {busy ? "Đang lưu..." : "Lưu thay đổi"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+/* ─────────────── Marquee Tab ─────────────── */
+
+function MarqueeTab({ initial }: { initial: SiteSettings }) {
+  const [items, setItems] = useState<string[]>(initial.marqueeItems);
+  const [busy, setBusy] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleaned = items.filter((v) => v.trim());
+    if (cleaned.length === 0) {
+      toast("Cần ít nhất 1 nội dung marquee", "error");
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await fetch("/api/admin/site/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ marqueeItems: cleaned }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast(data?.error ?? "Lưu thất bại", "error");
+        return;
+      }
+      setItems(data.settings.marqueeItems);
+      toast("Đã lưu marquee", "success");
+    } catch {
+      toast("Lỗi kết nối", "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4 rounded-xl border border-[var(--color-border-strong)] bg-zinc-900 p-5"
+    >
+      <p className="text-[12px] text-[var(--color-text-dim)]">
+        Các dòng chữ chạy ở trên cùng trang chủ.
+      </p>
+
+      <div className="flex flex-col gap-2">
+        {items.map((item, idx) => (
+          <div key={idx} className="flex items-center gap-2">
+            <span className="w-7 shrink-0 text-center text-[11px] font-medium text-[var(--color-text-dim)]">
+              {String(idx + 1).padStart(2, "0")}
+            </span>
+            <input
+              type="text"
+              value={item}
+              onChange={(e) => {
+                setItems((prev) => prev.map((v, i) => (i === idx ? e.target.value : v)));
+              }}
+              placeholder="Nội dung..."
+              className="h-9 flex-1 rounded-lg border border-[var(--color-border)] bg-zinc-900 px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+            />
+            <button
+              type="button"
+              onClick={() => setItems((prev) => prev.filter((_, i) => i !== idx))}
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--color-border)] bg-zinc-900 text-[12px] text-red-400 transition hover:border-red-500/60 hover:bg-red-500/10"
+              aria-label="Xóa"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setItems((prev) => [...prev, ""])}
+        className="self-start rounded-lg border border-dashed border-[var(--color-border-strong)] bg-zinc-900 px-4 py-1.5 text-[12px] font-medium text-[var(--color-text-dim)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+      >
+        + Thêm dòng
+      </button>
+
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={busy}
+          className="rounded-lg bg-[var(--color-accent)] px-5 py-2 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+        >
+          {busy ? "Đang lưu..." : "Lưu marquee"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+/* ─────────────── Hero Tab ─────────────── */
+
+function HeroTab({ initial }: { initial: SiteSettings }) {
+  /* Background */
+  const [heroBgUrl, setHeroBgUrl] = useState(initial.heroBgUrl);
+  const [heroBgPreview, setHeroBgPreview] = useState<string | null>(null);
+  const [heroBgFile, setHeroBgFile] = useState<File | null>(null);
+  const heroBgRef = useRef<HTMLInputElement>(null);
+
+  /* Showcase */
+  const [showcaseLabel, setShowcaseLabel] = useState(initial.heroShowcaseLabel);
+  const [showcaseText, setShowcaseText] = useState(initial.heroShowcaseText);
+  const [showcaseImageUrl, setShowcaseImageUrl] = useState(initial.heroShowcaseImageUrl);
+  const [showcasePreview, setShowcasePreview] = useState<string | null>(null);
+  const [showcaseFile, setShowcaseFile] = useState<File | null>(null);
+  const showcaseRef = useRef<HTMLInputElement>(null);
+
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (heroBgPreview) URL.revokeObjectURL(heroBgPreview);
+      if (showcasePreview) URL.revokeObjectURL(showcasePreview);
+    };
+  }, [heroBgPreview, showcasePreview]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.set("_action", "hero");
+
+      if (heroBgFile) fd.set("heroBg", heroBgFile);
+      if (!heroBgFile && !heroBgUrl && initial.heroBgUrl) fd.set("removeHeroBg", "1");
+
+      fd.set("heroShowcaseLabel", showcaseLabel);
+      fd.set("heroShowcaseText", showcaseText);
+      if (showcaseFile) fd.set("heroShowcaseImage", showcaseFile);
+      if (!showcaseFile && !showcaseImageUrl && initial.heroShowcaseImageUrl) fd.set("removeShowcaseImage", "1");
+
+      const res = await fetch("/api/admin/site/settings", { method: "PATCH", body: fd });
+      const data = await res.json();
+      if (!res.ok) {
+        toast(data?.error ?? "Lưu thất bại", "error");
+        return;
+      }
+
+      setHeroBgUrl(data.settings.heroBgUrl);
+      setHeroBgFile(null);
+      if (heroBgPreview) URL.revokeObjectURL(heroBgPreview);
+      setHeroBgPreview(null);
+      if (heroBgRef.current) heroBgRef.current.value = "";
+
+      setShowcaseLabel(data.settings.heroShowcaseLabel);
+      setShowcaseText(data.settings.heroShowcaseText);
+      setShowcaseImageUrl(data.settings.heroShowcaseImageUrl);
+      setShowcaseFile(null);
+      if (showcasePreview) URL.revokeObjectURL(showcasePreview);
+      setShowcasePreview(null);
+      if (showcaseRef.current) showcaseRef.current.value = "";
+
+      toast("Đã lưu Hero", "success");
+    } catch {
+      toast("Lỗi kết nối", "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const bgDisplay = heroBgPreview || heroBgUrl;
+  const showcaseDisplay = showcasePreview || showcaseImageUrl;
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-6 rounded-xl border border-[var(--color-border-strong)] bg-zinc-900 p-5"
+    >
+      {/* ─── Background ─── */}
+      <div className="border-b border-[var(--color-border)] pb-5">
+        <h3 className="text-[13px] font-semibold text-[var(--color-text)]">Ảnh nền Hero</h3>
+        <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
+          Ảnh nền phần đầu trang chủ. Hiển thị cover + overlay tối.
+        </p>
+
+        <div className="mt-3">
+          {bgDisplay ? (
+            <div className="relative aspect-[3/1] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={bgDisplay} alt="Background preview" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <span className="absolute bottom-2 left-3 text-[10px] font-semibold uppercase tracking-widest text-white/70">BACKGROUND</span>
+            </div>
+          ) : (
+            <div className="flex aspect-[3/1] flex-col items-center justify-center rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] text-[var(--color-text-dim)]">
+              <span className="text-[12px]">Chưa có ảnh nền</span>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-3 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => heroBgRef.current?.click()}
+            className="rounded-lg border border-[var(--color-border-strong)] bg-zinc-900 px-3 py-1.5 text-[12px] font-medium text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+          >
+            {bgDisplay ? "Đổi ảnh nền" : "Tải ảnh nền"}
+          </button>
+          {bgDisplay && (
+            <button
+              type="button"
+              onClick={() => {
+                setHeroBgFile(null);
+                setHeroBgUrl(null);
+                if (heroBgPreview) URL.revokeObjectURL(heroBgPreview);
+                setHeroBgPreview(null);
+                if (heroBgRef.current) heroBgRef.current.value = "";
+              }}
+              className="text-[12px] text-red-400 hover:underline"
+            >
+              Xóa ảnh nền
+            </button>
+          )}
+          <input
+            ref={heroBgRef}
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (!f) return;
+              setHeroBgFile(f);
+              if (heroBgPreview) URL.revokeObjectURL(heroBgPreview);
+              setHeroBgPreview(URL.createObjectURL(f));
+            }}
+            className="hidden"
+          />
+        </div>
+      </div>
+
+      {/* ─── Showcase card ─── */}
+      <div>
+        <h3 className="text-[13px] font-semibold text-[var(--color-text)]">Showcase Card (ô bên phải)</h3>
+        <p className="mt-1 text-[12px] text-[var(--color-text-dim)]">
+          Ô hiển thị khi chưa có banner carousel. Có thể chèn ảnh + text.
+        </p>
+
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="flex flex-col gap-3">
+            <div>
+              <label className="mb-1 block text-[12px] font-medium text-[var(--color-text-dim)]">Label (nhỏ, phía trên)</label>
+              <input
+                type="text"
+                value={showcaseLabel}
+                onChange={(e) => setShowcaseLabel(e.target.value)}
+                placeholder="NOW SHOWING"
+                className="h-9 w-full rounded-lg border border-[var(--color-border)] bg-zinc-900 px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-[12px] font-medium text-[var(--color-text-dim)]">Text chính (lớn)</label>
+              <input
+                type="text"
+                value={showcaseText}
+                onChange={(e) => setShowcaseText(e.target.value)}
+                placeholder="Bộ sưu tập đang được lắp ráp."
+                className="h-9 w-full rounded-lg border border-[var(--color-border)] bg-zinc-900 px-3 text-[13px] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-[12px] font-medium text-[var(--color-text-dim)]">Ảnh showcase</label>
+            {showcaseDisplay ? (
+              <div className="relative aspect-[5/4] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={showcaseDisplay} alt="Showcase preview" className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <span className="absolute bottom-2 left-3 text-[10px] font-semibold uppercase tracking-widest text-white/70">SHOWCASE</span>
+              </div>
+            ) : (
+              <div className="flex aspect-[5/4] flex-col items-center justify-center rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface-2)] text-[var(--color-text-dim)]">
+                <span className="text-[12px]">Chưa có</span>
+              </div>
+            )}
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => showcaseRef.current?.click()}
+                className="rounded-lg border border-[var(--color-border-strong)] bg-zinc-900 px-3 py-1.5 text-[12px] font-medium text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+              >
+                {showcaseDisplay ? "Đổi ảnh" : "Tải ảnh"}
+              </button>
+              {showcaseDisplay && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowcaseFile(null);
+                    setShowcaseImageUrl(null);
+                    if (showcasePreview) URL.revokeObjectURL(showcasePreview);
+                    setShowcasePreview(null);
+                    if (showcaseRef.current) showcaseRef.current.value = "";
+                  }}
+                  className="text-[12px] text-red-400 hover:underline"
+                >
+                  Xóa ảnh
+                </button>
+              )}
+              <input
+                ref={showcaseRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  setShowcaseFile(f);
+                  if (showcasePreview) URL.revokeObjectURL(showcasePreview);
+                  setShowcasePreview(URL.createObjectURL(f));
+                }}
+                className="hidden"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p className="text-[11px] text-[var(--color-text-dim)]">
+        Tối đa 15MB (nền) / 10MB (showcase). PNG · JPG · WebP · GIF · AVIF.
+      </p>
+
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={busy}
+          className="rounded-lg bg-[var(--color-accent)] px-5 py-2 text-[13px] font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+        >
+          {busy ? "Đang lưu..." : "Lưu Hero"}
         </button>
       </div>
     </form>

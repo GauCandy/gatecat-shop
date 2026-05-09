@@ -140,17 +140,17 @@ export default async function LoginPage({ searchParams }: Props) {
             <p className="mc-mono mt-7 border-t-2 border-zinc-800 pt-4 text-center text-[10px] uppercase tracking-[0.18em] text-zinc-500">
               ▸ Bằng cách tiếp tục, bạn đồng ý với{" "}
               <Link
-                href="/terms"
+                href="/legal#terms"
                 className="text-orange-400 underline transition hover:text-orange-300"
               >
                 điều khoản
               </Link>{" "}
               và{" "}
               <Link
-                href="/privacy"
+                href="/legal#privacy"
                 className="text-orange-400 underline transition hover:text-orange-300"
               >
-                bảo mật
+                chính sách bảo mật
               </Link>
               .
             </p>

@@ -312,6 +312,37 @@ function ProductList({
 }) {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const dragYRef = useRef(0);
+  const scrollRafRef = useRef<number | null>(null);
+
+  // Auto-scroll logic: scroll page when dragging near viewport edges
+  const EDGE_ZONE = 80; // px from edge to start scrolling
+  const MAX_SPEED = 18; // max px per frame
+
+  const startAutoScroll = () => {
+    const tick = () => {
+      const y = dragYRef.current;
+      const vh = window.innerHeight;
+      if (y < EDGE_ZONE) {
+        // near top — scroll up
+        const intensity = 1 - y / EDGE_ZONE;
+        window.scrollBy(0, -Math.round(MAX_SPEED * intensity));
+      } else if (y > vh - EDGE_ZONE) {
+        // near bottom — scroll down
+        const intensity = 1 - (vh - y) / EDGE_ZONE;
+        window.scrollBy(0, Math.round(MAX_SPEED * intensity));
+      }
+      scrollRafRef.current = requestAnimationFrame(tick);
+    };
+    scrollRafRef.current = requestAnimationFrame(tick);
+  };
+
+  const stopAutoScroll = () => {
+    if (scrollRafRef.current !== null) {
+      cancelAnimationFrame(scrollRafRef.current);
+      scrollRafRef.current = null;
+    }
+  };
 
   const handleDragStart = (e: React.DragEvent, idx: number) => {
     if (!canDrag) {
@@ -319,17 +350,21 @@ function ProductList({
       return;
     }
     setDragIndex(idx);
+    dragYRef.current = e.clientY;
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/plain", String(idx));
+    startAutoScroll();
   };
   const handleDragOver = (e: React.DragEvent, idx: number) => {
     if (dragIndex === null) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+    dragYRef.current = e.clientY;
     if (hoverIndex !== idx) setHoverIndex(idx);
   };
   const handleDrop = (e: React.DragEvent, idx: number) => {
     e.preventDefault();
+    stopAutoScroll();
     const from = dragIndex;
     setDragIndex(null);
     setHoverIndex(null);
@@ -337,6 +372,7 @@ function ProductList({
     onReorder(from, idx);
   };
   const handleDragEnd = () => {
+    stopAutoScroll();
     setDragIndex(null);
     setHoverIndex(null);
   };
@@ -458,7 +494,14 @@ function ProductList({
                     </div>
                   </td>
                   <td className="px-3 py-2">
-                    <div className="font-medium text-zinc-100">{p.name}</div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-medium text-zinc-100">{p.name}</span>
+                      {p.isPreorder && (
+                        <span className="shrink-0 rounded bg-cyan-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-300">
+                          Pre-order
+                        </span>
+                      )}
+                    </div>
                     <div className="text-[11px] text-zinc-400">{p.slug}</div>
                   </td>
                   <td className="px-3 py-2 text-zinc-400">
@@ -602,6 +645,7 @@ function ProductForm({
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const [isPreorder, setIsPreorder] = useState(editing?.isPreorder ?? false);
 
   useEffect(() => {
     setName(editing?.name ?? "");
@@ -613,6 +657,7 @@ function ProductForm({
       editing ? editing.variants.map(fromExistingVariant) : [createEmptyVariant()]
     );
     setError(null);
+    setIsPreorder(editing?.isPreorder ?? false);
     if (mainFileRef.current) mainFileRef.current.value = "";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingId, resetKey]);
@@ -691,6 +736,7 @@ function ProductForm({
     const fd = new FormData();
     fd.set("name", name.trim());
     fd.set("description", description);
+    if (isPreorder) fd.set("isPreorder", "1");
     for (const cid of categoryIds) fd.append("categoryIds", cid);
 
     const mainFile = mainFileRef.current?.files?.[0];
@@ -762,6 +808,19 @@ function ProductForm({
           className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-[13px] text-zinc-100 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
         />
       </Field>
+
+      <label className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2.5 transition hover:border-zinc-500">
+        <input
+          type="checkbox"
+          checked={isPreorder}
+          onChange={(e) => setIsPreorder(e.target.checked)}
+          className="h-4 w-4 rounded border-zinc-600 accent-orange-500"
+        />
+        <div>
+          <span className="text-[13px] font-medium text-zinc-200">Sản phẩm đặt trước</span>
+          <p className="text-[11px] text-zinc-500">Đánh dấu sản phẩm này là hàng pre-order</p>
+        </div>
+      </label>
 
       <Field
         label={`Danh mục (${categoryIds.size})`}
