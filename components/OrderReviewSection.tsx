@@ -181,8 +181,9 @@ function StarInput({
   onChange: (v: number) => void;
   disabled?: boolean;
 }) {
-  const [hover, setHover] = useState<number>(0);
-  const display = hover || value;
+  const [hover, setHover] = useState(0);
+  const active = hover > 0 ? hover : value;
+
   return (
     <div className="flex items-center gap-1" onMouseLeave={() => setHover(0)}>
       {[1, 2, 3, 4, 5].map((i) => (
@@ -193,15 +194,19 @@ function StarInput({
           onClick={() => onChange(i)}
           onMouseEnter={() => setHover(i)}
           aria-label={`${i} sao`}
-          className={`text-[24px] transition ${
-            i <= display ? "text-orange-500" : "text-zinc-700"
-          } disabled:cursor-not-allowed hover:scale-110`}
+          className={`text-[24px] leading-none transition-colors disabled:cursor-not-allowed hover:scale-110 ${
+            i <= active
+              ? hover > 0
+                ? "text-yellow-400"
+                : "text-orange-500"
+              : "text-zinc-500"
+          }`}
         >
           ★
         </button>
       ))}
       <span className="mc-mono ml-2 text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-400">
-        {value > 0 ? `${value}/5 STAR` : "▸ CHỌN SAO"}
+        {value > 0 ? `${value}/5 SAO` : "▸ CHỌN SAO"}
       </span>
     </div>
   );
@@ -214,7 +219,7 @@ export function StarDisplay({ rating }: { rating: number }) {
         <span
           key={i}
           className={`text-[16px] ${
-            i <= rating ? "text-orange-500" : "text-zinc-700"
+            i <= rating ? "text-orange-500" : "text-zinc-500"
           }`}
         >
           ★

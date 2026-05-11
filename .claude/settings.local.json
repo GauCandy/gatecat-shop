@@ -50,7 +50,11 @@
       "Bash(node --env-file=.env scripts/revert-seed-0023.mjs)",
       "Bash(node --env-file=.env -e \"import\\('pg'\\).then\\(async \\({default:pg}\\)=>{const p=new pg.Pool\\({connectionString:process.env.DATABASE_URL}\\);const c=await p.query\\('SELECT count\\(*\\)::int FROM categories'\\);const pr=await p.query\\('SELECT count\\(*\\)::int FROM products'\\);const v=await p.query\\('SELECT count\\(*\\)::int FROM product_variants'\\);const pc=await p.query\\('SELECT count\\(*\\)::int FROM product_categories'\\);console.log\\({categories:c.rows[0].count,products:pr.rows[0].count,variants:v.rows[0].count,product_categories:pc.rows[0].count}\\);const all=await p.query\\('SELECT name FROM products'\\);console.log\\('products:',all.rows.map\\(r=>r.name\\)\\);await p.end\\(\\);}\\)\")",
       "Bash(del db\\\\migrations\\\\0023_seed_gaming_products.sql scripts\\\\revert-seed-0023.mjs)",
-      "Bash(npm i *)"
+      "Bash(npm i *)",
+      "Bash(mkdir -p \"d:/Documents/gatecat-shop/app/category/[slug]\" 2>/dev/null; echo done)"
+    ],
+    "additionalDirectories": [
+      "d:\\Documents\\gatecat-shop\\app\\category"
     ]
   }
 }

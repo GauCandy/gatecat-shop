@@ -48,14 +48,16 @@ html.is-scrolling * {
   pointer-events: none !important;
 }
 
-/* Force dark on native form controls */
-input, select, textarea, button {
-  color-scheme: dark;
-  color: inherit;
-}
-select option {
-  background: #18181b;
-  color: #f4f4f5;
+/* Force dark on native form controls — inside @layer base so Tailwind utilities can override */
+@layer base {
+  input, select, textarea, button {
+    color-scheme: dark;
+    color: inherit;
+  }
+  select option {
+    background: #18181b;
+    color: #f4f4f5;
+  }
 }
 
 h1, h2, h3 {

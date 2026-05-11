@@ -10,7 +10,7 @@ type BannerItem = {
   title: string | null;
 };
 
-export function BannerCarousel({ items }: { items: BannerItem[] }) {
+export function BannerCarousel({ items, aspectClass, className }: { items: BannerItem[]; aspectClass?: string; className?: string }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -29,11 +29,11 @@ export function BannerCarousel({ items }: { items: BannerItem[] }) {
 
   return (
     <div
-      className="group relative overflow-hidden bg-zinc-950"
+      className={`group relative overflow-hidden bg-zinc-950${className ? ` ${className}` : ""}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative aspect-[16/9] sm:aspect-[12/5] lg:aspect-[5/2]">
+      <div className={`relative ${aspectClass ?? "aspect-[16/9] sm:aspect-[12/5] lg:aspect-[5/2]"}`}>
         {items.map((b, i) => {
           const isActive = i === index;
           const slide = (

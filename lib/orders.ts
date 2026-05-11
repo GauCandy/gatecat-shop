@@ -415,10 +415,31 @@ export async function listOrders(userId: string): Promise<Order[]> {
       o.address_line, o.note, o.payment_method, o.delivery_method::text AS delivery_method,
       o.status, o.total_amount,
       o.discount_amount, v.code AS voucher_code,
-      o.created_at, o.updated_at
+      o.created_at, o.updated_at,
+      COALESCE(
+        json_agg(
+          json_build_object(
+            'id', oi.id,
+            'orderId', oi.order_id,
+            'variantId', oi.variant_id,
+            'productName', oi.product_name,
+            'variantSku', oi.variant_sku,
+            'variantImageUrl', COALESCE(oi.variant_image_url, pv.image_url, pr.image_url),
+            'unitPrice', oi.unit_price::float8,
+            'quantity', oi.quantity,
+            'subtotal', oi.subtotal::float8,
+            'createdAt', oi.created_at
+          ) ORDER BY oi.created_at
+        ) FILTER (WHERE oi.id IS NOT NULL),
+        '[]'::json
+      ) AS items
     FROM orders o
     LEFT JOIN vouchers v ON v.id = o.voucher_id
+    LEFT JOIN order_items oi ON oi.order_id = o.id
+    LEFT JOIN product_variants pv ON pv.id = oi.variant_id
+    LEFT JOIN products pr ON pr.id = pv.product_id
     WHERE o.user_id = $1
+    GROUP BY o.id, v.code
     ORDER BY o.created_at DESC
     `,
     [userId]
@@ -442,5 +463,10 @@ export async function listOrders(userId: string): Promise<Order[]> {
     voucherCode: row.voucher_code ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    items: (row.items as OrderItem[]).map((item) => ({
+      ...item,
+      unitPrice: Number(item.unitPrice),
+      subtotal: Number(item.subtotal),
+    })),
   }));
 }

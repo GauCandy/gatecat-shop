@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 type Step = "email" | "otp";
 
-export function EmailOtpForm() {
+export function EmailOtpForm({ agreed = true }: { agreed?: boolean }) {
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -126,13 +126,21 @@ export function EmailOtpForm() {
             placeholder="you@example.com"
             className="mc-mono w-full border-2 border-zinc-700 bg-zinc-950 px-3 py-3 text-[13px] text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-orange-500"
           />
-          <button
-            type="submit"
-            disabled={loading || !email.trim()}
-            className="mc-mono group relative flex w-full items-center justify-center gap-2 border-2 border-orange-500 bg-orange-500 px-4 py-3 text-[12px] font-black uppercase tracking-[0.2em] text-zinc-950 transition hover:bg-orange-400 hover:shadow-[4px_4px_0_#09090b] hover:translate-x-[-2px] hover:translate-y-[-2px] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-none"
-          >
-            {loading ? "⟳ Đang gửi…" : "⬢ Gửi mã đăng nhập"}
-          </button>
+          <div className={!agreed ? "group relative" : ""}>
+            <button
+              type="submit"
+              disabled={loading || !email.trim() || !agreed}
+              className="mc-mono relative flex w-full items-center justify-center gap-2 border-2 border-orange-500 bg-orange-500 px-4 py-3 text-[12px] font-black uppercase tracking-[0.2em] text-zinc-950 transition hover:bg-orange-400 hover:shadow-[4px_4px_0_#09090b] hover:translate-x-[-2px] hover:translate-y-[-2px] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+            >
+              {loading ? "⟳ Đang gửi…" : "⬢ Gửi mã đăng nhập"}
+            </button>
+            {!agreed && (
+              <span className="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded border border-orange-500/40 bg-zinc-900 px-3 py-1.5 text-[11px] font-semibold text-orange-300 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                Vui lòng đồng ý điều khoản bên dưới trước
+                <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-orange-500/40" />
+              </span>
+            )}
+          </div>
         </form>
       ) : (
         <form onSubmit={verifyOtp} className="space-y-3">

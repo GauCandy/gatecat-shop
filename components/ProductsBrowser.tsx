@@ -38,12 +38,14 @@ export function ProductsBrowser({
   lockedCategorySlug = null,
   title,
   subtitle,
+  hideTitle = false,
 }: {
   products: Product[];
   categories: Category[];
   lockedCategorySlug?: string | null;
   title: string;
   subtitle?: string;
+  hideTitle?: boolean;
 }) {
   const router = useRouter();
   const sp = useSearchParams();
@@ -193,17 +195,22 @@ export function ProductsBrowser({
     <div className="relative">
       <div className="relative mx-auto w-full px-4 py-8 sm:px-6 lg:w-2/3 lg:px-0">
         {/* Header */}
-        <header className="mb-8 flex flex-col gap-4 border-b border-zinc-800 pb-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-[24px] font-bold tracking-tight text-zinc-100 sm:text-[32px]">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="mt-1.5 text-[14px] text-zinc-500">
-                {subtitle}
-              </p>
-            )}
-          </div>
+        <header className={hideTitle
+          ? "mb-6 flex items-center justify-between border-b border-zinc-800 pb-4"
+          : "mb-8 flex flex-col gap-4 border-b border-zinc-800 pb-6 sm:flex-row sm:items-end sm:justify-between"
+        }>
+          {!hideTitle && (
+            <div>
+              <h1 className="text-[24px] font-bold tracking-tight text-zinc-100 sm:text-[32px]">
+                {title}
+              </h1>
+              {subtitle && (
+                <p className="mt-1.5 text-[14px] text-zinc-500">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <button
               type="button"

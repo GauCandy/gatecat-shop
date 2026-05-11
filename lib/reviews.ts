@@ -112,9 +112,10 @@ export async function listReviewableProductsForOrder(
         pv.product_id AS "productId",
         oi.product_name AS "productName",
         oi.variant_sku AS "variantSku",
-        oi.variant_image_url AS "variantImageUrl"
+        COALESCE(oi.variant_image_url, pv.image_url, pr.image_url) AS "variantImageUrl"
      FROM order_items oi
      JOIN product_variants pv ON pv.id = oi.variant_id
+     JOIN products pr ON pr.id = pv.product_id
      WHERE oi.order_id = $1
      ORDER BY pv.product_id, oi.created_at`,
     [orderId]
