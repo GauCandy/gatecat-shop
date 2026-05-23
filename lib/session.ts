@@ -43,7 +43,7 @@ export async function getSessionUser(
     `SELECT u.id, u.name, u.email, u.role, u.avatar_url AS "avatarUrl"
      FROM sessions s
      JOIN users u ON u.id = s.user_id
-     WHERE s.id = $1 AND s.expires_at > NOW()
+     WHERE s.id = $1 AND s.expires_at > NOW() AND u.is_banned = FALSE
      LIMIT 1`,
     [id]
   );

@@ -98,6 +98,11 @@ export function EmailOtpForm({ agreed = true }: { agreed?: boolean }) {
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
+        // Tài khoản bị cấm → redirect sang trang login để hiển thị thông báo đầy đủ
+        if (res.status === 403 && data.error === "banned") {
+          window.location.href = "/login?error=banned";
+          return;
+        }
         setError(data.error || "Xác thực thất bại.");
         return;
       }

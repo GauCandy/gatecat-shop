@@ -8,6 +8,7 @@ import type { SessionUser } from "@/lib/session";
 import type { Category, CategoryNode } from "@/lib/categories-types";
 import { buildTree } from "@/lib/category-tree";
 import { UserMenu } from "./UserMenu";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function HeaderClient({
   user,
@@ -126,6 +127,7 @@ export function HeaderClient({
 
           {/* Actions */}
           <div className="flex shrink-0 items-center gap-2">
+            <ThemeToggle />
             {/* Mobile search toggle */}
             <button
               type="button"

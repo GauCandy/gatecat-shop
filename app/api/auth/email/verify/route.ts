@@ -4,6 +4,7 @@ import { pool } from "@/lib/db";
 import { cookieSecure } from "@/lib/env";
 import { verifyOtp } from "@/lib/email-otp";
 import { createSession, SESSION_COOKIE } from "@/lib/session";
+import { isUserBanned } from "@/lib/users";
 import { sendLoginNotification } from "@/lib/login-notify";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -81,6 +82,35 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Lỗi máy chủ, vui lòng thử lại." }, { status: 500 });
   } finally {
     client.release();
+  }
+
+  // Chặn login nếu tài khoản đã bị cấm
+  const banInfo = await isUserBanned(userId);
+  if (banInfo) {
+    const res = NextResponse.json(
+      {
+        error: "banned",
+        reason: banInfo.reason,
+        bannedAt: banInfo.bannedAt.toISOString(),
+      },
+      { status: 403 }
+    );
+    res.cookies.set(
+      "ban_info",
+      JSON.stringify({
+        reason: banInfo.reason,
+        bannedAt: banInfo.bannedAt.toISOString(),
+        email: result.email,
+      }),
+      {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: cookieSecure,
+        path: "/",
+        maxAge: 120,
+      }
+    );
+    return res;
   }
 
   const userAgent = req.headers.get("user-agent") ?? undefined;

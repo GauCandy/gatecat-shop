@@ -8,6 +8,7 @@ import {
   googleRedirectUri,
 } from "@/lib/oauth";
 import { createSession, SESSION_COOKIE } from "@/lib/session";
+import { isUserBanned } from "@/lib/users";
 import { sendLoginNotification } from "@/lib/login-notify";
 
 export async function GET(req: NextRequest) {
@@ -86,6 +87,29 @@ export async function GET(req: NextRequest) {
   } catch (e) {
     console.error("google oauth callback failed", e);
     return NextResponse.redirect(new URL("/login?error=oauth", base));
+  }
+
+  // Chặn login nếu tài khoản đã bị cấm
+  const banInfo = await isUserBanned(userId);
+  if (banInfo) {
+    const res = NextResponse.redirect(new URL("/login?error=banned", base));
+    res.cookies.set(
+      "ban_info",
+      JSON.stringify({
+        reason: banInfo.reason,
+        bannedAt: banInfo.bannedAt.toISOString(),
+        email: userEmail,
+      }),
+      {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: cookieSecure,
+        path: "/",
+        maxAge: 120,
+      }
+    );
+    res.cookies.delete("oauth_state");
+    return res;
   }
 
   const userAgent = req.headers.get("user-agent") ?? undefined;

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { LoginFormClient } from "@/components/LoginFormClient";
@@ -13,12 +14,48 @@ const ERROR_MESSAGES: Record<string, string> = {
   oauth: "Không thể xác thực với Google. Vui lòng thử lại.",
 };
 
+type BanInfo = {
+  reason: string | null;
+  bannedAt: string;
+  email: string;
+};
+
+function parseBanInfo(raw: string | undefined): BanInfo | null {
+  if (!raw) return null;
+  try {
+    const v = JSON.parse(raw);
+    if (typeof v?.bannedAt === "string") {
+      return {
+        reason: typeof v.reason === "string" ? v.reason : null,
+        bannedAt: v.bannedAt,
+        email: typeof v.email === "string" ? v.email : "",
+      };
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+const formatDate = (iso: string) => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat("vi-VN", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(d);
+};
+
 export default async function LoginPage({ searchParams }: Props) {
-  const [{ error }, settings] = await Promise.all([
+  const [{ error }, settings, cookieStore] = await Promise.all([
     searchParams,
     getSiteSettings(),
+    cookies(),
   ]);
-  const message = error ? ERROR_MESSAGES[error] : null;
+
+  const isBanned = error === "banned";
+  const banInfo = isBanned ? parseBanInfo(cookieStore.get("ban_info")?.value) : null;
+  const message = error && !isBanned ? ERROR_MESSAGES[error] : null;
 
   return (
     <>
@@ -69,6 +106,14 @@ export default async function LoginPage({ searchParams }: Props) {
               ▸ Đăng nhập để theo dõi đơn hàng và mua sắm
             </p>
 
+            {isBanned && (
+              <BannedNotice
+                reason={banInfo?.reason ?? null}
+                bannedAt={banInfo?.bannedAt ?? null}
+                email={banInfo?.email ?? null}
+              />
+            )}
+
             {message && (
               <div className="relative mt-6 border-2 border-red-500/60 bg-red-500/10 px-4 py-3">
                 <span className="mc-mono mb-1 block text-[10px] font-black uppercase tracking-[0.28em] text-red-400">
@@ -86,5 +131,62 @@ export default async function LoginPage({ searchParams }: Props) {
       </main>
       <Footer />
     </>
+  );
+}
+
+function BannedNotice({
+  reason,
+  bannedAt,
+  email,
+}: {
+  reason: string | null;
+  bannedAt: string | null;
+  email: string | null;
+}) {
+  return (
+    <div className="relative mt-6 border-2 border-red-500/70 bg-red-500/10 p-5">
+      <span className="mc-mono mb-2 block text-[10px] font-black uppercase tracking-[0.28em] text-red-400">
+        ⛔ Tài khoản đã bị cấm
+      </span>
+      <p className="text-[14px] font-bold leading-snug text-red-200">
+        Tài khoản của bạn hiện đang bị cấm truy cập hệ thống.
+      </p>
+
+      {email && (
+        <p className="mc-mono mt-3 text-[11px] uppercase tracking-[0.12em] text-zinc-400">
+          Email:{" "}
+          <span className="text-zinc-200">{email}</span>
+        </p>
+      )}
+
+      {reason && (
+        <div className="mt-3 border-l-2 border-red-500/60 bg-zinc-950/40 px-3 py-2">
+          <span className="mc-mono block text-[10px] font-bold uppercase tracking-[0.18em] text-red-300">
+            ▸ Lý do
+          </span>
+          <p className="mt-1 text-[13px] leading-relaxed text-zinc-100">{reason}</p>
+        </div>
+      )}
+
+      {bannedAt && (
+        <p className="mc-mono mt-3 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+          Thời điểm cấm:{" "}
+          <span className="text-zinc-300">{formatDate(bannedAt)}</span>
+        </p>
+      )}
+
+      <div className="mt-4 border-t border-red-500/30 pt-3">
+        <p className="text-[12px] leading-relaxed text-zinc-300">
+          Nếu bạn cho rằng đây là sự nhầm lẫn hoặc lý do không hợp lý, vui lòng
+          liên hệ:
+        </p>
+        <a
+          href="mailto:support@gatecat.net?subject=Khi%E1%BA%BFu%20n%E1%BA%A1i%20t%C3%A0i%20kho%E1%BA%A3n%20b%E1%BB%8B%20c%E1%BA%A5m"
+          className="mc-mono mt-2 inline-flex items-center gap-2 border-2 border-orange-500 bg-orange-500/10 px-3 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-orange-300 transition hover:bg-orange-500 hover:text-zinc-950"
+        >
+          ✉ support@gatecat.net
+        </a>
+      </div>
+    </div>
   );
 }

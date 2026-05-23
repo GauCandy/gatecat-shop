@@ -41,6 +41,13 @@ export default async function RootLayout({
       lang="vi"
       className={`${inter.variable} ${mono.variable} ${serif.variable}`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light')}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body
         className="min-h-screen flex flex-col"
         {...(heroBg ? { "data-hero-bg": "" } : {})}
